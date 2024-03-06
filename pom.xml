@@ -5,7 +5,7 @@
   <artifactId>SMP4</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>Archetype - SMP4</name>
+  <name>SMP4</name>
   <url>http://maven.apache.org</url>
   <modules>
     <module>GameEngine</module>
