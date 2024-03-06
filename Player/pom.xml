@@ -7,7 +7,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
     <artifactId>Player</artifactId>
-    <name>Archetype - Player</name>
+    <name>Player</name>
     <url>http://maven.apache.org</url>
     <packaging>jar</packaging>
 </project>
