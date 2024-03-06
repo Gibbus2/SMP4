@@ -49,7 +49,7 @@
           <arguments>
             <argument>--module-path=mods</argument>
             <argument>--class-path=libs/*</argument>
-            <argument>--module=Core/dk.sdu.mmmi.GRP7.main.Main</argument>
+            <argument>--module=GameEngine/dk.sdu.mmmi.GRP7.main.Main</argument>
             <argument>--add-modules javafx.graphics</argument>
           </arguments>
         </configuration>
