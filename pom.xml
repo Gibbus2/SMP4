@@ -14,6 +14,7 @@
     <module>Map</module>
     <module>Tower</module>
     <module>ObjectPool</module>
+    <module>FXGL</module>
   </modules>
 
   <build>
