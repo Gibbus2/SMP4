@@ -1,0 +1,3 @@
+module Common {
+    requires javatuples;
+}
