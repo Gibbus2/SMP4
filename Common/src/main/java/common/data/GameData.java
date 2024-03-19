@@ -2,8 +2,8 @@ package common.data;
 
 public class GameData {
 
-    private int displayWidth  = 800 ;
-    private int displayHeight = 800;
+    private int displayWidth  = 1440;
+    private int displayHeight = 810;
 
     private final GamePointer gamePointer = new GamePointer();
 
