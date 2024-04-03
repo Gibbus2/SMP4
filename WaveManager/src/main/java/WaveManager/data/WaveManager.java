@@ -1,6 +1,17 @@
 package WaveManager.data;
+import com.almasb.fxgl.entity.Entities;
+import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.component.Component;
+import com.almasb.fxgl.entity.components.PositionComponent;
+import com.almasb.fxgl.entity.components.ViewComponent;
+import com.almasb.fxgl.time.Duration;
+import com.almasb.fxgl.time.LocalTimer;
+import javafx.util.Duration;
 
-public class GameSpawner {
+import static com.almasb.fxgl.dsl.FXGL.*;
+
+
+public class WaveManager {
     /*
     The game needs to spawn normal mobs based on round number
     something like 5 mobs * wave counter
@@ -10,14 +21,15 @@ public class GameSpawner {
     modulus. Game needs to increment enemy left counter when something
     spawns, and then decrement it when they die.
      */
-    private int enemiesSpawned;
+    private void enemySpawner(){
+        WaveData waveData = new WaveData();
+        for(int i = 0; i < waveData.getEnemies().size();i++){
+            int j = i;
+            getGameTimer().runOnceAfter(() -> {
+                Enemy enemy = waveData.getEnemies(j);
+            }, Duration.seconds(1));
 
-    public int getEnemiesSpawned() {
-        return enemiesSpawned;
-    }
-
-    public void setEnemiesSpawned(int enemiesSpawned) {
-        this.enemiesSpawned = enemiesSpawned;
+        }
     }
 
 
