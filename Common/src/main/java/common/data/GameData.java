@@ -5,7 +5,6 @@ public class GameData {
     private int displayWidth  = 1440;
     private int displayHeight = 810;
 
-    private final GamePointer gamePointer = new GamePointer();
 
     public void setDisplayWidth(int width) {
         this.displayWidth = width;

@@ -1,7 +1,7 @@
 package common.services;
 
+import com.almasb.fxgl.app.scene.GameScene;
 import common.data.GameData;
-import common.data.GameScene;
 
 public interface IEntityProcessingService {
     void process(GameData gameData, GameScene gameScene);

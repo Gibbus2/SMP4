@@ -9,6 +9,14 @@
     <artifactId>Common</artifactId>
     <name>Archetype - Common</name>
     <url>http://maven.apache.org</url>
+    <dependencies>
+        <dependency>
+            <groupId>com.github.almasb</groupId>
+            <artifactId>fxgl</artifactId>
+            <version>21</version>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>
