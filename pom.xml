@@ -17,13 +17,13 @@
     <module>FXGL</module>
       <module>Common</module>
   </modules>
-<dependencies>
-  <dependency>
-    <groupId>org.javatuples</groupId>
-    <artifactId>javatuples</artifactId>
-    <version>1.2</version>
-  </dependency>
-</dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>org.javatuples</groupId>
+      <artifactId>javatuples</artifactId>
+      <version>1.2</version>
+    </dependency>
+  </dependencies>
 
 
   <build>
