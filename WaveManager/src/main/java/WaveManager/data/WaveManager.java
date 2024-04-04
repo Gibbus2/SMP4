@@ -1,11 +1,6 @@
 package WaveManager.data;
-import com.almasb.fxgl.entity.Entities;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.component.Component;
-import com.almasb.fxgl.entity.components.PositionComponent;
-import com.almasb.fxgl.entity.components.ViewComponent;
-import com.almasb.fxgl.time.Duration;
-import com.almasb.fxgl.time.LocalTimer;
+
 import javafx.util.Duration;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
@@ -21,16 +16,13 @@ public class WaveManager {
     modulus. Game needs to increment enemy left counter when something
     spawns, and then decrement it when they die.
      */
-    private void enemySpawner(){
-        WaveData waveData = new WaveData();
+    private void enemySpawner(WaveData waveData){
         for(int i = 0; i < waveData.getEnemies().size();i++){
             int j = i;
             getGameTimer().runOnceAfter(() -> {
-                Enemy enemy = waveData.getEnemies(j);
-            }, Duration.seconds(1));
-
+                Entity enemy = waveData.getEnemies().get(j);
+            }, Duration.seconds((double) 1 /waveData.getwaveCounter()));
         }
     }
-
 
 }

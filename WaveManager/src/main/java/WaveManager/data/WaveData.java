@@ -6,62 +6,110 @@ import java.util.List;
 
 public class WaveData {
     private int waveCounter;
-    private int enemiesSpawned;
-    private boolean isStarted;
-    private boolean isComplete;
     private List<Entity> enemies;
+    private int enemiesRemaining;
 
 
-    public WaveData(){
-        enemies = new ArrayList<>();
-        isStarted = false;
-        isComplete = false;
+    public WaveData(int waveCounter){
+        this.waveCounter = waveCounter;
+        this.enemies = new ArrayList<>();
+        this.enemiesRemaining = 0;
     }
 
-    public List<Entity> getEnemies(){
-        return enemies;
+    public void enemyLoader(int waveCounter, List<Entity> enemies){
+
+
+        if(waveCounter <= 5){
+            for(int i = 0; i < waveCounter; i++){
+                Entity enemy = createNormalEnemy();
+                enemies.add(enemy);
+            }
+        } else if (waveCounter <= 9) {
+            int normalEnemyCount = waveCounter -3 ;
+            int mediumEnemyCount = 2 * waveCounter - 5;
+            for(int i = 0; i < normalEnemyCount; i++) {
+                Entity normalEnemy = createNormalEnemy();
+                enemies.add(normalEnemy);
+            }
+            for(int i = 0; i < mediumEnemyCount; i++) {
+                Entity mediumEnemy = createBossEnemy();
+                enemies.add(mediumEnemy);
+            }
+        } else if (waveCounter >= 10) {
+            int normalEnemyCount = waveCounter -10 ;
+            int mediumEnemyCount = 2 * waveCounter - 7;
+            int heavyEnemyCount = waveCounter - 13;
+            int bossEnemyCount = 1;
+            for(int i = 0; i < normalEnemyCount; i++) {
+                Entity normalEnemy = createNormalEnemy();
+                enemies.add(normalEnemy);
+            }
+            for(int i = 0; i < mediumEnemyCount; i++) {
+                Entity mediumEnemy = createMediumEnemy();
+                enemies.add(mediumEnemy);
+            }
+            for(int i = 0; i < heavyEnemyCount; i++) {
+                Entity heavyEnemy = createHardEnemy();
+                enemies.add(heavyEnemy);
+            }
+            if (waveCounter % 10 == 0){
+                for(int i = 0; i < bossEnemyCount; i++){
+                    Entity bossEnemy = createBossEnemy();
+                    enemies.add(bossEnemy);
+                }
+            }
+        }
     }
 
-    public boolean isComplete(){
-        return isComplete;
+
+
+    private Entity createNormalEnemy(){
+        return null;
+    }
+    private Entity createMediumEnemy(){
+        return null;
+    }
+    private Entity createHardEnemy(){
+        return null;
+    }
+    private Entity createBossEnemy(){
+        return null;
     }
 
-    public void setComplete() {
-        isComplete = true;
-    }
-
-    public int getWaveCounter() {
+    public int getwaveCounter() {
         return waveCounter;
     }
 
-    public void setWaveCounter(int waveCounter) {
+    public void setwaveCounter(int waveCounter) {
         this.waveCounter = waveCounter;
     }
 
-    public void incrementWaveCounter(int waveCounter){
-        this.waveCounter = waveCounter + 1;
+    public List<Entity> getEnemies() {
+        return enemies;
     }
 
-    public void decrementWaveCounter(int waveCounter){
-        this.waveCounter = waveCounter - 1;
+    public void setEnemies(List<Entity> enemies) {
+        this.enemies = enemies;
     }
 
-
-    public int getEnemiesSpawned() {
-        return enemiesSpawned;
+    public int getEnemiesRemaining() {
+        return enemiesRemaining;
     }
 
-    public int incrementEnemiesSpawned(){
-        return enemiesSpawned + 1;
+    public void setEnemiesRemaining(int enemiesRemaining) {
+        this.enemiesRemaining = enemiesRemaining;
     }
 
-    public int decrementEnemiesSpawned(){
-        return enemiesSpawned - 1;
-    }
-
-    public void addEnemy(Entity enemy){
+    public void addEnemy(Entity enemy) {
         enemies.add(enemy);
+        enemiesRemaining++;
     }
 
+    public void enemyDefeated() {
+        enemiesRemaining--;
+    }
 
+    public boolean isWaveComplete() {
+        return enemiesRemaining == 0;
+    }
 }
