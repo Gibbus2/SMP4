@@ -68,7 +68,7 @@
             <argument>-Djava.library.path=libs</argument>
             <argument>--module-path=mods-mvn</argument>
             <argument>--class-path=libs/*</argument>
-            <argument>--module=GameEngine/dk.sdu.mmmi.GRP7.main.Main</argument>
+            <argument>--module=GameEngine/app.App</argument>
             <argument>--add-modules com.almasb.fxgl.all</argument>
           </arguments>
         </configuration>
