@@ -23,16 +23,6 @@
     <maven.compiler.target>21</maven.compiler.target>
   </properties>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>com.github.almasb</groupId>
-        <artifactId>fxgl</artifactId>
-        <version>21.1</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <build>
     <plugins>
       <plugin>
@@ -69,7 +59,6 @@
             <argument>--module-path=mods-mvn</argument>
             <argument>--class-path=libs/*</argument>
             <argument>--module=GameEngine/app.App</argument>
-            <argument>--add-modules com.almasb.fxgl.all</argument>
           </arguments>
         </configuration>
       </plugin>
@@ -136,6 +125,38 @@
                   <outputDirectory>../mods-mvn</outputDirectory>
                 </configuration>
               </execution>
+              <execution>
+                <id>copy-dependencies</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>copy-dependencies</goal>
+                </goals>
+                <configuration>
+                  <includeArtifactIds>
+                    fxgl,
+                    fxgl-core,
+                    fxgl-entity,
+                    fxgl-io,
+                    fxgl-gameplay,
+                    fxgl-scene,
+                    javafx-base,
+                    javafx-graphics,
+                    javafx-controls,
+                    javafx-fxml,
+                    javafx-media,
+                    jackson-databind,
+                    jackson-annotations,
+                    jackson-core,
+                    lifecycle,
+                    audio,
+                    kotlin-stdlib,
+                    storage,
+                    util
+                  </includeArtifactIds>
+                  <outputDirectory>../mods-mvn</outputDirectory>
+                </configuration>
+              </execution>
+
             </executions>
           </plugin>
         </plugins>
