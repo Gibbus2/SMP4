@@ -1,6 +1,7 @@
 package WaveManager.data;
 
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.SpawnData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,11 +87,13 @@ public class WaveData {
 
 
     private Entity createNormalEnemy() {
-        return null;
+        WaveManagerEntityFactory factory = new WaveManagerEntityFactory();
+        return factory.normalEnemy(new SpawnData(0,0));
     }
 
     private Entity createMediumEnemy() {
-        return null;
+        WaveManagerEntityFactory factory = new WaveManagerEntityFactory();
+        return factory.mediumEnemy(new SpawnData(0,0));
     }
 
     private Entity createHardEnemy() {

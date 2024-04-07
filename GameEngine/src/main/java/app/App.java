@@ -1,5 +1,6 @@
 package app;
 
+import WaveManager.data.WaveManagerEntityFactory;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.dsl.FXGL;
@@ -8,6 +9,7 @@ import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
+import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -16,10 +18,14 @@ import javafx.scene.shape.Rectangle;
 import java.util.Map;
 import common.data.GameData;
 import javafx.scene.text.Text;
+import WaveManager.data.WaveManager;
+
+import static com.almasb.fxgl.dsl.FXGLForKtKt.getGameWorld;
 
 
 public class App extends GameApplication {
     GameData gameData = new GameData();
+    private WaveManager waveManager = new WaveManager();
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -108,6 +114,12 @@ public class App extends GameApplication {
                 .viewWithBBox(new Circle(15, Color.YELLOW))
                 .with(new CollidableComponent(true))
                 .buildAndAttach();
+    //start wave
+
+    //this should prob not be here, move to timer or button later
+        getGameWorld().addEntityFactory(new WaveManagerEntityFactory());
+        waveManager = new WaveManager();
+        waveManager.startWave();
     }
 
     @Override
@@ -171,6 +183,14 @@ public class App extends GameApplication {
         });
 
         FXGL.getGameScene().addUINode(brickTexture);
+
+        Button startWaveButton = new Button("Start Wave");
+        startWaveButton.setTranslateX(50);
+        startWaveButton.setTranslateY(50);
+        startWaveButton.setOnAction(e -> {
+            waveManager.startWave();
+        });
+        FXGL.getGameScene().addUINode(startWaveButton);
     }
 
     @Override

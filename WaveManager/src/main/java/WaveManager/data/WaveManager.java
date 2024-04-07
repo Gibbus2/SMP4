@@ -3,6 +3,8 @@ import com.almasb.fxgl.entity.Entity;
 
 import javafx.util.Duration;
 
+import java.util.Random;
+
 import static com.almasb.fxgl.dsl.FXGL.*;
 
 
@@ -30,13 +32,12 @@ public class WaveManager {
         //pause wave, not too sure if this is gonna be used
     }
     private void enemySpawner(WaveData waveData){
+        Random random = new Random();
         for(int i = 0; i < waveData.getEnemies().size();i++){
             int j = i;
             getGameTimer().runOnceAfter(() -> {
                 Entity enemy = waveData.getEnemies().get(j);
-                //set up EntityFactory
-                //i guess enemy needs to be sent to the factory to be spawned?
-                spawn("Enemy", 0,0); // get x and y from map, prob add some variance to the spawn
+                  spawn(enemy.getType().toString(), 500 + random.nextInt(10),500 + random.nextInt(10)); // get x and y from map, prob add some variance to the spawn
             }, Duration.seconds((double) 1 /waveData.getWaveCounter()));
         }
     }
