@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>dk.sdu.mmmi.GRP7</groupId>
   <artifactId>SMP4</artifactId>
@@ -18,33 +18,22 @@
     <module>WaveManager</module>
     <module>Common</module>
   </modules>
-  <dependencies>
-    <dependency>
-      <groupId>org.javatuples</groupId>
-      <artifactId>javatuples</artifactId>
-      <version>1.2</version>
-    </dependency>
-  </dependencies>
-
-
+  <properties>
+    <java>java</java>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
+  </properties>
 
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>21</source>
-          <target>21</target>
-        </configuration>
-      </plugin>
-      <plugin>
         <artifactId>maven-clean-plugin</artifactId>
-        <version>3.3.2</version>
+        <version>3.2.0</version>
       </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.12.1</version>
+        <version>3.10.1</version>
         <configuration>
           <fork>true</fork>
         </configuration>
@@ -53,7 +42,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
-        <version>3.2.0</version>
+        <version>1.6.0</version>
         <inherited>false</inherited>
         <executions>
           <execution>
@@ -63,17 +52,117 @@
           </execution>
         </executions>
         <configuration>
-          <executable>java</executable>
+          <executable>${java}</executable>
           <workingDirectory>.</workingDirectory>
           <longModulepath>false</longModulepath>
           <arguments>
-            <argument>--module-path=mods</argument>
+            <argument>-Dorg.lwjgl.util.Debug=true</argument>
+            <argument>-Djava.library.path=libs</argument>
+            <argument>--module-path=mods-mvn</argument>
             <argument>--class-path=libs/*</argument>
-            <argument>--module=GameEngine/dk.sdu.mmmi.GRP7.main.Main</argument>
-            <argument>--add-modules javafx.graphics</argument>
+            <argument>--module=GameEngine/app.App</argument>
           </arguments>
         </configuration>
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <!-- parent project should delete 'mods-mvn' -->
+      <id>parent-project</id>
+      <activation>
+        <file>
+          <missing>src</missing>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-clean-plugin</artifactId>
+            <version>3.2.0</version>
+            <configuration>
+              <filesets>
+                <fileset>
+                  <directory>mods-mvn</directory>
+                </fileset>
+                <fileset>
+                  <directory>libs</directory>
+                </fileset>
+              </filesets>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <!-- child projects should copy artifact into 'mods-mvn' -->
+      <id>child-project</id>
+      <activation>
+        <file>
+          <exists>src</exists>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>3.0.2</version>
+            <executions>
+              <execution>
+                <id>copy-installed</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <artifactItems>
+                    <artifactItem>
+                      <groupId>${project.groupId}</groupId>
+                      <artifactId>${project.artifactId}</artifactId>
+                      <version>${project.version}</version>
+                      <type>jar</type>
+                    </artifactItem>
+                  </artifactItems>
+                  <outputDirectory>../mods-mvn</outputDirectory>
+                </configuration>
+              </execution>
+              <execution>
+                <id>copy-dependencies</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>copy-dependencies</goal>
+                </goals>
+                <configuration>
+                  <includeArtifactIds>
+                    fxgl,
+                    fxgl-core,
+                    fxgl-entity,
+                    fxgl-io,
+                    fxgl-gameplay,
+                    fxgl-scene,
+                    javafx-base,
+                    javafx-graphics,
+                    javafx-controls,
+                    javafx-fxml,
+                    javafx-media,
+                    jackson-databind,
+                    jackson-annotations,
+                    jackson-core,
+                    lifecycle,
+                    audio,
+                    kotlin-stdlib,
+                    storage,
+                    util
+                  </includeArtifactIds>
+                  <outputDirectory>../mods-mvn</outputDirectory>
+                </configuration>
+              </execution>
+
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
