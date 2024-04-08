@@ -90,6 +90,7 @@ public class App extends GameApplication {
     protected void initGameVars(Map<String, Object> vars) {
         vars.put("pixelsMoved", 0);
         vars.put("coinsCollected", 0);
+        vars.put("currentWave", waveManager.getCurrentWave());
     }
     public enum EntityType  {
         PLAYER, COIN
@@ -119,7 +120,7 @@ public class App extends GameApplication {
     //this should prob not be here, move to timer or button later
         getGameWorld().addEntityFactory(new WaveManagerEntityFactory());
         waveManager = new WaveManager();
-        waveManager.waveIntermission();
+        //waveManager.waveIntermission();
     }
 
     @Override
@@ -184,6 +185,11 @@ public class App extends GameApplication {
 
         FXGL.getGameScene().addUINode(brickTexture);
 
+        //Button for starting wave, need to agree on if we do button to start
+        //or just intermission on game start then run after x seconds
+        //does this need to be in here or wavemanager for jpms?
+        //would assume i need to change this as if wavemanager gets removed
+        //it would just break right? but for now it just needs to work
         Button startWaveButton = new Button("Start Wave");
         startWaveButton.setTranslateX(50);
         startWaveButton.setTranslateY(50);
@@ -191,6 +197,14 @@ public class App extends GameApplication {
             waveManager.waveIntermission();
         });
         FXGL.getGameScene().addUINode(startWaveButton);
+
+        //waveCounter text
+        Text waveCounterText = new Text();
+        waveCounterText.setTranslateX(50);
+        waveCounterText.setTranslateY(150);
+        waveCounterText.textProperty().bind(FXGL.getWorldProperties().intProperty("currentWave").asString("Wave: %d"));
+
+        FXGL.getGameScene().addUINode(waveCounterText);
 
     }
 

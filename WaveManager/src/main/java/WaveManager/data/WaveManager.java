@@ -13,6 +13,8 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class WaveManager {
     //this should prob be 0 since startWave() increments on call?
+    //nvm it actually needs to be 1 since spawning is based on that number
+    //so 0 = no spawning, need to offset counter by 1 or do i?
     private int currentWave = 1;
     private WaveData waveData;
     public void startWave(){
@@ -20,6 +22,7 @@ public class WaveManager {
         WaveData waveData = new WaveData(currentWave);
         waveData.enemyArrayLoader(currentWave, waveData.getEnemies());
         enemySpawner(waveData);
+        FXGL.getWorldProperties().setValue("currentWave", currentWave);
         currentWave++;
     }
 
@@ -31,18 +34,23 @@ public class WaveManager {
         waveData.getEnemies().clear();
     }
 
+    public int getCurrentWave(){
+        return currentWave;
+    }
+
     public void waveIntermission(){
         //intermission between waves
         //guess call this on wave end, then
         //new wave starts after x(30) seconds or something
         var countDownText = FXGL.getUIFactoryService().newText("");
-        //countDownText.setFont(FXGL.getUIFactoryService().newFont(24));
+        //countDownText.setFont(FXGL.getUIFactoryService().newFont(24)); // this bricks something forgot what
         countDownText.setTranslateX(300);
         countDownText.setTranslateY(300);
         countDownText.setFill(Paint.valueOf("BLACK"));
+        //add countdown text to screen
         FXGL.getGameScene().addUINode(countDownText);
 
-        //getGameTimer wants AtomicInteger for threat safety, no clue if needed
+        //getGameTimer wants AtomicInteger for thread safety, no clue if needed
         AtomicInteger countDown = new AtomicInteger(5);
 
         FXGL.getGameTimer().runAtInterval(() -> {
@@ -63,6 +71,7 @@ public class WaveManager {
     }
     private void enemySpawner(WaveData waveData){
         Random random = new Random();
+        //goes through the enemy array and spawns them the way they were put in, maybe randomize?
         for(int i = 0; i < waveData.getEnemies().size();i++){
             int j = i;
             getGameTimer().runOnceAfter(() -> {
