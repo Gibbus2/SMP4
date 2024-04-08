@@ -3,5 +3,5 @@ module Enemy {
     requires FXGL;
     requires com.almasb.fxgl.entity;
     exports enemy.data;
-    exports enemy.services;
+    requires Map;
 }
