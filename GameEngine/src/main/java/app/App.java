@@ -119,7 +119,7 @@ public class App extends GameApplication {
     //this should prob not be here, move to timer or button later
         getGameWorld().addEntityFactory(new WaveManagerEntityFactory());
         waveManager = new WaveManager();
-        waveManager.startWave();
+        waveManager.waveIntermission();
     }
 
     @Override
@@ -188,9 +188,10 @@ public class App extends GameApplication {
         startWaveButton.setTranslateX(50);
         startWaveButton.setTranslateY(50);
         startWaveButton.setOnAction(e -> {
-            waveManager.startWave();
+            waveManager.waveIntermission();
         });
         FXGL.getGameScene().addUINode(startWaveButton);
+
     }
 
     @Override

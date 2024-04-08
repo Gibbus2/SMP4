@@ -1,5 +1,5 @@
 package WaveManager.data;
 
 public enum EntityType {
-    normalEnemy, mediumEnemy, bossEnemy
+    normalEnemy, mediumEnemy, hardEnemy, bossEnemy
 }

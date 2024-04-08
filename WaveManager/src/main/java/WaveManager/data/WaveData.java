@@ -17,15 +17,19 @@ public class WaveData {
         this.waveCounter = waveCounter;
         this.enemies = new ArrayList<>();
         this.enemiesRemaining = 0;
+        //check if i made some spaghetti with how the enemy array
+        //has been set up, feel like i might have
     }
 
     public void enemyArrayLoader(int waveCounter, List<Entity> enemies) {
         //this should create enemy entities based on the waveCounter
         //then load it into the enemies list and sending it off to
-        //the enemySpawner
+        //the enemySpawner, although i think the entity array is actually not used
         int waveRange = 0;
         int normalEnemyCount = 0;
         int mediumEnemyCount = 0;
+        int hardEnemyCount = 0;
+        int bossEnemyCount = 0;
 
         if (waveCounter <= 5) {
             waveRange = 1;
@@ -40,6 +44,7 @@ public class WaveData {
                 for(int i = 0; i < waveCounter; i++){
                     Entity enemy = createNormalEnemy();
                     enemies.add(enemy);
+                    enemiesRemaining++;
                 }
                 break;
 
@@ -50,35 +55,41 @@ public class WaveData {
                 for(int i = 0; i < normalEnemyCount; i++) {
                     Entity normalEnemy = createNormalEnemy();
                     enemies.add(normalEnemy);
+                    enemiesRemaining++;
                 }
                 for(int i = 0; i < mediumEnemyCount; i++) {
-                    Entity mediumEnemy = createBossEnemy();
+                    Entity mediumEnemy = createMediumEnemy();
                     enemies.add(mediumEnemy);
+                    enemiesRemaining++;
                 }
                 break;
 
             case 3:
                 normalEnemyCount = waveCounter -10 ;
                 mediumEnemyCount = 2 * waveCounter - 7;
-                int heavyEnemyCount = waveCounter - 13;
-                int bossEnemyCount = 1;
+                hardEnemyCount = waveCounter - 7;
+                bossEnemyCount = 1;
 
                 for(int i = 0; i < normalEnemyCount; i++) {
                     Entity normalEnemy = createNormalEnemy();
                     enemies.add(normalEnemy);
+                    enemiesRemaining++;
                 }
                 for(int i = 0; i < mediumEnemyCount; i++) {
                     Entity mediumEnemy = createMediumEnemy();
                     enemies.add(mediumEnemy);
+                    enemiesRemaining++;
                 }
-                for(int i = 0; i < heavyEnemyCount; i++) {
-                    Entity heavyEnemy = createHardEnemy();
-                    enemies.add(heavyEnemy);
+                for(int i = 0; i < hardEnemyCount; i++) {
+                    Entity hardEnemy = createHardEnemy();
+                    enemies.add(hardEnemy);
+                    enemiesRemaining++;
                 }
                 if (waveCounter % 10 == 0){
                     for(int i = 0; i < bossEnemyCount; i++){
                         Entity bossEnemy = createBossEnemy();
                         enemies.add(bossEnemy);
+                        enemiesRemaining++;
                     }
                 }
                 break;
@@ -97,11 +108,13 @@ public class WaveData {
     }
 
     private Entity createHardEnemy() {
-        return null;
+        WaveManagerEntityFactory factory = new WaveManagerEntityFactory();
+        return factory.hardEnemy(new SpawnData(0,0));
     }
 
     private Entity createBossEnemy() {
-        return null;
+        WaveManagerEntityFactory factory = new WaveManagerEntityFactory();
+        return factory.bossEnemy(new SpawnData(0,0));
     }
 
     public int getWaveCounter() {
