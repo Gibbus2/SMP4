@@ -20,6 +20,12 @@
             <artifactId>fxgl</artifactId>
             <version>21.1</version>
         </dependency>
+        <dependency>
+            <groupId>dk.sdu.mmmi.GRP7</groupId>
+            <artifactId>Enemy</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
     <packaging>jar</packaging>
     <build>

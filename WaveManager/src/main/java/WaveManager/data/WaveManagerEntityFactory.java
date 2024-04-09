@@ -6,6 +6,8 @@ import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.components.CollidableComponent;
+import com.almasb.fxgl.entity.state.StateComponent;
+import enemy.data.EnemyComponent;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
@@ -29,6 +31,8 @@ public class WaveManagerEntityFactory implements EntityFactory {
                 .type(EntityType.normalEnemy)
                 .viewWithBBox(new Rectangle(20,20, getRandomColor()))
                 .with(new CollidableComponent(true))
+                .with(new StateComponent())
+                .with(new EnemyComponent(1, 1, 1, 1))
                 .build();
     }
     @Spawns("mediumEnemy")

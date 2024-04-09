@@ -9,13 +9,22 @@ public class EnemyComponent extends com.almasb.fxgl.entity.component.Component{
     private int speed;
     private int score;
 
-    private StateComponent state;
+    //change private when figured out how to access it
+    public StateComponent state;
 
     public EnemyComponent(int hp, int damage, int speed, int score){
         this.hp = hp;
         this.damage = damage;
         this.speed = speed;
         this.score = score;
+    }
+
+    public StateComponent getState(){
+        return state;
+    }
+
+    public void setState(StateComponent state) {
+        this.state = state;
     }
 
     @Override
