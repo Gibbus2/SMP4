@@ -18,13 +18,8 @@
         </dependency>
         <dependency>
             <groupId>com.github.almasb</groupId>
-            <artifactId>fxgl-entity</artifactId>
-            <version>21</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.almasb</groupId>
-            <artifactId>fxgl-core</artifactId>
-            <version>21</version>
+            <artifactId>fxgl</artifactId>
+            <version>21.1</version>
         </dependency>
     </dependencies>
     <packaging>jar</packaging>
