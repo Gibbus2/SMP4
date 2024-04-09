@@ -137,9 +137,6 @@ public class WaveData {
         return enemiesRemaining;
     }
 
-    public void setEnemiesRemaining(int enemiesRemaining) {
-        this.enemiesRemaining = enemiesRemaining;
-    }
 
     public void addEnemy(Entity enemy) {
         enemies.add(enemy);
