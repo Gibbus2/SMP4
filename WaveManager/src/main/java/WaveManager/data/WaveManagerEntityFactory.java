@@ -32,7 +32,7 @@ public class WaveManagerEntityFactory implements EntityFactory {
                 .viewWithBBox(new Rectangle(20,20, getRandomColor()))
                 .with(new CollidableComponent(true))
                 .with(new StateComponent())
-                .with(new EnemyComponent(1, 1, 1, 1))
+                .with(new EnemyComponent(1, 1, 100, 1))
                 .build();
     }
     @Spawns("mediumEnemy")

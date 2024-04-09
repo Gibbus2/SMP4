@@ -36,11 +36,12 @@ public class EnemyComponent extends com.almasb.fxgl.entity.component.Component{
     private final EntityState MOVING = new EntityState("MOVING") {
         @Override
         public void onUpdate(double tpf) {
+            entity.translateX(speed * tpf);
             // to be implemented
         }
         @Override
         public void onEntering() {
-            speed = 10;
+            speed = speed;
         }
     };
     private final EntityState SLOWED = new EntityState("SLOWED") {
@@ -50,7 +51,7 @@ public class EnemyComponent extends com.almasb.fxgl.entity.component.Component{
         }
         @Override
         public void onEntering() {
-            speed = 5;
+            speed = speed / 2;
         }
     };
     private final EntityState STUNNED = new EntityState("STUNNED") {
