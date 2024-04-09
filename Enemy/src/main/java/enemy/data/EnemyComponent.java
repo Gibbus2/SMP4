@@ -41,12 +41,13 @@ public class EnemyComponent extends com.almasb.fxgl.entity.component.Component{
     private final EntityState MOVING = new EntityState("MOVING") {
         @Override
         public void onUpdate(double tpf) {
-            entity.translateX(speed * tpf);
             // to be implemented
         }
         @Override
         public void onEntering() {
             speed = speed;
+            PointMovementSystem pointMovementSystem = new PointMovementSystem();
+            pointMovementSystem.ghettoWayPointSystem(entity);
         }
     };
     private final EntityState SLOWED = new EntityState("SLOWED") {
@@ -60,18 +61,7 @@ public class EnemyComponent extends com.almasb.fxgl.entity.component.Component{
         }
     };
 
-    public void translateEntityTo(Entity entity, double targetX, double targetY, double durationSeconds) {
-        double distanceX = targetX - entity.getX();
-        double distanceY = targetY - entity.getY();
 
-        double speedX = distanceX / durationSeconds;
-        double speedY = distanceY / durationSeconds;
-
-        getGameTimer().runAtInterval(() -> {
-            entity.translateX(speedX * FXGL.tpf());
-            entity.translateY(speedY * FXGL.tpf());
-        }, Duration.seconds(FXGL.tpf()));
-    }
     private final EntityState STUNNED = new EntityState("STUNNED") {
         @Override
         public void onUpdate(double tpf) {

@@ -32,15 +32,15 @@ public class WaveManagerEntityFactory implements EntityFactory {
                 .viewWithBBox(new Rectangle(20,20, getRandomColor()))
                 .with(new CollidableComponent(true))
                 .with(new StateComponent())
-                .with(new EnemyComponent(1, 1, 100, 1))
+                .with(new EnemyComponent(1, 1, 10, 1))
                 .build();
     }
     @Spawns("mediumEnemy")
     public Entity mediumEnemy(SpawnData data) {
         Image image = FXGL.image("test1.jpg");
         ImageView imageView = new ImageView(image);
-        imageView.setFitWidth(30);
-        imageView.setFitHeight(30);
+        imageView.setFitWidth(100);
+        imageView.setFitHeight(100);
         return FXGL.entityBuilder(data)
                 .type(EntityType.mediumEnemy)
                 .viewWithBBox(imageView) //test image for showing it can load it
