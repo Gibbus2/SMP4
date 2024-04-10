@@ -159,7 +159,7 @@ public class App extends GameApplication {
 
         Text textPixels = new Text();
         textPixels.setTranslateX(50); // x = 50
-        textPixels.setTranslateY(100); // y = 100
+        textPixels.setTranslateY(130); // y = 100
 
         textPixels.textProperty().bind(FXGL.getWorldProperties().intProperty("pixelsMoved").asString());
 
@@ -167,7 +167,7 @@ public class App extends GameApplication {
 
         Text coinText = new Text();
         coinText.setTranslateX(100); // x = 50
-        coinText.setTranslateY(100); // y = 100
+        coinText.setTranslateY(130); // y = 100
 
         coinText.textProperty().bind(FXGL.getWorldProperties().intProperty("coinsCollected").asString());
 
@@ -201,8 +201,8 @@ public class App extends GameApplication {
         //would assume i need to change this as if wavemanager gets removed
         //it would just break right? but for now it just needs to work
         Button startWaveButton = new Button("Start Wave");
-        startWaveButton.setTranslateX(50);
-        startWaveButton.setTranslateY(50);
+        startWaveButton.setTranslateX(35);
+        startWaveButton.setTranslateY(10);
         startWaveButton.setOnAction(e -> {
             waveManager.waveIntermission();
         });

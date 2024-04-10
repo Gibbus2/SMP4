@@ -13,9 +13,11 @@ import javafx.util.Duration;
 public class PointMovementSystem {
     int currentWayPoint = 0;
 
-    public void moveEntityToX(Entity entity, double destX) {
+    public void moveEntityToX(Entity entity, double destX, int speed) {
+        double distance = Math.abs(destX - entity.getPosition().getX());
+        double duration = distance / speed;
         new AnimationBuilder()
-                .duration(Duration.seconds(10))
+                .duration(Duration.seconds(duration))
                 .interpolator(Interpolator.LINEAR)
                 .onFinished(()->{
                     incrementWayPoint();
@@ -27,11 +29,16 @@ public class PointMovementSystem {
                 .buildAndPlay(FXGL.getGameScene());
     }
 
-    public void moveEntityToY(Entity entity, double destY) {
+    public void moveEntityToY(Entity entity, double destY, int speed) {
+        double distance = Math.abs(destY - entity.getPosition().getY());
+        double duration = distance / speed;
         new AnimationBuilder()
-                .duration(Duration.seconds(10))
+                .duration(Duration.seconds(duration))
                 .interpolator(Interpolator.LINEAR)
-                .onFinished(this::incrementWayPoint)
+                .onFinished(()->{
+                    incrementWayPoint();
+                    ghettoWayPointSystem(entity);
+                })
                 .translate(entity)
                 .from(entity.getPosition())
                 .to(new Point2D(entity.getPosition().getX(), destY))
@@ -45,13 +52,13 @@ public class PointMovementSystem {
     public void ghettoWayPointSystem(Entity entity) {
         switch (currentWayPoint) {
             case 0:
-                moveEntityToX(entity, 100);
+                moveEntityToX(entity, 295, 100);
                 break;
             case 1:
-                moveEntityToY(entity, 100);
+                moveEntityToY(entity, 590, 100);
                 break;
             case 2:
-                moveEntityToX(entity, 50);
+                moveEntityToX(entity, 1000, 100);
                 break;
         }
     }

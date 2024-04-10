@@ -76,7 +76,7 @@ public class WaveManager {
             int j = i;
             getGameTimer().runOnceAfter(() -> {
                 Entity enemy = waveData.getEnemies().get(j);
-                  spawn(enemy.getType().toString(), 500 + random.nextInt(100),500 + random.nextInt(100)); // get x and y from map, prob add some variance to the spawn
+                  spawn(enemy.getType().toString(), 10 ,50 ); // get x and y from map, prob add some variance to the spawn
             }, Duration.seconds(1 + i));
 
         }
