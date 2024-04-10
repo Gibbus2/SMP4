@@ -15,12 +15,15 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.Map;
 import common.data.GameData;
 import javafx.scene.text.Text;
 import WaveManager.data.WaveManager;
 
 import static com.almasb.fxgl.dsl.FXGLForKtKt.getGameWorld;
+import map.MapLoader;
 
 
 public class App extends GameApplication {
@@ -99,6 +102,13 @@ public class App extends GameApplication {
     Entity coin;
     @Override
     protected void initGame() {
+        try {
+            MapLoader mapLoader = new MapLoader();
+            mapLoader.loadLevel(0);
+        } catch (MalformedURLException | URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+
         test = FXGL.entityBuilder()
                 .type(EntityType.PLAYER)
                 .at(300, 100)
