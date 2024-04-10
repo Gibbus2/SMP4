@@ -51,7 +51,7 @@ public class WaveManager {
         FXGL.getGameScene().addUINode(countDownText);
 
         //getGameTimer wants AtomicInteger for thread safety, no clue if needed
-        AtomicInteger countDown = new AtomicInteger(1);
+        AtomicInteger countDown = new AtomicInteger(5);
 
         FXGL.getGameTimer().runAtInterval(() -> {
             countDown.getAndDecrement();
