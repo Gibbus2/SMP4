@@ -104,7 +104,7 @@ public class App extends GameApplication {
     protected void initGame() {
         try {
             MapLoader mapLoader = new MapLoader();
-            mapLoader.loadLevel(0);
+            mapLoader.loadLevel(1);
         } catch (MalformedURLException | URISyntaxException e) {
             throw new RuntimeException(e);
         }

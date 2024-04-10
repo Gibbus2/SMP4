@@ -10,32 +10,16 @@ import javafx.beans.binding.Bindings;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+import static com.almasb.fxgl.dsl.FXGLForKtKt.entityBuilder;
+
 public class MapFactory implements EntityFactory {
-    public enum EntityType  {
-        WAYPOINT,TOWER_BASE
-    }
     @Spawns("waypoint")
-    public Entity newWaypoint(SpawnData data){
-        return FXGL.entityBuilder().type(EntityType.WAYPOINT).build();
-    }
-
-    @Spawns("towerBase")
-    public Entity newTowerBase(SpawnData data) {
-        var rect = new Rectangle(64, 64, Color.GREEN);
-        rect.setOpacity(0.25);
-
-        var cell = FXGLForKtKt.entityBuilder(data)
-                .type(EntityType.TOWER_BASE)
-                .viewWithBBox(rect)
+    public Entity newWaypoint(SpawnData data) {
+        return entityBuilder(data)
+                .type(EntityType.WAYPOINT)
                 .build();
-
-        rect.fillProperty().bind(
-                Bindings.when(cell.getViewComponent().getParent().hoverProperty())
-                        .then(Color.DARKGREEN)
-                        .otherwise(Color.GREEN)
-        );
-
-        return cell;
     }
+
+
 
 }
