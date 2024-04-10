@@ -156,7 +156,31 @@
                   <outputDirectory>../mods-mvn</outputDirectory>
                 </configuration>
               </execution>
-
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <version>3.3.1</version>
+            <executions>
+              <execution>
+                <id>copy-external-resources</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>../mods-mvn/levels</outputDirectory>
+                  <resources>
+                    <resource>
+                      <directory>../Map/src/main/resources/levels</directory>
+                      <includes>
+                        <include>**/*</include>
+                      </includes>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
             </executions>
           </plugin>
         </plugins>
