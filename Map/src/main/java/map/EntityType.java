@@ -1,6 +1,6 @@
 package map;
 
 public enum EntityType {
-        WAYPOINT,START,END
+        WAYPOINT,NO_BUILD_ZONE
     }
 

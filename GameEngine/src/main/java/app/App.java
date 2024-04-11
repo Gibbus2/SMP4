@@ -11,6 +11,7 @@ import com.almasb.fxgl.physics.CollisionHandler;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Rectangle;
 
 import java.net.MalformedURLException;
@@ -18,6 +19,7 @@ import java.net.URISyntaxException;
 import java.util.Map;
 import common.data.GameData;
 import javafx.scene.text.Text;
+import map.EntityType;
 import map.MapLoader;
 
 
@@ -97,10 +99,14 @@ public class App extends GameApplication {
     protected void initGame() {
         try {
             MapLoader mapLoader = new MapLoader();
-            mapLoader.loadLevel(1);
+            mapLoader.loadLevel(0);
         } catch (MalformedURLException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
+        //How to get waypoints from FXGL object from TMX file
+        Polyline polyline = FXGL.getGameWorld().getEntitiesByType(map.EntityType.WAYPOINT).getFirst().getObject("polyline");
+        //poline.getpoints returns an array of the points in the polyline
+        System.out.println("POLYLINE: " + polyline.getPoints());
 
         test = FXGL.entityBuilder()
                 .type(EntityType.PLAYER)
