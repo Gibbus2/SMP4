@@ -1,14 +1,11 @@
 package enemy.data;
 
-import com.almasb.fxgl.dsl.FXGL;
-import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.state.EntityState;
 import com.almasb.fxgl.entity.state.StateComponent;
-import javafx.util.Duration;
+import common.services.EnemyComponentSPI;
 
-import static com.almasb.fxgl.dsl.FXGLForKtKt.getGameTimer;
-
-public class EnemyComponent extends com.almasb.fxgl.entity.component.Component{
+public class EnemyComponent extends Component implements EnemyComponentSPI {
     private int hp;
     private int damage;
     private int speed;
@@ -24,12 +21,19 @@ public class EnemyComponent extends com.almasb.fxgl.entity.component.Component{
         this.score = score;
     }
 
+    public EnemyComponent() {
+        this(0,0,0,0);
+    }
+
     public StateComponent getState(){
         return state;
     }
 
     public void setState(StateComponent state) {
         this.state = state;
+    }
+    public EnemyComponentSPI createEnemyComponent(int hp, int damage, int speed, int score) {
+        return new EnemyComponent(hp, damage, speed, score);
     }
 
     @Override
