@@ -15,6 +15,7 @@
     <module>Tower</module>
     <module>ObjectPool</module>
     <module>Common</module>
+    <module>UI</module>
   </modules>
   <properties>
     <java>java</java>
