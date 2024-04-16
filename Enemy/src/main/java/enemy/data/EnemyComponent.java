@@ -44,7 +44,6 @@ public class EnemyComponent extends Component implements EnemyComponentSPI {
     }
 
     private final EntityState MOVING = new EntityState("MOVING") {
-        int ds;
         @Override
         public void onUpdate(double tpf) {
             // to be implemented
@@ -57,7 +56,6 @@ public class EnemyComponent extends Component implements EnemyComponentSPI {
         }
     };
     private final EntityState SLOWED = new EntityState("SLOWED") {
-        int ds;
         @Override
         public void onUpdate(double tpf) {
             // to be implemented
@@ -68,9 +66,7 @@ public class EnemyComponent extends Component implements EnemyComponentSPI {
         }
     };
 
-
     private final EntityState STUNNED = new EntityState("STUNNED") {
-        int ds;
         @Override
         public void onUpdate(double tpf) {
             // to be implemented
@@ -81,7 +77,6 @@ public class EnemyComponent extends Component implements EnemyComponentSPI {
         }
     };
     private final EntityState DEAD = new EntityState("DEAD") {
-        int ds;
         @Override
         public void onUpdate(double tpf) {
             // do nothing
@@ -91,7 +86,6 @@ public class EnemyComponent extends Component implements EnemyComponentSPI {
             ds = 0;
         }
     };
-
 
     public int getHp(){
         return hp;
@@ -104,6 +98,7 @@ public class EnemyComponent extends Component implements EnemyComponentSPI {
     public int getSpeed(){
         return speed;
     }
+    public int getDs(){return ds;}
 
     public int getScore(){
         return score;
@@ -115,5 +110,21 @@ public class EnemyComponent extends Component implements EnemyComponentSPI {
 
     public void setSpeed(int speed) {
         this.speed = speed;
+    }
+
+    public EntityState getDEAD() {
+        return DEAD;
+    }
+
+    public EntityState getMOVING() {
+        return MOVING;
+    }
+
+    public EntityState getSLOWED() {
+        return SLOWED;
+    }
+
+    public EntityState getSTUNNED() {
+        return STUNNED;
     }
 }

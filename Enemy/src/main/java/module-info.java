@@ -1,5 +1,7 @@
 import common.services.EnemyComponentSPI;
+import common.services.PMSComponentSPI;
 import enemy.data.EnemyComponent;
+import enemy.data.PointMovementSystemComponent;
 
 module Enemy {
     requires Common;
@@ -8,5 +10,6 @@ module Enemy {
     requires Map;
     exports enemy.data;
     provides EnemyComponentSPI with EnemyComponent;
+    provides PMSComponentSPI with PointMovementSystemComponent;
     //requires Map;
 }
