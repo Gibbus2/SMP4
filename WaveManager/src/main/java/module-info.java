@@ -7,6 +7,7 @@ module WaveManager {
     requires com.almasb.fxgl.all;
     requires Enemy;
     requires Common;
+    requires Map;
     exports WaveManager.data;
     exports WaveManager.services;
     //ask if this is correct

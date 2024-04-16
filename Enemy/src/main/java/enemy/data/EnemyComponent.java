@@ -9,6 +9,7 @@ public class EnemyComponent extends Component implements EnemyComponentSPI {
     private int hp;
     private int damage;
     private int speed;
+    private int ds;
     private int score;
 
     //change private when figured out how to access it
@@ -43,47 +44,51 @@ public class EnemyComponent extends Component implements EnemyComponentSPI {
     }
 
     private final EntityState MOVING = new EntityState("MOVING") {
+        int ds;
         @Override
         public void onUpdate(double tpf) {
             // to be implemented
         }
         @Override
         public void onEntering() {
-            speed = speed;
-            PointMovementSystem pointMovementSystem = new PointMovementSystem();
-            pointMovementSystem.ghettoWayPointSystem(entity);
+            ds = speed;
+            PointMovementSystemComponent pointMovementSystem = new PointMovementSystemComponent();
+            pointMovementSystem.wayPointSystem(entity);
         }
     };
     private final EntityState SLOWED = new EntityState("SLOWED") {
+        int ds;
         @Override
         public void onUpdate(double tpf) {
             // to be implemented
         }
         @Override
         public void onEntering() {
-            speed = speed / 2;
+            ds = speed / 2;
         }
     };
 
 
     private final EntityState STUNNED = new EntityState("STUNNED") {
+        int ds;
         @Override
         public void onUpdate(double tpf) {
             // to be implemented
         }
         @Override
         public void onEntering() {
-            speed = 0;
+            ds = 0;
         }
     };
     private final EntityState DEAD = new EntityState("DEAD") {
+        int ds;
         @Override
         public void onUpdate(double tpf) {
             // do nothing
         }
         @Override
         public void onEntering() {
-            speed = 0;
+            ds = 0;
         }
     };
 

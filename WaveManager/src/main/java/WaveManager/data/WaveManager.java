@@ -3,6 +3,7 @@ import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.Polyline;
 import javafx.util.Duration;
 
 import java.util.Random;
@@ -67,21 +68,20 @@ public class WaveManager {
    
 
     public void pauseWave(){
-        //pause wave, not too sure if this is gonna be used
+        //pause wave, not too sure if this is finna be used
     }
     private void enemySpawner(WaveData waveData){
-        Random random = new Random();
-        //goes through the enemy array and spawns them the way they were put in, maybe randomize?
+        Polyline polyline = FXGL.getGameWorld().getEntitiesByType(map.EntityType.WAYPOINT).getFirst().getObject("polyline");
+        //polyline.getPoints returns an array of the points in the polyline
+
         for(int i = 0; i < waveData.getEnemies().size();i++){
             int j = i;
             getGameTimer().runOnceAfter(() -> {
                 Entity enemy = waveData.getEnemies().get(j);
-                  spawn(enemy.getType().toString(), 500 + random.nextInt(100),500 + random.nextInt(100)); // get x and y from map, prob add some variance to the spawn
+                  spawn(enemy.getType().toString(), polyline.getPoints().get(0),polyline.getPoints().get(1));// get x and y from map, prob add some variance to the spawn
+                System.out.println(polyline.getPoints());
             }, Duration.seconds(1 + i));
 
         }
     }
-
-
-
 }
