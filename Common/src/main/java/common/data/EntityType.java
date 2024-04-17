@@ -1,6 +1,6 @@
 package common.data;
 
 public enum EntityType  {
-    PLAYER, ENEMY, BULLET, WAYPOINT, NO_BUILD_ZONE,normalEnemy, mediumEnemy, hardEnemy, bossEnemy
+    PLAYER, ENEMY, BULLET, WAYPOINT, NO_BUILD_ZONE, NORMAL_ENEMY, MEDIUM_ENEMY, HARD_ENEMY, BOSS_ENEMY
 
 }
