@@ -29,7 +29,6 @@ import static com.almasb.fxgl.dsl.FXGLForKtKt.getGameWorld;
 import map.MapLoader;
 import player.PlayerComponent;
 
-;
 
 public class App extends GameApplication {
     GameData gameData = new GameData();
@@ -102,6 +101,7 @@ public class App extends GameApplication {
     }
 
     Entity player;
+    Entity enemy;
     @Override
     protected void initGame() {
         try {
@@ -119,8 +119,17 @@ public class App extends GameApplication {
                 .type(EntityType.PLAYER)
                 .at(300, 100)
                 //.view(new Rectangle(25, 25, Color.BLUE))
-                .viewWithBBox(new Rectangle(25, 25))
+                .viewWithBBox(new Rectangle(25, 25, Color.BLUE))
+                .with(new HealthComponent(2))
                 .with(new PlayerComponent())
+                .with(new CollidableComponent(true))
+                .buildAndAttach();
+
+        enemy = FXGL.entityBuilder()
+                .type(EntityType.ENEMY)
+                .at(100, 100)
+                .viewWithBBox(new Circle(15, Color.RED))
+                .with(new CollidableComponent(true))
                 .buildAndAttach();
 
 //        test.removeFromWorld();
@@ -142,28 +151,28 @@ public class App extends GameApplication {
 
     @Override
     protected void initPhysics() {
-
-
-        // We passed PLAYER first and then COIN.
-        // Therefore, in onCollisionBegin() the order of entities will be player and then coin
+        // Enemy and Player collision.
         FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.ENEMY, EntityType.PLAYER) {
             // order of types is the same as passed into the constructor
             @Override
-            protected void onCollisionBegin(Entity player, Entity coin) {
-                coin.removeFromWorld();
-                FXGL.inc("coinsCollected", +1);
+            protected void onCollisionBegin(Entity enemy, Entity player) {
+                enemy.removeFromWorld();
+                player.getComponent(PlayerComponent.class).damage(1);
             }
         });
 
+        // Bullet and Enemy collision.
         FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.BULLET, EntityType.ENEMY) {
-            // order of types is the same as passed into the constructor
             @Override
             protected void onCollisionBegin(Entity bullet, Entity enemy) {
                 // TODO: Uncomment line below when enemy is merged into dev.
 //                enemy.getComponent(EnemyComponent.class).damage(bullet.getComponent(BulletComponent.class));
 
+                // TODO: Logic should be moved into EnemyComponent.
                 if (enemy.getComponent(HealthComponent.class).isDead()) {
                     enemy.removeFromWorld();
+                    // TODO: Scales with wave level, or something.
+                    player.getComponent(PlayerComponent.class).addCurrency(1);
                 }
             }
         });
