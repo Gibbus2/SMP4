@@ -15,6 +15,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import common.data.EntityType;
 
 import java.util.Collection;
 import java.util.ServiceLoader;
