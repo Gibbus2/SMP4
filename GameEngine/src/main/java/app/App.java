@@ -16,7 +16,6 @@ import health.HealthComponent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Rectangle;
 
 import java.net.MalformedURLException;
@@ -30,6 +29,8 @@ import WaveManager.data.WaveManager;
 
 import static com.almasb.fxgl.dsl.FXGLForKtKt.getGameWorld;
 import map.MapLoader;
+import objectPool.ICreateEntityPool;
+import objectPool.ObjectPool;
 import player.PlayerComponent;
 
 
@@ -113,6 +114,14 @@ public class App extends GameApplication {
             throw new RuntimeException(e);
         }
 
+        ObjectPool.createPool(EntityType.BULLET,
+                (ICreateEntityPool) () -> FXGL.entityBuilder()
+                   .type(EntityType.BULLET)
+                   .at(0,0)
+                   .buildAndAttach());
+
+
+
         player = FXGL.entityBuilder()
                 .type(EntityType.PLAYER)
                 .at(300, 100)
@@ -145,6 +154,7 @@ public class App extends GameApplication {
         getGameWorld().addEntityFactory(new WaveManagerEntityFactory());
         waveManager.init();
         //waveManager.waveIntermission();
+
     }
 
     @Override

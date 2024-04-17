@@ -5,4 +5,5 @@ open module GameEngine {
     requires Map;
     requires Player;
     requires Health;
+    requires ObjectPool;
 }
