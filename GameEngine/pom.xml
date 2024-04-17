@@ -24,6 +24,12 @@
         </dependency>
         <dependency>
             <groupId>dk.sdu.mmmi.GRP7</groupId>
+            <artifactId>WaveManager</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>dk.sdu.mmmi.GRP7</groupId>
             <artifactId>Map</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>

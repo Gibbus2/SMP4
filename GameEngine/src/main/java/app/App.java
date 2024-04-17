@@ -1,5 +1,6 @@
 package app;
 
+import WaveManager.data.WaveManagerEntityFactory;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.dsl.FXGL;
@@ -8,6 +9,7 @@ import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
+import javafx.scene.control.Button;
 import common.data.EntityType;
 import health.HealthComponent;
 import javafx.scene.input.KeyCode;
@@ -20,6 +22,9 @@ import java.net.URISyntaxException;
 import java.util.Map;
 import common.data.GameData;
 import javafx.scene.text.Text;
+import WaveManager.data.WaveManager;
+
+import static com.almasb.fxgl.dsl.FXGLForKtKt.getGameWorld;
 import map.MapLoader;
 import objectPool.ICreateEntityPool;
 import objectPool.ObjectPool;
@@ -28,6 +33,7 @@ import player.PlayerComponent;
 
 public class App extends GameApplication {
     GameData gameData = new GameData();
+    private WaveManager waveManager = new WaveManager();
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -92,6 +98,7 @@ public class App extends GameApplication {
     protected void initGameVars(Map<String, Object> vars) {
         vars.put("pixelsMoved", 0);
         vars.put("coinsCollected", 0);
+        vars.put("currentWave", waveManager.getCurrentWave());
     }
 
     Entity player;
@@ -129,6 +136,22 @@ public class App extends GameApplication {
                 .viewWithBBox(new Circle(15, Color.RED))
                 .with(new CollidableComponent(true))
                 .buildAndAttach();
+
+//        test.removeFromWorld();
+
+//        coin = FXGL.entityBuilder()
+//                .type(EntityType.COIN)
+//                .at(500, 100)
+//                .viewWithBBox(new Circle(15, Color.YELLOW))
+//                .with(new CollidableComponent(true))
+//                .buildAndAttach();
+
+    //start wave
+
+    //this should prob not be here, move to timer or button later
+        getGameWorld().addEntityFactory(new WaveManagerEntityFactory());
+        waveManager = new WaveManager();
+        //waveManager.waveIntermission();
 
     }
 
@@ -204,6 +227,32 @@ public class App extends GameApplication {
         });
 
         FXGL.getGameScene().addUINode(brickTexture);
+
+        //Button for starting wave, need to agree on if we do button to start
+        //or just intermission on game start then run after x seconds
+        //does this need to be in here or wavemanager for jpms?
+        //would assume i need to change this as if wavemanager gets removed
+        //it would just break right? but for now it just needs to work
+        Button startWaveButton;
+        if(FXGL.getGameWorld().getEntitiesByType(EntityType.NORMAL_ENEMY).isEmpty()){
+            startWaveButton = new Button("Start Wave");
+            startWaveButton.setTranslateX(50);
+            startWaveButton.setTranslateY(50);
+            startWaveButton.setOnAction(e -> {
+                waveManager.waveIntermission();
+            });
+            FXGL.getGameScene().addUINode(startWaveButton);
+
+            //waveCounter text
+            Text waveCounterText = new Text();
+            waveCounterText.setTranslateX(50);
+            waveCounterText.setTranslateY(150);
+            waveCounterText.textProperty().bind(FXGL.getWorldProperties().intProperty("currentWave").asString("Wave: %d"));
+
+            FXGL.getGameScene().addUINode(waveCounterText);;
+        } else {
+            return;
+        }
     }
 
     @Override

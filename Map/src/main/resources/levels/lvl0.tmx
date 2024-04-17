@@ -31,8 +31,8 @@
   <object id="27" name="NoBuild5" type="nobuild" x="648" y="72" width="48" height="576"/>
  </objectgroup>
  <objectgroup id="4" name="waypoints" class="waypoint">
-  <object id="17" name="way1" type="waypoint" x="17.5914" y="73.2974">
-   <polyline points="0,0 291.724,-2.93189 296.121,524.809 725.644,523.343 722.712,38.1146 1304.69,41.0465 1306.16,621.562"/>
+  <object id="17" name="way1" type="waypoint" x="4.39784" y="73.2974">
+   <polyline points="0,0 309.315,0 309.315,524.809 744.701,523.343 740.303,43.9784 1312.02,42.5125 1310.56,643.551"/>
   </object>
  </objectgroup>
 </map>

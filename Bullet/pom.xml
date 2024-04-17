@@ -6,30 +6,13 @@
         <artifactId>SMP4</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>Enemy</artifactId>
-    <name>Enemy</name>
+    <artifactId>Bullet</artifactId>
+    <name>Bullet</name>
     <url>http://maven.apache.org</url>
     <dependencies>
         <dependency>
             <groupId>dk.sdu.mmmi.GRP7</groupId>
             <artifactId>Common</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.almasb</groupId>
-            <artifactId>fxgl</artifactId>
-            <version>21.1</version>
-        </dependency>
-        <dependency>
-            <groupId>dk.sdu.mmmi.GRP7</groupId>
-            <artifactId>Map</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>dk.sdu.mmmi.GRP7</groupId>
-            <artifactId>Map</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
