@@ -25,18 +25,12 @@ public class MapFactory implements EntityFactory {
 
     @Spawns("waypoint")
     public Entity newWaypoint(SpawnData data) {
-        // System.out.println("here:" + entityBuilder(data).type(EntityType.WAYPOINT));
-       // System.out.println("DATA HERE: " + data.getData().get("polyline"));
         Polyline polyline = data.get("polyline");
-       // System.out.println("POLYLINE: " + polyline.getPoints().toArray());
         return entityBuilder(data)
                 .type(EntityType.WAYPOINT)
                 .build();
     }
 
-    List<Entity> getWaypoints() {
-        return FXGL.getGameWorld().getEntitiesByType(EntityType.WAYPOINT);
-    }
 
     @Spawns("nobuild")
     public Entity noBuild(SpawnData data) {
