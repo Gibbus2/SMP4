@@ -6,7 +6,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.shape.Polyline;
 import java.util.ArrayList;
 import java.util.List;
-
+import common.data.EntityType;
 public class Waypoint {
 
 
