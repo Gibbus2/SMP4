@@ -10,6 +10,8 @@ import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import javafx.scene.control.Button;
+import common.data.EntityType;
+import health.HealthComponent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -25,6 +27,8 @@ import WaveManager.data.WaveManager;
 
 import static com.almasb.fxgl.dsl.FXGLForKtKt.getGameWorld;
 import map.MapLoader;
+import player.PlayerComponent;
+
 import map.EntityType;
 import WaveManager.data.WaveManager;
 import static com.almasb.fxgl.dsl.FXGLForKtKt.getGameWorld;
@@ -53,7 +57,7 @@ public class App extends GameApplication {
         input.addAction(new UserAction("Move Right") {
             @Override
             protected void onAction() {
-                test.translateX(5);
+                player.translateX(5);
                 FXGL.inc("pixelsMoved", +5);
             }
         }, KeyCode.D);
@@ -61,7 +65,7 @@ public class App extends GameApplication {
         input.addAction(new UserAction("Move Left") {
             @Override
             protected void onAction() {
-                test.translateX(-5);
+                player.translateX(-5);
                 FXGL.inc("pixelsMoved", +5);
             }
         }, KeyCode.A);
@@ -69,7 +73,7 @@ public class App extends GameApplication {
         input.addAction(new UserAction("Move Up") {
             @Override
             protected void onAction() {
-                test.translateY(-5);
+                player.translateY(-5);
                 FXGL.inc("pixelsMoved", +5);
             }
         }, KeyCode.W);
@@ -77,7 +81,7 @@ public class App extends GameApplication {
         input.addAction(new UserAction("Move Down") {
             @Override
             protected void onAction() {
-                test.translateY(5);
+                player.translateY(5);
                 FXGL.inc("pixelsMoved", +5);
             }
         }, KeyCode.S);
@@ -98,11 +102,8 @@ public class App extends GameApplication {
         vars.put("coinsCollected", 0);
         vars.put("currentWave", waveManager.getCurrentWave());
     }
-    public enum EntityType  {
-        PLAYER, COIN
-    }
-    Entity test;
-    Entity coin;
+
+    Entity player;
     @Override
     protected void initGame() {
         try {
@@ -112,26 +113,27 @@ public class App extends GameApplication {
             throw new RuntimeException(e);
         }
         //How to get waypoints from FXGL object from TMX file
-        Polyline polyline = FXGL.getGameWorld().getEntitiesByType(map.EntityType.WAYPOINT).getFirst().getObject("polyline");
+        Polyline polyline = FXGL.getGameWorld().getEntitiesByType(EntityType.WAYPOINT).getFirst().getObject("polyline");
         //poline.getpoints returns an array of the points in the polyline
         System.out.println("POLYLINE: " + polyline.getPoints());
 
-        test = FXGL.entityBuilder()
+        player = FXGL.entityBuilder()
                 .type(EntityType.PLAYER)
                 .at(300, 100)
                 //.view(new Rectangle(25, 25, Color.BLUE))
-                .viewWithBBox("brick.png")
-                .with(new CollidableComponent(true))
+                .viewWithBBox(new Rectangle(25, 25))
+                .with(new PlayerComponent())
                 .buildAndAttach();
 
 //        test.removeFromWorld();
 
-        coin = FXGL.entityBuilder()
-                .type(EntityType.COIN)
-                .at(500, 100)
-                .viewWithBBox(new Circle(15, Color.YELLOW))
-                .with(new CollidableComponent(true))
-                .buildAndAttach();
+//        coin = FXGL.entityBuilder()
+//                .type(EntityType.COIN)
+//                .at(500, 100)
+//                .viewWithBBox(new Circle(15, Color.YELLOW))
+//                .with(new CollidableComponent(true))
+//                .buildAndAttach();
+
     //start wave
 
     //this should prob not be here, move to timer or button later
@@ -146,15 +148,26 @@ public class App extends GameApplication {
 
         // We passed PLAYER first and then COIN.
         // Therefore, in onCollisionBegin() the order of entities will be player and then coin
-        FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.PLAYER, EntityType.COIN) {
-
+        FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.ENEMY, EntityType.PLAYER) {
             // order of types is the same as passed into the constructor
             @Override
             protected void onCollisionBegin(Entity player, Entity coin) {
                 coin.removeFromWorld();
                 FXGL.inc("coinsCollected", +1);
             }
+        });
 
+        FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.BULLET, EntityType.ENEMY) {
+            // order of types is the same as passed into the constructor
+            @Override
+            protected void onCollisionBegin(Entity bullet, Entity enemy) {
+                // TODO: Uncomment line below when enemy is merged into dev.
+//                enemy.getComponent(EnemyComponent.class).damage(bullet.getComponent(BulletComponent.class));
+
+                if (enemy.getComponent(HealthComponent.class).isDead()) {
+                    enemy.removeFromWorld();
+                }
+            }
         });
     }
 

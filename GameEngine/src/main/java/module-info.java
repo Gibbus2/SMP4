@@ -3,4 +3,6 @@ open module GameEngine {
     requires Common;
     requires WaveManager;
     requires Map;
+    requires Player;
+    requires Health;
 }
