@@ -11,6 +11,7 @@ import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
 import java.util.List;
+import common.data.EntityType;
 
 import static com.almasb.fxgl.dsl.FXGLForKtKt.entityBuilder;
 
