@@ -37,7 +37,7 @@ public class WaveManagerEntityFactory implements EntityFactory {
     @Spawns("normalEnemy")
     public Entity normalEnemy(SpawnData data) {
         EntityBuilder entityBuilder = FXGL.entityBuilder(data)
-                .type(EntityType.normalEnemy)
+                .type(EntityType.NORMAL_ENEMY)
                 .viewWithBBox(new Rectangle(20,20, getRandomColor()))
                 .with(new CollidableComponent(true))
                 //adding enemy component with hp, damage, speed, and score
@@ -57,7 +57,7 @@ public class WaveManagerEntityFactory implements EntityFactory {
         imageView.setFitWidth(100);
         imageView.setFitHeight(100);
         EntityBuilder entityBuilder = FXGL.entityBuilder(data)
-                .type(EntityType.mediumEnemy)
+                .type(EntityType.MEDIUM_ENEMY)
                 .viewWithBBox(imageView)
                 .with(new CollidableComponent(true))
                 //adding enemy component with hp, damage, speed, and score
@@ -73,7 +73,7 @@ public class WaveManagerEntityFactory implements EntityFactory {
     @Spawns("hardEnemy")
     public Entity hardEnemy(SpawnData data) {
         EntityBuilder entityBuilder = FXGL.entityBuilder(data)
-                .type(EntityType.hardEnemy)
+                .type(EntityType.HARD_ENEMY)
                 .viewWithBBox(new Rectangle(40,40,Color.RED))
                 .with(new CollidableComponent(true))
                 //adding enemy component with hp, damage, speed, and score
@@ -89,7 +89,7 @@ public class WaveManagerEntityFactory implements EntityFactory {
     @Spawns("bossEnemy")
     public Entity bossEnemy(SpawnData data) {
         EntityBuilder entityBuilder = FXGL.entityBuilder(data)
-                .type(EntityType.bossEnemy)
+                .type(EntityType.BOSS_ENEMY)
                 .viewWithBBox(new Rectangle(50,50,Color.CRIMSON))
                 .with(new CollidableComponent(true))
                 //adding enemy component with hp, damage, speed, and score
