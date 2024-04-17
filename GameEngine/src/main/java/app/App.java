@@ -227,22 +227,26 @@ public class App extends GameApplication {
         //does this need to be in here or wavemanager for jpms?
         //would assume i need to change this as if wavemanager gets removed
         //it would just break right? but for now it just needs to work
-        Button startWaveButton = new Button("Start Wave");
-        startWaveButton.setTranslateX(50);
-        startWaveButton.setTranslateY(50);
-        startWaveButton.setOnAction(e -> {
-            waveManager.waveIntermission();
-        });
-        FXGL.getGameScene().addUINode(startWaveButton);
+        Button startWaveButton;
+        if(FXGL.getGameWorld().getEntitiesByType(EntityType.NORMAL_ENEMY).isEmpty()){
+            startWaveButton = new Button("Start Wave");
+            startWaveButton.setTranslateX(50);
+            startWaveButton.setTranslateY(50);
+            startWaveButton.setOnAction(e -> {
+                waveManager.waveIntermission();
+            });
+            FXGL.getGameScene().addUINode(startWaveButton);
 
-        //waveCounter text
-        Text waveCounterText = new Text();
-        waveCounterText.setTranslateX(50);
-        waveCounterText.setTranslateY(150);
-        waveCounterText.textProperty().bind(FXGL.getWorldProperties().intProperty("currentWave").asString("Wave: %d"));
+            //waveCounter text
+            Text waveCounterText = new Text();
+            waveCounterText.setTranslateX(50);
+            waveCounterText.setTranslateY(150);
+            waveCounterText.textProperty().bind(FXGL.getWorldProperties().intProperty("currentWave").asString("Wave: %d"));
 
-        FXGL.getGameScene().addUINode(waveCounterText);
-
+            FXGL.getGameScene().addUINode(waveCounterText);;
+        } else {
+            return;
+        }
     }
 
     @Override

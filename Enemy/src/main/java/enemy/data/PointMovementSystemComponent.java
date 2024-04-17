@@ -41,6 +41,7 @@ public class PointMovementSystemComponent extends Component implements PMSCompon
     public void onUpdate(double tpf) {
         if(currentWayPoint >= wayPoints.size()){
             entity.removeFromWorld();
+            //uhhhhh send data to take dmg yes
             return;
         }
 
