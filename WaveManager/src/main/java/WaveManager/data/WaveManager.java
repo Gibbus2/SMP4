@@ -3,13 +3,13 @@ import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import common.data.EntityType;
 
+import enemy.data.EnemyReachedEndEvent;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Polyline;
 import javafx.util.Duration;
 
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
@@ -22,13 +22,18 @@ public class WaveManager {
     //so 0 = no spawning, need to offset counter by 1 or do i?
     private int currentWave = 1;
     private List<Point2D> wayPoints;
-
-
+    private int enemyCount = 0;
     private WaveData waveData;
+    private AtomicInteger countDown;
+
+    public void init(){
+        FXGL.getEventBus().addEventHandler(EnemyReachedEndEvent.ANY, event -> enemyCount--);
+    }
+
     public void startWave(){
         wayPoints = map.Waypoint.fromPolyline().getWaypoints();
         //start wave eh
-        WaveData waveData = new WaveData(currentWave);
+        waveData = new WaveData(currentWave);
         waveData.enemyArrayLoader(currentWave, waveData.getEnemies());
         enemySpawner(waveData);
         FXGL.getWorldProperties().setValue("currentWave", currentWave);
@@ -46,6 +51,12 @@ public class WaveManager {
     public int getCurrentWave(){
         return currentWave;
     }
+    public int getEnemyCount(){
+        return enemyCount;
+    }
+    public void setEnemyCount(int enemyCount) {
+        this.enemyCount = enemyCount;
+    }
 
     public void waveIntermission(){
         //intermission between waves
@@ -60,7 +71,7 @@ public class WaveManager {
         FXGL.getGameScene().addUINode(countDownText);
 
         //getGameTimer wants AtomicInteger for thread safety, no clue if needed
-        AtomicInteger countDown = new AtomicInteger(5);
+        countDown = new AtomicInteger(5);
 
         FXGL.getGameTimer().runAtInterval(() -> {
             countDown.getAndDecrement();
@@ -73,11 +84,7 @@ public class WaveManager {
         }, Duration.seconds(1));
     }
 
-   
 
-    public void pauseWave(){
-        //pause wave, not too sure if this is finna be used
-    }
     private void enemySpawner(WaveData waveData){
 
         Polyline polyline = FXGL.getGameWorld().getEntitiesByType(EntityType.WAYPOINT).getFirst().getObject("polyline");
@@ -88,7 +95,7 @@ public class WaveManager {
             getGameTimer().runOnceAfter(() -> {
                 Entity enemy = waveData.getEnemies().get(j);
                   spawn(enemy.getType().toString(), wayPoints.get(0).getX(), wayPoints.get(0).getY());// get x and y from map, prob add some variance to the spawn
-                System.out.println(polyline.getPoints());
+                enemyCount++;
             }, Duration.seconds(1 + i));
 
         }

@@ -43,12 +43,13 @@ public class PointMovementSystemComponent extends Component implements PMSCompon
     public void onUpdate(double tpf) {
         if(currentWayPoint >= wayPoints.size()){
             entity.removeFromWorld();
+            FXGL.getEventBus().fireEvent(new EnemyReachedEndEvent());
             //uhhhhh send data to take dmg yes
             return;
         }
-        System.out.println(wayPoints);
+        //System.out.println(wayPoints);
         Point2D target = wayPoints.get(currentWayPoint);
-        System.out.println("Speed cuh: "+entity.getComponent(EnemyComponent.class).getDs());
+        //System.out.println("Speed cuh: "+entity.getComponent(EnemyComponent.class).getDs());
         Point2D direction = target.subtract(entity.getPosition()).normalize();
         Point2D velocity = direction.multiply(entity.getComponent(EnemyComponent.class).getDs() * tpf);
         entity.translate(velocity);

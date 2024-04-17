@@ -1,5 +1,6 @@
 package app;
 
+import WaveManager.data.WaveData;
 import WaveManager.data.WaveManagerEntityFactory;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
@@ -21,6 +22,8 @@ import javafx.scene.shape.Rectangle;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import common.data.GameData;
 import javafx.scene.text.Text;
 import WaveManager.data.WaveManager;
@@ -33,7 +36,6 @@ import player.PlayerComponent;
 public class App extends GameApplication {
     GameData gameData = new GameData();
     private WaveManager waveManager = new WaveManager();
-
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setWidth(gameData.getDisplayWidth());
@@ -141,7 +143,7 @@ public class App extends GameApplication {
 
     //this should prob not be here, move to timer or button later
         getGameWorld().addEntityFactory(new WaveManagerEntityFactory());
-        waveManager = new WaveManager();
+        waveManager.init();
         //waveManager.waveIntermission();
     }
 
@@ -223,31 +225,34 @@ public class App extends GameApplication {
         //does this need to be in here or wavemanager for jpms?
         //would assume i need to change this as if wavemanager gets removed
         //it would just break right? but for now it just needs to work
-        Button startWaveButton;
-        if(FXGL.getGameWorld().getEntitiesByType(EntityType.NORMAL_ENEMY).isEmpty()){
-            startWaveButton = new Button("Start Wave");
-            startWaveButton.setTranslateX(50);
-            startWaveButton.setTranslateY(50);
-            startWaveButton.setOnAction(e -> {
-                waveManager.waveIntermission();
-            });
-            FXGL.getGameScene().addUINode(startWaveButton);
+        Button startWaveButton = new Button("Start Wave");
 
-            //waveCounter text
-            Text waveCounterText = new Text();
-            waveCounterText.setTranslateX(50);
-            waveCounterText.setTranslateY(150);
-            waveCounterText.textProperty().bind(FXGL.getWorldProperties().intProperty("currentWave").asString("Wave: %d"));
 
-            FXGL.getGameScene().addUINode(waveCounterText);;
-        } else {
-            return;
+        startWaveButton.setTranslateX(50);
+        startWaveButton.setTranslateY(50);
+        startWaveButton.setOnAction(e -> {
+            waveManager.waveIntermission();
+            startWaveButton.setVisible(false);
+        });
+        FXGL.getGameScene().addUINode(startWaveButton);
+
+        //waveCounter text
+        Text waveCounterText = new Text();
+        waveCounterText.setTranslateX(50);
+        waveCounterText.setTranslateY(150);
+        waveCounterText.textProperty().bind(FXGL.getWorldProperties().intProperty("currentWave").asString("Wave: %d"));
+
+        FXGL.getGameScene().addUINode(waveCounterText);
+        if(waveManager.getEnemyCount() == 0){
+            startWaveButton.setVisible(true);
+            System.out.println("i got here");
         }
+
     }
 
     @Override
     protected void onUpdate(double tpf) {
-
+        System.out.println("onUpdate : " + waveManager.getEnemyCount() );
     }
 
     public static void main(String[] args) {
