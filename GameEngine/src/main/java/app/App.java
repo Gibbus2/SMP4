@@ -110,10 +110,6 @@ public class App extends GameApplication {
         } catch (MalformedURLException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
-        //How to get waypoints from FXGL object from TMX file
-        Polyline polyline = FXGL.getGameWorld().getEntitiesByType(EntityType.WAYPOINT).getFirst().getObject("polyline");
-        //poline.getpoints returns an array of the points in the polyline
-        System.out.println("POLYLINE: " + polyline.getPoints());
 
         player = FXGL.entityBuilder()
                 .type(EntityType.PLAYER)
