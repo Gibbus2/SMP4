@@ -3,14 +3,17 @@ import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import common.data.EntityType;
 
+import javafx.geometry.Point2D;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Polyline;
 import javafx.util.Duration;
 
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
+
 
 
 public class WaveManager {
@@ -18,8 +21,12 @@ public class WaveManager {
     //nvm it actually needs to be 1 since spawning is based on that number
     //so 0 = no spawning, need to offset counter by 1 or do i?
     private int currentWave = 1;
+    private List<Point2D> wayPoints;
+
+
     private WaveData waveData;
     public void startWave(){
+        wayPoints = map.Waypoint.fromPolyline().getWaypoints();
         //start wave eh
         WaveData waveData = new WaveData(currentWave);
         waveData.enemyArrayLoader(currentWave, waveData.getEnemies());
@@ -72,6 +79,7 @@ public class WaveManager {
         //pause wave, not too sure if this is finna be used
     }
     private void enemySpawner(WaveData waveData){
+
         Polyline polyline = FXGL.getGameWorld().getEntitiesByType(EntityType.WAYPOINT).getFirst().getObject("polyline");
         //polyline.getPoints returns an array of the points in the polyline
 
@@ -79,7 +87,7 @@ public class WaveManager {
             int j = i;
             getGameTimer().runOnceAfter(() -> {
                 Entity enemy = waveData.getEnemies().get(j);
-                  spawn(enemy.getType().toString(), polyline.getPoints().get(0),polyline.getPoints().get(1));// get x and y from map, prob add some variance to the spawn
+                  spawn(enemy.getType().toString(), wayPoints.get(0).getX(), wayPoints.get(0).getY());// get x and y from map, prob add some variance to the spawn
                 System.out.println(polyline.getPoints());
             }, Duration.seconds(1 + i));
 

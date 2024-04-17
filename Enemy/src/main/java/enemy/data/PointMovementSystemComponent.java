@@ -10,6 +10,7 @@ import common.services.PMSComponentSPI;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Polyline;
 import common.data.EntityType;
+import map.Waypoint;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,8 @@ import java.util.List;
 
 public class PointMovementSystemComponent extends Component implements PMSComponentSPI {
     int currentWayPoint = 0;
-    private List<Point2D> wayPoints;
+    private List<Point2D> wayPoints = map.Waypoint.fromPolyline().getWaypoints();
+
 
 
     //How to get waypoints from FXGL object from TMX file
@@ -26,7 +28,7 @@ public class PointMovementSystemComponent extends Component implements PMSCompon
     public void incrementWayPoint() {
         currentWayPoint++;
     }
-
+/*
     public PointMovementSystemComponent(){
         Polyline polyline = FXGL.getGameWorld().getEntitiesByType(EntityType.WAYPOINT).getFirst().getObject("polyline");
         this.wayPoints = new ArrayList<>();
@@ -35,7 +37,7 @@ public class PointMovementSystemComponent extends Component implements PMSCompon
         }
     }
 
-
+*/
 
     @Override
     public void onUpdate(double tpf) {
@@ -44,7 +46,7 @@ public class PointMovementSystemComponent extends Component implements PMSCompon
             //uhhhhh send data to take dmg yes
             return;
         }
-
+        System.out.println(wayPoints);
         Point2D target = wayPoints.get(currentWayPoint);
         System.out.println("Speed cuh: "+entity.getComponent(EnemyComponent.class).getDs());
         Point2D direction = target.subtract(entity.getPosition()).normalize();

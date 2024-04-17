@@ -24,20 +24,15 @@ import static java.util.stream.Collectors.toList;
 
 public class WaveManagerEntityFactory implements EntityFactory {
 
-    public Color getRandomColor(){
-        int random = (int) (Math.random() * 3);
-        return switch (random) {
-            case 0 -> Color.RED;
-            case 1 -> Color.BLUE;
-            case 2 -> Color.GREEN;
-            default -> Color.BLACK;
-        };
-    }
+
 
     @Spawns("NORMAL_ENEMY")
     public Entity normalEnemy(SpawnData data) {
         Image image = FXGL.image("normalEnemy.png");
         ImageView imageView = new ImageView(image);
+        imageView.setTranslateX(-24);
+        imageView.setTranslateY(-24);
+
         EntityBuilder entityBuilder = FXGL.entityBuilder(data)
                 .type(EntityType.NORMAL_ENEMY)
                 .viewWithBBox(imageView)
