@@ -39,6 +39,11 @@ public class PointMovementSystemComponent extends Component implements PMSCompon
 
     @Override
     public void onUpdate(double tpf) {
+        if(currentWayPoint >= wayPoints.size()){
+            entity.removeFromWorld();
+            return;
+        }
+
         Point2D target = wayPoints.get(currentWayPoint);
         System.out.println("Speed cuh: "+entity.getComponent(EnemyComponent.class).getDs());
         Point2D direction = target.subtract(entity.getPosition()).normalize();
