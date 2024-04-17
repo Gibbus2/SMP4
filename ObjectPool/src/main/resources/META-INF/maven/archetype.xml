@@ -1,5 +1,5 @@
 <archetype>
-  <id>ObjectPool</id>
+  <id>objectPool.ObjectPool</id>
   <sources>
     <source>src/main/java/App.java</source>
   </sources>

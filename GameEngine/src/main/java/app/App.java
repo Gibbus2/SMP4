@@ -13,7 +13,6 @@ import health.HealthComponent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Rectangle;
 
 import java.net.MalformedURLException;
@@ -22,6 +21,8 @@ import java.util.Map;
 import common.data.GameData;
 import javafx.scene.text.Text;
 import map.MapLoader;
+import objectPool.ICreateEntityPool;
+import objectPool.ObjectPool;
 import player.PlayerComponent;
 
 
@@ -104,6 +105,14 @@ public class App extends GameApplication {
             throw new RuntimeException(e);
         }
 
+        ObjectPool.createPool(EntityType.BULLET,
+                (ICreateEntityPool) () -> FXGL.entityBuilder()
+                   .type(EntityType.BULLET)
+                   .at(0,0)
+                   .buildAndAttach());
+
+
+
         player = FXGL.entityBuilder()
                 .type(EntityType.PLAYER)
                 .at(300, 100)
@@ -120,6 +129,7 @@ public class App extends GameApplication {
                 .viewWithBBox(new Circle(15, Color.RED))
                 .with(new CollidableComponent(true))
                 .buildAndAttach();
+
     }
 
     @Override
