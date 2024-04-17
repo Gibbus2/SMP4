@@ -29,9 +29,7 @@ import static com.almasb.fxgl.dsl.FXGLForKtKt.getGameWorld;
 import map.MapLoader;
 import player.PlayerComponent;
 
-import map.EntityType;
-import WaveManager.data.WaveManager;
-import static com.almasb.fxgl.dsl.FXGLForKtKt.getGameWorld;
+;
 
 public class App extends GameApplication {
     GameData gameData = new GameData();
