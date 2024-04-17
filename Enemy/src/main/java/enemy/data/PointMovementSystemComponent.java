@@ -9,6 +9,7 @@ import com.almasb.fxgl.entity.state.StateComponent;
 import common.services.PMSComponentSPI;
 import javafx.geometry.Point2D;
 import javafx.scene.shape.Polyline;
+import common.data.EntityType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,7 @@ public class PointMovementSystemComponent extends Component implements PMSCompon
     }
 
     public PointMovementSystemComponent(){
-        Polyline polyline = FXGL.getGameWorld().getEntitiesByType(map.EntityType.WAYPOINT).getFirst().getObject("polyline");
+        Polyline polyline = FXGL.getGameWorld().getEntitiesByType(EntityType.WAYPOINT).getFirst().getObject("polyline");
         this.wayPoints = new ArrayList<>();
         for(int i = 0; i < polyline.getPoints().size(); i+=2){
             wayPoints.add(new Point2D(polyline.getPoints().get(i), polyline.getPoints().get(i+1)));

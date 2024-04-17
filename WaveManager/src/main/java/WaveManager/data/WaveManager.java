@@ -1,6 +1,7 @@
 package WaveManager.data;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
+import common.data.EntityType;
 
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Polyline;
@@ -71,7 +72,7 @@ public class WaveManager {
         //pause wave, not too sure if this is finna be used
     }
     private void enemySpawner(WaveData waveData){
-        Polyline polyline = FXGL.getGameWorld().getEntitiesByType(map.EntityType.WAYPOINT).getFirst().getObject("polyline");
+        Polyline polyline = FXGL.getGameWorld().getEntitiesByType(EntityType.WAYPOINT).getFirst().getObject("polyline");
         //polyline.getPoints returns an array of the points in the polyline
 
         for(int i = 0; i < waveData.getEnemies().size();i++){
