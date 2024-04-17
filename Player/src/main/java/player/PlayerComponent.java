@@ -5,19 +5,21 @@ import health.HealthComponent;
 
 public class PlayerComponent extends Component implements IPlayerComponentSPI /*IDamageable*/ {
 
-    private HealthComponent health;
     private int ledger;
 
     @Override
     public void onAdded() {
-        health = getEntity().getComponent(HealthComponent.class);
         ledger = 0;
     }
 
     public void damage(int amount) {
-        health.setHealth(-amount);
-        if (health.getHealth() <= 0) {
+        System.out.println("Player health change: " + getEntity().getComponent(HealthComponent.class).getHealth() + "->" +  (getEntity().getComponent(HealthComponent.class).getHealth()-1));
+        getEntity().getComponent(HealthComponent.class).setHealth(-amount);
+
+        if (getEntity().getComponent(HealthComponent.class).getHealth() >= 0) {
             getEntity().removeFromWorld();
+
+            System.out.println("Player died.");
             // TODO: End game.
         }
     }
