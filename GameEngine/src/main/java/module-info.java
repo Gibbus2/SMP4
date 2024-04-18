@@ -6,4 +6,5 @@ open module GameEngine {
     requires Player;
     requires Health;
     requires ObjectPool;
+    requires UI;
 }

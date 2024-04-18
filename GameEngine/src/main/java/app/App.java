@@ -4,6 +4,8 @@ import WaveManager.data.WaveData;
 import WaveManager.data.WaveManagerEntityFactory;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
+import com.almasb.fxgl.app.scene.FXGLMenu;
+import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
@@ -34,6 +36,7 @@ import map.MapLoader;
 import objectPool.ICreateEntityPool;
 import objectPool.ObjectPool;
 import player.PlayerComponent;
+import ui.GameMenu;
 
 
 public class App extends GameApplication {
@@ -43,7 +46,17 @@ public class App extends GameApplication {
     protected void initSettings(GameSettings settings) {
         settings.setWidth(gameData.getDisplayWidth());
         settings.setHeight(gameData.getDisplayHeight());
-        settings.setTitle("Basic Game App");
+        settings.setTitle("Dick N Bauss");
+        settings.setGameMenuEnabled(true);
+        settings.setMainMenuEnabled(true);
+        settings.setSceneFactory(new SceneFactory() {
+            @Override
+            public FXGLMenu newGameMenu() {
+                System.out.println("newGameMenu");
+                return new GameMenu();
+            }
+        });
+
 
     }
 
