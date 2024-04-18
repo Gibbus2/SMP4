@@ -230,33 +230,14 @@ public class App extends GameApplication {
 
         FXGL.getGameScene().addUINode(brickTexture);
 
+        waveManager.startWaveUI(waveManager);
+
         //Button for starting wave, need to agree on if we do button to start
         //or just intermission on game start then run after x seconds
         //does this need to be in here or wavemanager for jpms?
         //would assume i need to change this as if wavemanager gets removed
         //it would just break right? but for now it just needs to work
-        Button startWaveButton = new Button("Start Wave");
 
-
-        startWaveButton.setTranslateX(50);
-        startWaveButton.setTranslateY(50);
-        startWaveButton.setOnAction(e -> {
-            waveManager.waveIntermission();
-            startWaveButton.setVisible(false);
-        });
-        FXGL.getGameScene().addUINode(startWaveButton);
-
-        //waveCounter text
-        Text waveCounterText = new Text();
-        waveCounterText.setTranslateX(50);
-        waveCounterText.setTranslateY(150);
-        waveCounterText.textProperty().bind(FXGL.getWorldProperties().intProperty("currentWave").asString("Wave: %d"));
-
-        FXGL.getGameScene().addUINode(waveCounterText);
-        if(waveManager.getEnemyCount() == 0){
-            startWaveButton.setVisible(true);
-            System.out.println("i got here");
-        }
 
     }
 

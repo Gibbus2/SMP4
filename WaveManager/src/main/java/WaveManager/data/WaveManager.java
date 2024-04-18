@@ -5,8 +5,10 @@ import common.data.EntityType;
 
 import enemy.data.EnemyReachedEndEvent;
 import javafx.geometry.Point2D;
+import javafx.scene.control.Button;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Polyline;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import java.util.List;
@@ -38,6 +40,28 @@ public class WaveManager {
         enemySpawner(waveData);
         FXGL.getWorldProperties().setValue("currentWave", currentWave);
         currentWave++;
+    }
+
+    public void startWaveUI(WaveManager waveManager){
+        Button startWaveButton = new Button("Start Wave");
+
+
+        startWaveButton.setTranslateX(50);
+        startWaveButton.setTranslateY(50);
+        startWaveButton.setOnAction(e -> {
+            waveManager.waveIntermission();
+            startWaveButton.setVisible(false);
+        });
+        FXGL.getGameScene().addUINode(startWaveButton);
+
+        //waveCounter text
+        Text waveCounterText = new Text();
+        waveCounterText.setTranslateX(50);
+        waveCounterText.setTranslateY(150);
+        waveCounterText.textProperty().bind(FXGL.getWorldProperties().intProperty("currentWave").asString("Wave: %d"));
+
+        FXGL.getGameScene().addUINode(waveCounterText);
+
     }
 
     public void stopWave(){
