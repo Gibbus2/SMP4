@@ -28,6 +28,8 @@ import javafx.scene.text.Text;
 import WaveManager.data.WaveManager;
 
 import static com.almasb.fxgl.dsl.FXGLForKtKt.getGameWorld;
+
+import javafx.util.Duration;
 import map.MapLoader;
 import objectPool.ICreateEntityPool;
 import objectPool.ObjectPool;
@@ -244,6 +246,9 @@ public class App extends GameApplication {
     @Override
     protected void onUpdate(double tpf) {
         //System.out.println("onUpdate : " + waveManager.getEnemyCount() );
+        waveManager.delayButton(waveManager);
+
+
     }
 
     public static void main(String[] args) {

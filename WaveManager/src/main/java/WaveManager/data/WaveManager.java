@@ -26,7 +26,10 @@ public class WaveManager {
     private List<Point2D> wayPoints;
     private int enemyCount = 0;
     private WaveData waveData;
-    private AtomicInteger countDown;
+    private AtomicInteger countDown = new AtomicInteger(0);
+    private Button startWaveButton;
+    private boolean timerRunning = false;
+
 
     public void init(){
         FXGL.getEventBus().addEventHandler(EnemyReachedEndEvent.ANY, event -> enemyCount--);
@@ -42,8 +45,12 @@ public class WaveManager {
         currentWave++;
     }
 
+    public void setButtonVisible(){
+        startWaveButton.setVisible(true);
+    }
+
     public void startWaveUI(WaveManager waveManager){
-        Button startWaveButton = new Button("Start Wave");
+        startWaveButton = new Button("Start Wave");
 
 
         startWaveButton.setTranslateX(50);
@@ -82,6 +89,8 @@ public class WaveManager {
         this.enemyCount = enemyCount;
     }
 
+
+
     public void waveIntermission(){
         //intermission between waves
         //guess call this on wave end, then
@@ -108,7 +117,22 @@ public class WaveManager {
         }, Duration.seconds(1));
     }
 
+    public AtomicInteger getCountDown(){
+        return countDown;
+    }
 
+    public void delayButton(WaveManager waveManager) {
+        if (!timerRunning && waveManager.getEnemyCount() == 0 && waveManager.getCountDown().get() == 0) {
+            timerRunning = true;
+            FXGL.getGameTimer().runOnceAfter(() -> {
+                // Check the conditions again after the delay
+                if (waveManager.getEnemyCount() == 0 && waveManager.getCountDown().get() == 0) {
+                    waveManager.setButtonVisible();
+                }
+                timerRunning = false;
+            }, Duration.seconds(1)); // delay in seconds
+        }
+    }
     private void enemySpawner(WaveData waveData){
 
         Polyline polyline = FXGL.getGameWorld().getEntitiesByType(EntityType.WAYPOINT).getFirst().getObject("polyline");
