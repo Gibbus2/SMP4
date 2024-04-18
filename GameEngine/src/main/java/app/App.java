@@ -243,7 +243,7 @@ public class App extends GameApplication {
 
     @Override
     protected void onUpdate(double tpf) {
-        System.out.println("onUpdate : " + waveManager.getEnemyCount() );
+        //System.out.println("onUpdate : " + waveManager.getEnemyCount() );
     }
 
     public static void main(String[] args) {
