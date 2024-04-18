@@ -1,18 +1,11 @@
-package enemy.data;
+package Enemy.data;
 
-import com.almasb.fxgl.core.math.Vec2;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
-import com.almasb.fxgl.entity.state.EntityState;
-import com.almasb.fxgl.entity.state.StateComponent;
-import common.services.PMSComponentSPI;
+import Enemy.services.PMSComponentSPI;
 import javafx.geometry.Point2D;
-import javafx.scene.shape.Polyline;
-import common.data.EntityType;
-import map.Waypoint;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -36,7 +29,6 @@ public class PointMovementSystemComponent extends Component implements PMSCompon
             wayPoints.add(new Point2D(polyline.getPoints().get(i), polyline.getPoints().get(i+1)));
         }
     }
-
 */
 
     @Override

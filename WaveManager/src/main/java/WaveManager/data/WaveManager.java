@@ -3,7 +3,7 @@ import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import common.data.EntityType;
 
-import enemy.data.EnemyReachedEndEvent;
+import Enemy.data.EnemyReachedEndEvent;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
 import javafx.scene.paint.Paint;

@@ -1,9 +1,9 @@
-package enemy.data;
+package Enemy.data;
 
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.state.EntityState;
 import com.almasb.fxgl.entity.state.StateComponent;
-import common.services.EnemyComponentSPI;
+import Enemy.services.EnemyComponentSPI;
 
 public class EnemyComponent extends Component implements EnemyComponentSPI {
     private int hp;
