@@ -11,6 +11,7 @@ public class EnemyComponent extends Component implements EnemyComponentSPI {
     private int speed;
     private int ds;
     private int score;
+    private double distanceTraveled = 0;
 
     //change private when figured out how to access it
     public StateComponent state;
@@ -90,41 +91,38 @@ public class EnemyComponent extends Component implements EnemyComponentSPI {
     public int getHp(){
         return hp;
     }
-
     public int getDamage(){
         return damage;
     }
-
     public int getSpeed(){
         return speed;
     }
     public int getDs(){return ds;}
-
     public int getScore(){
         return score;
     }
-
     public void setHp(int hp) {
         this.hp = hp;
     }
-
     public void setSpeed(int speed) {
         this.speed = speed;
     }
-
     public EntityState getDEAD() {
         return DEAD;
     }
-
     public EntityState getMOVING() {
         return MOVING;
     }
-
     public EntityState getSLOWED() {
         return SLOWED;
     }
-
     public EntityState getSTUNNED() {
         return STUNNED;
+    }
+    public double getDistanceTraveled(){
+        return distanceTraveled;
+    }
+    public void setDistanceTraveled(double distanceTraveled){
+        this.distanceTraveled = distanceTraveled;
     }
 }
