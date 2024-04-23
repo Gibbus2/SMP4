@@ -39,7 +39,7 @@ public class WaveManagerEntityFactory implements EntityFactory {
                 //adding enemy component with hp, damage, speed, and score
                 .with(new StateComponent());
         for(EnemyComponentSPI enemyComponent : getEnemyComponentSPIs()){
-            entityBuilder.with((Component) enemyComponent.createEnemyComponent(10, 1, 100, 10));
+            entityBuilder.with((Component) enemyComponent.createEnemyComponent());
         }
 
         return entityBuilder.build();
@@ -57,7 +57,7 @@ public class WaveManagerEntityFactory implements EntityFactory {
                 //adding enemy component with hp, damage, speed, and score
                 .with(new StateComponent());
         for(EnemyComponentSPI enemyComponent : getEnemyComponentSPIs()){
-            entityBuilder.with((Component) enemyComponent.createEnemyComponent(10, 1, 10, 10));
+            entityBuilder.with((Component) enemyComponent.createEnemyComponent());
         }
 
         return entityBuilder.build();
@@ -71,7 +71,7 @@ public class WaveManagerEntityFactory implements EntityFactory {
                 //adding enemy component with hp, damage, speed, and score
                 .with(new StateComponent());
         for(EnemyComponentSPI enemyComponent : getEnemyComponentSPIs()){
-            entityBuilder.with((Component) enemyComponent.createEnemyComponent(10, 1, 10, 10));
+            entityBuilder.with((Component) enemyComponent.createEnemyComponent());
         }
         return entityBuilder.build();
     }
@@ -84,7 +84,7 @@ public class WaveManagerEntityFactory implements EntityFactory {
                 //adding enemy component with hp, damage, speed, and score
                 .with(new StateComponent());
         for(EnemyComponentSPI enemyComponent : getEnemyComponentSPIs()){
-            entityBuilder.with((Component) enemyComponent.createEnemyComponent(10, 1, 10, 10));
+            entityBuilder.with((Component) enemyComponent.createEnemyComponent());
         }
 
         return entityBuilder.build();

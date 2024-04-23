@@ -39,7 +39,7 @@ public class EnemyComponent extends Component implements EnemyComponentSPI {
     public void setState(StateComponent state) {
         this.state = state;
     }
-    public EnemyComponentSPI createEnemyComponent(int hp, int damage, int speed, int score) {
+    public EnemyComponent createEnemyComponent() {
         return new EnemyComponent(hp, damage, speed, score);
     }
 

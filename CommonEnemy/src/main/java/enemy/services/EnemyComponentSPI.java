@@ -1,6 +1,8 @@
 package enemy.services;
 
 
+import enemy.data.EnemyComponent;
+
 public interface EnemyComponentSPI {
-    EnemyComponentSPI createEnemyComponent(int hp, int damage, int speed, int score);
+    EnemyComponent createEnemyComponent();
 }
