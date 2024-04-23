@@ -5,7 +5,6 @@ import enemy.data.PointMovementSystemComponent;
 
 module CommonEnemy {
     requires Common;
-    requires com.almasb.fxgl.entity;
     requires com.almasb.fxgl.all;
     requires Map;
     exports enemy.data;
