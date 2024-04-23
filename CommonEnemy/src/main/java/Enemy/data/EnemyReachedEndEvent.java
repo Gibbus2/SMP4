@@ -1,4 +1,4 @@
-package Enemy.data;
+package enemy.data;
 
 import javafx.event.Event;
 import javafx.event.EventType;

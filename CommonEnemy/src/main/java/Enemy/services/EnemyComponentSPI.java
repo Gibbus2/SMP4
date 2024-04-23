@@ -1,4 +1,4 @@
-package Enemy.services;
+package enemy.services;
 
 
 public interface EnemyComponentSPI {

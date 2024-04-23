@@ -1,6 +1,6 @@
 module NormalEnemy {
-    uses Enemy.services.EnemyComponentSPI;
-    uses Enemy.services.PMSComponentSPI;
+    uses enemy.services.EnemyComponentSPI;
+    uses enemy.services.PMSComponentSPI;
     requires com.almasb.fxgl.entity;
     requires com.almasb.fxgl.core;
     requires com.almasb.fxgl.all;

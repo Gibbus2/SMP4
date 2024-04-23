@@ -9,8 +9,8 @@ import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.entity.state.StateComponent;
-import Enemy.services.EnemyComponentSPI;
-import Enemy.services.PMSComponentSPI;
+import enemy.services.EnemyComponentSPI;
+import enemy.services.PMSComponentSPI;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import common.data.EntityType;
@@ -30,7 +30,7 @@ public class NormalEntity implements EntityFactory{
         imageView.setTranslateY(-24);
 
         EntityBuilder entityBuilder = FXGL.entityBuilder(data)
-                .type(EntityType.NORMAL_ENEMY)
+                .type(EntityType.ENEMY)
                 .viewWithBBox(imageView)
                 .with(new CollidableComponent(true))
                 //adding enemy component with hp, damage, speed, and score

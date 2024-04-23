@@ -1,9 +1,9 @@
-package Enemy.data;
+package enemy.data;
 
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
-import Enemy.services.PMSComponentSPI;
+import enemy.services.PMSComponentSPI;
 import javafx.geometry.Point2D;
 
 import java.util.List;
@@ -29,6 +29,7 @@ public class PointMovementSystemComponent extends Component implements PMSCompon
             wayPoints.add(new Point2D(polyline.getPoints().get(i), polyline.getPoints().get(i+1)));
         }
     }
+
 */
 
     @Override
@@ -56,8 +57,7 @@ public class PointMovementSystemComponent extends Component implements PMSCompon
 
     }
 
-    @Override
-    public PMSComponentSPI createPMSComponent() {
+    public PointMovementSystemComponent createPMSComponent() {
         return new PointMovementSystemComponent();
     }
 }
