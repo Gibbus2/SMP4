@@ -1,15 +1,15 @@
-import common.services.EnemyComponentSPI;
-import common.services.PMSComponentSPI;
+import enemy.services.EnemyComponentSPI;
+import enemy.services.PMSComponentSPI;
 import enemy.data.EnemyComponent;
 import enemy.data.PointMovementSystemComponent;
 
-module Enemy {
+module CommonEnemy {
     requires Common;
     requires com.almasb.fxgl.entity;
     requires com.almasb.fxgl.all;
     requires Map;
     exports enemy.data;
-    provides EnemyComponentSPI with EnemyComponent;
+    exports enemy.services;
     provides PMSComponentSPI with PointMovementSystemComponent;
-    //requires Map;
+    provides EnemyComponentSPI with EnemyComponent;
 }
