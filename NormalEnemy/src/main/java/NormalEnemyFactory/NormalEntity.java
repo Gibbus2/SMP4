@@ -10,7 +10,6 @@ import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.entity.state.StateComponent;
 import enemy.services.EnemyComponentSPI;
-import enemy.services.PMSComponentSPI;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import common.data.EntityType;
@@ -38,16 +37,11 @@ public class NormalEntity implements EntityFactory{
         for(EnemyComponentSPI enemyComponent : getEnemyComponentSPIs()){
             entityBuilder.with((Component) enemyComponent.createEnemyComponent(10, 1, 100, 10));
         }
-        for(PMSComponentSPI PMSComponent : getPMSComponentSPIs()){
-            entityBuilder.with((Component) PMSComponent.createPMSComponent());
-        }
         return entityBuilder.build();
     }
 
     private Collection<? extends EnemyComponentSPI> getEnemyComponentSPIs() {
         return ServiceLoader.load(EnemyComponentSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
     }
-    private Collection<? extends PMSComponentSPI> getPMSComponentSPIs() {
-        return ServiceLoader.load(PMSComponentSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
-    }
+
 }
