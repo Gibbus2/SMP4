@@ -12,6 +12,7 @@ import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import common.data.EntityType;
+import enemy.data.EnemyComponent;
 import health.HealthComponent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
@@ -137,6 +138,8 @@ public class App extends GameApplication {
                         .type(EntityType.ENEMY)
                         .at(0,0)
                         .view(new Circle(15, Color.RED))
+                        //.with health
+                        //.with some behavior component
                         .buildAndAttach()
         );
 

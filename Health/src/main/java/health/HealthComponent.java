@@ -13,6 +13,11 @@ public class HealthComponent extends Component implements IHealthComponentSPI {
         this.health = health;
     }
 
+    @Override
+    public HealthComponent createHealthComponent(int amount) {
+        return new HealthComponent(amount);
+    }
+
     public int getHealth() {
         return health;
     }
@@ -24,4 +29,5 @@ public class HealthComponent extends Component implements IHealthComponentSPI {
     public boolean isDead() {
         return health <= 0;
     }
+
 }

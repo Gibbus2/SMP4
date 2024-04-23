@@ -11,4 +11,5 @@ open module GameEngine {
     requires ObjectPool;
     requires UI;
     requires annotations;
+    requires CommonEnemy;
 }
