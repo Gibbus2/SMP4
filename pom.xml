@@ -25,6 +25,7 @@
     <module>CommonBullet</module>
       <module>CommonTower</module>
 
+    <module>NormalTower</module>
   </modules>
   <properties>
     <java>java</java>
