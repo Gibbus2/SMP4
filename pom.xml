@@ -22,6 +22,7 @@
     <module>Shop</module>
     <module>Health</module>
     <module>NormalEnemy</module>
+    <module>NormalTower</module>
   </modules>
   <properties>
     <java>java</java>
