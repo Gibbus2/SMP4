@@ -196,7 +196,7 @@ public class App extends GameApplication {
 
     @Override
     protected void initPhysics() {
-        // Enemy and Player collision.
+        // CommonEnemy and Player collision.
         FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.ENEMY, EntityType.PLAYER) {
             // order of types is the same as passed into the constructor
             @Override
@@ -206,7 +206,7 @@ public class App extends GameApplication {
             }
         });
 
-        // Bullet and Enemy collision.
+        // Bullet and CommonEnemy collision.
         FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.BULLET, EntityType.ENEMY) {
             @Override
             protected void onCollisionBegin(Entity bullet, Entity enemy) {
@@ -282,8 +282,6 @@ public class App extends GameApplication {
     protected void onUpdate(double tpf) {
         //System.out.println("onUpdate : " + waveManager.getEnemyCount() );
         waveManager.delayButton(waveManager);
-
-
     }
 
     public static void main(String[] args) {

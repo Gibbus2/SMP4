@@ -22,7 +22,7 @@
         </dependency>
         <dependency>
             <groupId>dk.sdu.mmmi.GRP7</groupId>
-            <artifactId>Enemy</artifactId>
+            <artifactId>CommonEnemy</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>

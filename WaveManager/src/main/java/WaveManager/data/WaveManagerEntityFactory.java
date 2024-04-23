@@ -9,8 +9,7 @@ import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.entity.state.StateComponent;
-import common.services.EnemyComponentSPI;
-import common.services.PMSComponentSPI;
+import enemy.services.EnemyComponentSPI;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
@@ -42,9 +41,7 @@ public class WaveManagerEntityFactory implements EntityFactory {
         for(EnemyComponentSPI enemyComponent : getEnemyComponentSPIs()){
             entityBuilder.with((Component) enemyComponent.createEnemyComponent(10, 1, 100, 10));
         }
-        for(PMSComponentSPI PMSComponent : getPMSComponentSPIs()){
-            entityBuilder.with((Component) PMSComponent.createPMSComponent());
-        }
+
         return entityBuilder.build();
     }
     @Spawns("MEDIUM_ENEMY")
@@ -62,9 +59,7 @@ public class WaveManagerEntityFactory implements EntityFactory {
         for(EnemyComponentSPI enemyComponent : getEnemyComponentSPIs()){
             entityBuilder.with((Component) enemyComponent.createEnemyComponent(10, 1, 10, 10));
         }
-        for(PMSComponentSPI PMSComponent : getPMSComponentSPIs()){
-            entityBuilder.with((Component) PMSComponent.createPMSComponent());
-        }
+
         return entityBuilder.build();
     }
     @Spawns("HARD_ENEMY")
@@ -77,9 +72,6 @@ public class WaveManagerEntityFactory implements EntityFactory {
                 .with(new StateComponent());
         for(EnemyComponentSPI enemyComponent : getEnemyComponentSPIs()){
             entityBuilder.with((Component) enemyComponent.createEnemyComponent(10, 1, 10, 10));
-        }
-        for(PMSComponentSPI PMSComponent : getPMSComponentSPIs()){
-            entityBuilder.with((Component) PMSComponent.createPMSComponent());
         }
         return entityBuilder.build();
     }
@@ -94,9 +86,6 @@ public class WaveManagerEntityFactory implements EntityFactory {
         for(EnemyComponentSPI enemyComponent : getEnemyComponentSPIs()){
             entityBuilder.with((Component) enemyComponent.createEnemyComponent(10, 1, 10, 10));
         }
-        for(PMSComponentSPI PMSComponent : getPMSComponentSPIs()){
-            entityBuilder.with((Component) PMSComponent.createPMSComponent());
-        }
 
         return entityBuilder.build();
     }
@@ -104,7 +93,5 @@ public class WaveManagerEntityFactory implements EntityFactory {
     private Collection<? extends EnemyComponentSPI> getEnemyComponentSPIs() {
         return ServiceLoader.load(EnemyComponentSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
     }
-    private Collection<? extends PMSComponentSPI> getPMSComponentSPIs() {
-        return ServiceLoader.load(PMSComponentSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
-    }
+
 }
