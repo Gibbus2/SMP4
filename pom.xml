@@ -16,6 +16,7 @@
     <module>ObjectPool</module>
     <module>Common</module>
     <module>UI</module>
+    <module>NormalTower</module>
   </modules>
   <properties>
     <java>java</java>
