@@ -11,6 +11,7 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.util.Duration;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,13 +52,13 @@ public class CommonTowerComponent extends Component implements TowerComponentSPI
     }
 
 
-   /* public void sortByDistanceTraveled() {
+   public void sortByDistanceTraveled() {
         enemiesInRange.sort(Comparator.comparing(enemy -> enemy.getComponent(EnemyComponent.class).getDistanceTraveled()));
     }
 
     public void sortByHealth() {
-        enemiesInRange.sort(Comparator.comparing(enemy -> enemy.getComponent(EnemyComponent.class).getHealth()));
-    } */
+        enemiesInRange.sort(Comparator.comparing(enemy -> enemy.getComponent(EnemyComponent.class).getHp()));
+    }
 
     @Override
     public void onAdded() {
