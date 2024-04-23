@@ -7,10 +7,15 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class Pool {
-    private Queue<Entity> pool;
-    private ICreateEntityPool createEntityPool;
+    private final Queue<Entity> pool;
+    private final ICreateEntityPool createEntityPool;
 
-    public Pool() {
+    public int getSize() {
+        return pool.size();
+    }
+
+    public Pool(ICreateEntityPool createEntityPool) {
+        this.createEntityPool = createEntityPool;
         pool = new LinkedList<>();
     }
 
@@ -24,11 +29,25 @@ public class Pool {
 
             return entity;
         } else {
-            return createEntityPool.createEntity();
+            Entity entity = createEntityPool.createEntity();
+
+            // if the iCreateEntityPool method does not add the
+            // PooledObjectComponent to the entity, then we add it here.
+            if (!entity.hasComponent(PooledObjectComponent.class)) {
+                entity.addComponent(new PooledObjectComponent(this));
+            }
+
+            return entity;
         }
     }
 
-    public void add(Entity entity) {
+    public void returnEntityToPool(Entity entity) {
+        for (Component component : entity.getComponents()) {
+            component.pause();
+        }
+
+        entity.setPosition(-10000, -10000);
+
         pool.add(entity);
     }
 }

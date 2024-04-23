@@ -5,14 +5,26 @@ import common.data.EntityType;
 
 import java.util.HashMap;
 
-public class ObjectPool {
-    private static HashMap<EntityType, Pool> pools = new HashMap<>();
+public class ObjectPool implements IObjectPool {
+    public static HashMap<EntityType, Pool> pools;
 
-    public static void createPool(EntityType entityType, ICreateEntityPool iCreateEntityPool) {
-        pools.put(entityType, new Pool());
+
+    public ObjectPool() {
+        pools = new HashMap<>();
     }
 
-    public static Entity getEntityFromPool(EntityType entityType) {
+    @Override
+    public void createPool(EntityType entityType, ICreateEntityPool iCreateEntityPool) {
+        pools.put(entityType, new Pool(iCreateEntityPool));
+    }
+
+    @Override
+    public Pool getPool(EntityType entityType) {
+        return pools.get(entityType);
+    }
+
+    @Override
+    public Entity getEntityFromPool(EntityType entityType) {
         return pools.get(entityType).getEntityFromPool();
     }
 }

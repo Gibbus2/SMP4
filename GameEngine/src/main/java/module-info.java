@@ -1,4 +1,7 @@
+import objectPool.IObjectPool;
+
 open module GameEngine {
+    uses IObjectPool;
     requires com.almasb.fxgl.all;
     requires Common;
     requires WaveManager;
@@ -7,4 +10,5 @@ open module GameEngine {
     requires Health;
     requires ObjectPool;
     requires UI;
+    requires annotations;
 }

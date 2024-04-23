@@ -10,6 +10,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Polyline;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
+import objectPool.ObjectPool;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,7 +30,11 @@ public class WaveManager {
     private AtomicInteger countDown = new AtomicInteger(0);
     private Button startWaveButton;
     private boolean timerRunning = false;
+    private ObjectPool objectPool;
 
+    public WaveManager(ObjectPool objectPool) {
+        this.objectPool = objectPool;
+    }
 
     public void init(){
         FXGL.getEventBus().addEventHandler(EnemyReachedEndEvent.ANY, event -> enemyCount--);
@@ -38,7 +43,7 @@ public class WaveManager {
     public void startWave(){
         wayPoints = map.Waypoint.fromPolyline().getWaypoints();
         //start wave eh
-        waveData = new WaveData(currentWave);
+        waveData = new WaveData(objectPool, currentWave);
         waveData.enemyArrayLoader(currentWave, waveData.getEnemies());
         enemySpawner(waveData);
         FXGL.getWorldProperties().setValue("currentWave", currentWave);

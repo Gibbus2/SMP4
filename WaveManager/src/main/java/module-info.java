@@ -10,6 +10,7 @@ module WaveManager {
     requires Enemy;
     requires Common;
     requires Map;
+    requires ObjectPool;
     exports WaveManager.data;
     exports WaveManager.services;
     //ask if this is correct
