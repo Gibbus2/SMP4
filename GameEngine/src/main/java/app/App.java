@@ -7,6 +7,7 @@ import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.entity.state.StateComponent;
 import com.almasb.fxgl.input.Input;
@@ -79,7 +80,6 @@ public class App extends GameApplication {
             @Override
             protected void onAction() {
                 player.translateX(5);
-                FXGL.inc("pixelsMoved", +5);
             }
         }, KeyCode.D);
 
@@ -87,7 +87,6 @@ public class App extends GameApplication {
             @Override
             protected void onAction() {
                 player.translateX(-5);
-                FXGL.inc("pixelsMoved", +5);
             }
         }, KeyCode.A);
 
@@ -95,7 +94,6 @@ public class App extends GameApplication {
             @Override
             protected void onAction() {
                 player.translateY(-5);
-                FXGL.inc("pixelsMoved", +5);
             }
         }, KeyCode.W);
 
@@ -103,7 +101,6 @@ public class App extends GameApplication {
             @Override
             protected void onAction() {
                 player.translateY(5);
-                FXGL.inc("pixelsMoved", +5);
             }
         }, KeyCode.S);
 
@@ -119,8 +116,8 @@ public class App extends GameApplication {
 
     @Override
     protected void initGameVars(Map<String, Object> vars) {
-        vars.put("pixelsMoved", 0);
-        vars.put("coinsCollected", 0);
+        // TODO: Should probably be moved into UI module when rendering
+        // current wave to view.
         vars.put("currentWave", waveManager.getCurrentWave());
     }
 
@@ -130,7 +127,7 @@ public class App extends GameApplication {
     protected void initGame() {
 
 
-        objectPool.createPool(EntityType.ENEMY,
+        objectPool.createPool(EnemyComponent.class.toString(),
                 () -> FXGL.entityBuilder()
                         // TODO: Build enemy here.
                         .type(EntityType.ENEMY)
@@ -148,7 +145,7 @@ public class App extends GameApplication {
             throw new RuntimeException(e);
         }
 
-        objectPool.createPool(EntityType.NORMAL_ENEMY,
+        objectPool.createPool("NORMAL_ENEMY",
                 () -> FXGL.entityBuilder()
                         .type(EntityType.NORMAL_ENEMY)
                         .viewWithBBox(new Rectangle(48,48, Color.RED))
@@ -158,7 +155,7 @@ public class App extends GameApplication {
                         .buildAndAttach()
         );
 
-        objectPool.getEntityFromPool(EntityType.NORMAL_ENEMY).setPosition(50, 50);
+        objectPool.getEntityFromPool("NORMAL_ENEMY").setPosition(50, 50);
 
 
         //TODO: NEEDS TO BE SERVICELOADED
@@ -231,22 +228,15 @@ public class App extends GameApplication {
         // TODO: Use Map module to load scene "Main Menu".
 
         // TODO:
+ // add to the scene graph
 
-        Text textPixels = new Text();
-        textPixels.setTranslateX(50); // x = 50
-        textPixels.setTranslateY(100); // y = 100
-
-        textPixels.textProperty().bind(FXGL.getWorldProperties().intProperty("pixelsMoved").asString());
-
-        FXGL.getGameScene().addUINode(textPixels); // add to the scene graph
-
-        Text coinText = new Text();
-        coinText.setTranslateX(100); // x = 50
-        coinText.setTranslateY(100); // y = 100
-
-        coinText.textProperty().bind(FXGL.getWorldProperties().intProperty("coinsCollected").asString());
-
-        FXGL.getGameScene().addUINode(coinText);
+//        Text coinText = new Text();
+//        coinText.setTranslateX(100); // x = 50
+//        coinText.setTranslateY(100); // y = 100
+//
+//        coinText.textProperty().bind(FXGL.getWorldProperties().intProperty("coinsCollected").asString());
+//
+//        FXGL.getGameScene().addUINode(coinText);
 
         var brickTexture = FXGL.getAssetLoader().loadTexture("brick.png");
         brickTexture.setTranslateX(50);

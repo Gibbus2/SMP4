@@ -1,10 +1,10 @@
 package objectPool;
 
 import com.almasb.fxgl.entity.Entity;
-import common.data.EntityType;
+import com.almasb.fxgl.entity.component.Component;
 
 public interface IObjectPool {
-    void createPool(EntityType entityType, ICreateEntityPool iCreateEntityPool);
-    Entity getEntityFromPool(EntityType entityType);
-    Pool getPool(EntityType entityType);
+    void createPool(String poolName, ICreateEntityPool iCreateEntityPool);
+    Entity getEntityFromPool(String poolName);
+    Pool getPool(String poolName);
 }

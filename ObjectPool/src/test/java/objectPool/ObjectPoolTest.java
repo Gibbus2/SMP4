@@ -1,14 +1,11 @@
+package objectPool;
+
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import common.data.EntityType;
-import objectPool.PooledObjectComponent;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
-
-import objectPool.ObjectPool;
-
-import java.util.ArrayList;
 
 public class ObjectPoolTest {
     private ObjectPool objectPool;
@@ -18,10 +15,10 @@ public class ObjectPoolTest {
     void createPool_WhenCalled_AddsPoolToPools() {
         objectPool = new ObjectPool();
 
-        objectPool.createPool(EntityType.ENEMY,
+        objectPool.createPool("ENEMY",
                 () -> FXGL.entityBuilder()
                         .type(EntityType.ENEMY)
-                        .with(new PooledObjectComponent(objectPool.getPool(EntityType.ENEMY)))
+                        .with(new PooledObjectComponent(objectPool.getPool("ENEMY")))
                         .build()
         );
 
@@ -32,14 +29,14 @@ public class ObjectPoolTest {
     void createEntity_WhenGettingFromEmptyPool() {
         objectPool = new ObjectPool();
 
-        objectPool.createPool(EntityType.ENEMY,
+        objectPool.createPool("ENEMY",
                 () -> FXGL.entityBuilder()
                         .type(EntityType.ENEMY)
-                        .with(new PooledObjectComponent(objectPool.getPool(EntityType.ENEMY)))
+                        .with(new PooledObjectComponent(objectPool.getPool("ENEMY")))
                         .build()
         );
 
-        entity = objectPool.getEntityFromPool(EntityType.ENEMY);
+        entity = objectPool.getEntityFromPool("ENEMY");
         assertNotNull(entity);
     }
 
@@ -47,14 +44,14 @@ public class ObjectPoolTest {
     void returnEntityAndComponentsArePaused_WhenCallingReturnToPool() {
         objectPool = new ObjectPool();
 
-        objectPool.createPool(EntityType.ENEMY,
+        objectPool.createPool("ENEMY",
                 () -> FXGL.entityBuilder()
                         .type(EntityType.ENEMY)
-                        .with(new PooledObjectComponent(objectPool.getPool(EntityType.ENEMY)))
+                        .with(new PooledObjectComponent(objectPool.getPool("ENEMY")))
                         .build()
         );
 
-        entity = objectPool.getEntityFromPool(EntityType.ENEMY);
+        entity = objectPool.getEntityFromPool("ENEMY");
 
         entity.getComponent(PooledObjectComponent.class).returnToPool();
 
@@ -62,23 +59,23 @@ public class ObjectPoolTest {
             assertTrue(component.isPaused());
         }
 
-        assertEquals(objectPool.getPool(EntityType.ENEMY).getSize(), 1);
+        assertEquals(objectPool.getPool("ENEMY").getSize(), 1);
     }
 
     @Test
     void getEntityFromPoolAndComponentsAreResumed_WhenGettingFromNonEmptyPool() {
         objectPool = new ObjectPool();
 
-        objectPool.createPool(EntityType.ENEMY,
+        objectPool.createPool("ENEMY",
                 () -> FXGL.entityBuilder()
                         .type(EntityType.ENEMY)
-                        .with(new PooledObjectComponent(objectPool.getPool(EntityType.ENEMY)))
+                        .with(new PooledObjectComponent(objectPool.getPool("ENEMY")))
                         .build()
         );
 
-        objectPool.getEntityFromPool(EntityType.ENEMY).getComponent(PooledObjectComponent.class).returnToPool();
+        objectPool.getEntityFromPool("ENEMY").getComponent(PooledObjectComponent.class).returnToPool();
 
-        entity = objectPool.getEntityFromPool(EntityType.ENEMY);
+        entity = objectPool.getEntityFromPool("ENEMY");
 
         for (Component component : entity.getComponents()) {
             assertFalse(component.isPaused());
@@ -91,10 +88,10 @@ public class ObjectPoolTest {
     void performanceTest_WhenUsingDifferentEntityGettersOrBuilders() {
         objectPool = new ObjectPool();
 
-        objectPool.createPool(EntityType.ENEMY,
+        objectPool.createPool("ENEMY",
                 () -> FXGL.entityBuilder()
                         .type(EntityType.ENEMY)
-                        .with(new PooledObjectComponent(objectPool.getPool(EntityType.ENEMY)))
+                        .with(new PooledObjectComponent(objectPool.getPool("ENEMY")))
                         .build()
         );
 
@@ -110,7 +107,7 @@ public class ObjectPoolTest {
 
         startTime = System.currentTimeMillis();
         for (int i = 0; i < 10000; i++) {
-            objectPool.getEntityFromPool(EntityType.ENEMY);
+            objectPool.getEntityFromPool("ENEMY");
         }
         endTime = System.currentTimeMillis();
         long duration2 = endTime - startTime;
@@ -118,7 +115,7 @@ public class ObjectPoolTest {
 
         startTime = System.currentTimeMillis();
         for (int i = 0; i < 10000; i++) {
-            objectPool.getEntityFromPool(EntityType.ENEMY).getComponent(PooledObjectComponent.class).returnToPool();
+            objectPool.getEntityFromPool("ENEMY").getComponent(PooledObjectComponent.class).returnToPool();
         }
         endTime = System.currentTimeMillis();
         long duration3 = endTime - startTime;

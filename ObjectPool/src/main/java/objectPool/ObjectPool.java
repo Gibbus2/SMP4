@@ -1,12 +1,12 @@
 package objectPool;
 
 import com.almasb.fxgl.entity.Entity;
-import common.data.EntityType;
+import com.almasb.fxgl.entity.component.Component;
 
 import java.util.HashMap;
 
 public class ObjectPool implements IObjectPool {
-    public static HashMap<EntityType, Pool> pools;
+    public static HashMap<String, Pool> pools;
 
 
     public ObjectPool() {
@@ -14,17 +14,17 @@ public class ObjectPool implements IObjectPool {
     }
 
     @Override
-    public void createPool(EntityType entityType, ICreateEntityPool iCreateEntityPool) {
-        pools.put(entityType, new Pool(iCreateEntityPool));
+    public void createPool(String poolName, ICreateEntityPool iCreateEntityPool) {
+        pools.put(poolName, new Pool(iCreateEntityPool));
     }
 
     @Override
-    public Pool getPool(EntityType entityType) {
-        return pools.get(entityType);
+    public Pool getPool(String poolName) {
+        return pools.get(poolName);
     }
 
     @Override
-    public Entity getEntityFromPool(EntityType entityType) {
-        return pools.get(entityType).getEntityFromPool();
+    public Entity getEntityFromPool(String poolName) {
+        return pools.get(poolName).getEntityFromPool();
     }
 }
