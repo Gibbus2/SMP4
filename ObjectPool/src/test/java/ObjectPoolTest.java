@@ -8,6 +8,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import objectPool.ObjectPool;
 
+import java.util.ArrayList;
+
 public class ObjectPoolTest {
     private ObjectPool objectPool;
     private Entity entity;
@@ -83,5 +85,47 @@ public class ObjectPoolTest {
         }
 
         assertNotNull(entity);
+    }
+
+    @Test
+    void performanceTest_WhenUsingDifferentEntityGettersOrBuilders() {
+        objectPool = new ObjectPool();
+
+        objectPool.createPool(EntityType.ENEMY,
+                () -> FXGL.entityBuilder()
+                        .type(EntityType.ENEMY)
+                        .with(new PooledObjectComponent(objectPool.getPool(EntityType.ENEMY)))
+                        .build()
+        );
+
+
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < 10000; i++) {
+            FXGL.entityBuilder()
+                    .type(EntityType.ENEMY)
+                    .build();
+        }
+        long endTime = System.currentTimeMillis();
+        long duration = endTime - startTime;
+
+        startTime = System.currentTimeMillis();
+        for (int i = 0; i < 10000; i++) {
+            objectPool.getEntityFromPool(EntityType.ENEMY);
+        }
+        endTime = System.currentTimeMillis();
+        long duration2 = endTime - startTime;
+
+
+        startTime = System.currentTimeMillis();
+        for (int i = 0; i < 10000; i++) {
+            objectPool.getEntityFromPool(EntityType.ENEMY).getComponent(PooledObjectComponent.class).returnToPool();
+        }
+        endTime = System.currentTimeMillis();
+        long duration3 = endTime - startTime;
+
+        System.out.println("Creating new Entity every time: " + duration + "ms");
+        System.out.println("Using empty ObjectPool: " + duration2 + "ms");
+        System.out.println("Using full ObjectPool: " + duration3 + "ms");
+
     }
 }
