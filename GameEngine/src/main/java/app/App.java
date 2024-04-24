@@ -155,7 +155,6 @@ public class App extends GameApplication {
                         .with(new CollidableComponent(true))
                         //adding enemy component with hp, damage, speed, and score
                         .with(new StateComponent())
-                        .with(new EnemyComponent(1, 1, 1, 1))
                         .buildAndAttach()
         );
 
