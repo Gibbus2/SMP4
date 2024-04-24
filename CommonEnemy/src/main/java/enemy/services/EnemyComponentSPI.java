@@ -10,4 +10,6 @@ import java.util.List;
 public interface EnemyComponentSPI {
     EnemyComponent createEnemyComponent(List<Point2D> wayPoints);
     javafx.scene.image.ImageView getImage();
+    int getHp();
+    double getDistanceTraveled();
 }

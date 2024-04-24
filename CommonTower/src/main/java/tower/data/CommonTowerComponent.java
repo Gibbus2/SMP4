@@ -1,23 +1,25 @@
 package tower.data;
 
+import bullet.services.CommonBulletComponentSPI;
+import com.almasb.fxgl.dsl.EntityBuilder;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.state.EntityState;
 import com.almasb.fxgl.entity.state.StateComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.time.LocalTimer;
-import enemy.data.EnemyComponent;
+import enemy.services.EnemyComponentSPI;
 import javafx.scene.image.ImageView;
+import javafx.scene.shape.Circle;
 import tower.services.TowerComponentSPI;
 import javafx.geometry.Point2D;
-import javafx.geometry.Rectangle2D;
 import javafx.util.Duration;
 
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
+import static java.util.stream.Collectors.toList;
 
 
 public class CommonTowerComponent extends Component implements TowerComponentSPI {
@@ -31,7 +33,7 @@ public class CommonTowerComponent extends Component implements TowerComponentSPI
     public List<Entity> enemiesInRange;
     private LocalTimer shootTimer;
     private StateComponent state;
-    public ImageView image = FXGL.getAssetLoader().loadTexture("normalTower.png");
+    public ImageView image = FXGL.getAssetLoader().loadTexture("");
 
 
     public CommonTowerComponent(int towerDamage, int towerPrice, double towerFirerate, int towerRange, int towerX, int towerY, String towerTarget) {
@@ -48,7 +50,7 @@ public class CommonTowerComponent extends Component implements TowerComponentSPI
     }
 
     public void updateEnemiesInRange() {
-        Rectangle2D range = new Rectangle2D(towerX - towerRange / 2, towerY - towerRange / 2, towerRange, towerRange);
+        Circle range = new Circle(towerX - towerRange / 2, towerY - towerRange / 2, towerRange)
 
         enemiesInRange = getGameWorld().getEntitiesByType(EntityType.ENEMY).stream()
                 .filter(enemy -> range.contains(enemy.getPosition()))
@@ -57,11 +59,16 @@ public class CommonTowerComponent extends Component implements TowerComponentSPI
 
 
    public void sortByDistanceTraveled() {
-        enemiesInRange.sort(Comparator.comparing(enemy -> enemy.getComponent(EnemyComponent.class).getDistanceTraveled()));
+       for(EnemyComponentSPI EnemyComponent : getEnemyComponentSPIs()){
+           enemiesInRange.sort(Comparator.comparing(enemy -> enemy.getComponent(EnemyComponent).getDistanceTraveled()));
+       }
     }
 
     public void sortByHealth() {
-        enemiesInRange.sort(Comparator.comparing(enemy -> enemy.getComponent(EnemyComponent.class).getHp()));
+        for(EnemyComponentSPI EnemyComponent : getEnemyComponentSPIs()){
+            enemyComponent = EnemyComponent.createEnemyComponent();
+            enemiesInRange.sort(Comparator.comparing(enemy -> enemy.getComponent(EnemyComponent).getHp()));
+        }
     }
 
     @Override
@@ -97,21 +104,19 @@ public class CommonTowerComponent extends Component implements TowerComponentSPI
         Point2D direction = enemy.getPosition().subtract(entity.getPosition());
         entity.rotateToVector(direction);
 
-        Entity bullet = FXGL.entityBuilder()
+        EntityBuilder bullet = FXGL.entityBuilder()
                 .type(EntityType.BULLET)
-                .at(entity.getPosition())
-                .with(new BulletComponent())
-                .buildAndAttach();
-
-        BulletComponent bulletComponent = bullet.getComponent(BulletComponent.class);
-        bulletComponent.setDirection(direction);
+                .at(entity.getPosition());
+        for(CommonBulletComponentSPI bulletComponent : getBulletComponentSPIs()){
+            bullet.with((Component) bulletComponent);
+        }
     }
 
 
     private final EntityState FIRSTTARGET = new EntityState("FIRSTTARGET") {
         @Override
         public void onEntering() {
-             //sortByDistanceTraveled();
+             sortByDistanceTraveled();
         }
         @Override
         protected void onUpdate(double tpf) {
@@ -125,7 +130,8 @@ public class CommonTowerComponent extends Component implements TowerComponentSPI
     private final EntityState LASTTARGET = new EntityState("LASTTARGET") {
         @Override
         public void onEntering() {
-            //sortByDistanceTraveled().reversed();
+            //sortByDistanceTraveled()
+            //Should be reversed
         }
         @Override
         protected void onUpdate(double tpf) {
@@ -139,7 +145,8 @@ public class CommonTowerComponent extends Component implements TowerComponentSPI
     private final EntityState STRONGTARGET = new EntityState("STRONGTARGET") {
         @Override
         public void onEntering() {
-            //sortByHealth().reversed();
+            //sortByHealth()
+            //Should be reversed
         }
         @Override
         protected void onUpdate(double tpf) {
@@ -196,9 +203,19 @@ public class CommonTowerComponent extends Component implements TowerComponentSPI
     public int getY(){
         return towerY;
     }
+    @Override
+    public ImageView getImage() {
+        return image;
+    }
 
     @Override
     public TowerComponentSPI createTowerComponent(int towerDamage, int towerPrice, double towerFirerate, int towerRange, int towerX, int towerY) {
         return new CommonTowerComponent(towerDamage, towerPrice, towerFirerate, towerRange, towerX, towerY, towerTarget);
+    }
+    private Collection<? extends CommonBulletComponentSPI> getBulletComponentSPIs() {
+        return ServiceLoader.load(CommonBulletComponentSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
+    }
+    private Collection<? extends EnemyComponentSPI> getEnemyComponentSPIs() {
+        return ServiceLoader.load(EnemyComponentSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
     }
 }
