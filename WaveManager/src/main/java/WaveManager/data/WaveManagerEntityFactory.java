@@ -10,6 +10,7 @@ import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.entity.state.StateComponent;
 import enemy.services.EnemyComponentSPI;
+import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
@@ -17,11 +18,13 @@ import javafx.scene.shape.Rectangle;
 import common.data.EntityType;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.ServiceLoader;
 
 import static java.util.stream.Collectors.toList;
 
 public class WaveManagerEntityFactory implements EntityFactory {
+    List<Point2D> waypoints = map.Waypoint.fromPolyline().getWaypoints();
 
 
 
@@ -39,7 +42,7 @@ public class WaveManagerEntityFactory implements EntityFactory {
                 //adding enemy component with hp, damage, speed, and score
                 .with(new StateComponent());
         for(EnemyComponentSPI enemyComponent : getEnemyComponentSPIs()){
-            entityBuilder.with((Component) enemyComponent.createEnemyComponent());
+            entityBuilder.with((Component) enemyComponent.createEnemyComponent(waypoints));
         }
 
         return entityBuilder.build();
@@ -57,7 +60,7 @@ public class WaveManagerEntityFactory implements EntityFactory {
                 //adding enemy component with hp, damage, speed, and score
                 .with(new StateComponent());
         for(EnemyComponentSPI enemyComponent : getEnemyComponentSPIs()){
-            entityBuilder.with((Component) enemyComponent.createEnemyComponent());
+            entityBuilder.with((Component) enemyComponent.createEnemyComponent(waypoints));
         }
 
         return entityBuilder.build();
@@ -71,7 +74,7 @@ public class WaveManagerEntityFactory implements EntityFactory {
                 //adding enemy component with hp, damage, speed, and score
                 .with(new StateComponent());
         for(EnemyComponentSPI enemyComponent : getEnemyComponentSPIs()){
-            entityBuilder.with((Component) enemyComponent.createEnemyComponent());
+            entityBuilder.with((Component) enemyComponent.createEnemyComponent(waypoints));
         }
         return entityBuilder.build();
     }
@@ -84,7 +87,7 @@ public class WaveManagerEntityFactory implements EntityFactory {
                 //adding enemy component with hp, damage, speed, and score
                 .with(new StateComponent());
         for(EnemyComponentSPI enemyComponent : getEnemyComponentSPIs()){
-            entityBuilder.with((Component) enemyComponent.createEnemyComponent());
+            entityBuilder.with((Component) enemyComponent.createEnemyComponent(waypoints));
         }
 
         return entityBuilder.build();

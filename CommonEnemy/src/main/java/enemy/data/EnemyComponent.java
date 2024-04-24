@@ -16,7 +16,7 @@ public class EnemyComponent extends Component implements EnemyComponentSPI {
     private int ds;
     private int score;
     int currentWayPoint = 0;
-    private List<Point2D> wayPoints = map.Waypoint.fromPolyline().getWaypoints();
+    private List<Point2D> wayPoints;
 
     //change private when figured out how to access it
     public StateComponent state;
@@ -27,6 +27,14 @@ public class EnemyComponent extends Component implements EnemyComponentSPI {
         this.speed = speed;
         this.score = score;
     }
+    public EnemyComponent(int hp, int damage, int speed, int score, List<Point2D> wayPoints){
+        this.hp = hp;
+        this.damage = damage;
+        this.speed = speed;
+        this.score = score;
+        this.wayPoints = wayPoints;
+    }
+
 
     public EnemyComponent() {
         this(0,0,0,0);
@@ -39,8 +47,8 @@ public class EnemyComponent extends Component implements EnemyComponentSPI {
     public void setState(StateComponent state) {
         this.state = state;
     }
-    public EnemyComponent createEnemyComponent() {
-        return new EnemyComponent(hp, damage, speed, score);
+    public EnemyComponent createEnemyComponent(List<Point2D> wayPoints) {
+        return new EnemyComponent(hp, damage, speed, score, wayPoints);
     }
 
     @Override

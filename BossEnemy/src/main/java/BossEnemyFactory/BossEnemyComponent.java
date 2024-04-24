@@ -1,6 +1,9 @@
 package BossEnemyFactory;
 
 import enemy.data.EnemyComponent;
+import javafx.geometry.Point2D;
+
+import java.util.List;
 
 public class BossEnemyComponent extends EnemyComponent {
     private int hp = 1000;
@@ -10,7 +13,8 @@ public class BossEnemyComponent extends EnemyComponent {
 
     public BossEnemyComponent() {
     }
-    public EnemyComponent createEnemyComponent() {
-        return new EnemyComponent(hp, damage, speed, score);
+    @Override
+    public EnemyComponent createEnemyComponent(List<Point2D> wayPoints) {
+        return new EnemyComponent(hp, damage, speed, score, wayPoints);
     }
 }
