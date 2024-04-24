@@ -1,4 +1,4 @@
-package NormalEnemyFactory;
+package NormalEnemyComponent;
 
 import enemy.data.EnemyComponent;
 
