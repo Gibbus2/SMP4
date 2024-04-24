@@ -7,6 +7,7 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.time.LocalTimer;
 import enemy.data.EnemyComponent;
+import javafx.scene.image.ImageView;
 import tower.services.TowerComponentSPI;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
@@ -27,12 +28,11 @@ public class CommonTowerComponent extends Component implements TowerComponentSPI
     private int towerX;
     private int towerY;
     private String towerTarget = "";
-
     public List<Entity> enemiesInRange;
-
     private LocalTimer shootTimer;
-
     private StateComponent state;
+    public ImageView image = FXGL.getAssetLoader().loadTexture("normalTower.png");
+
 
     public CommonTowerComponent(int towerDamage, int towerPrice, double towerFirerate, int towerRange, int towerX, int towerY, String towerTarget) {
         this.towerDamage = towerDamage;
@@ -42,6 +42,9 @@ public class CommonTowerComponent extends Component implements TowerComponentSPI
         this.towerTarget = towerTarget;
         this.towerX = towerX;
         this.towerY = towerY;
+    }
+    public CommonTowerComponent(){
+        this(0,0,0,0,0,0,"");
     }
 
     public void updateEnemiesInRange() {
@@ -150,7 +153,7 @@ public class CommonTowerComponent extends Component implements TowerComponentSPI
     private final EntityState WEAKTARGET = new EntityState("WEAKTARGET") {
         @Override
         public void onEntering() {
-            //sortByHealth();
+            sortByHealth();
         }
         @Override
         protected void onUpdate(double tpf) {
