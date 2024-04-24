@@ -6,27 +6,24 @@ import com.almasb.fxgl.entity.state.EntityState;
 import com.almasb.fxgl.entity.state.StateComponent;
 import enemy.services.EnemyComponentSPI;
 import javafx.geometry.Point2D;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import java.util.List;
 
 public class EnemyComponent extends Component implements EnemyComponentSPI {
-    private int hp;
-    private int damage;
-    private int speed;
+    private int hp = 0;
+    private int damage = 0;
+    private int speed = 0;
     private int ds;
-    private int score;
+    private int score = 0;
     int currentWayPoint = 0;
     private List<Point2D> wayPoints;
+    public ImageView image = FXGL.getAssetLoader().loadTexture("normalEnemy.png");
 
     //change private when figured out how to access it
     public StateComponent state;
 
-    public EnemyComponent(int hp, int damage, int speed, int score){
-        this.hp = hp;
-        this.damage = damage;
-        this.speed = speed;
-        this.score = score;
-    }
     public EnemyComponent(int hp, int damage, int speed, int score, List<Point2D> wayPoints){
         this.hp = hp;
         this.damage = damage;
@@ -34,10 +31,8 @@ public class EnemyComponent extends Component implements EnemyComponentSPI {
         this.score = score;
         this.wayPoints = wayPoints;
     }
-
-
-    public EnemyComponent() {
-        this(0,0,0,0);
+    public EnemyComponent(){
+        this.wayPoints = null;
     }
 
     public StateComponent getState(){
@@ -55,6 +50,7 @@ public class EnemyComponent extends Component implements EnemyComponentSPI {
     public void onAdded() {
         state = entity.getComponent(StateComponent.class);
         state.changeState(MOVING);
+        entity.getViewComponent().addChild(image);
     }
 
     private final EntityState MOVING = new EntityState("MOVING") {
@@ -102,6 +98,12 @@ public class EnemyComponent extends Component implements EnemyComponentSPI {
         }
     }
     //entity.getComponent(EnemyComponent.class).getState().changeState(entity.getComponent(EnemyComponent.class).getSLOWED()); //this should be how to set state
+
+
+    @Override
+    public ImageView getImage() {
+        return image;
+    }
 
     public int getHp(){
         return hp;

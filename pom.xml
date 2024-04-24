@@ -17,7 +17,6 @@
     <module>WaveManager</module>
     <module>Common</module>
     <module>Bullet</module>
-    <module>PathFinding</module>
     <module>UI</module>
     <module>Shop</module>
     <module>Health</module>
