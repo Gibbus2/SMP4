@@ -1,7 +1,7 @@
 import tower.services.TowerComponentSPI;
 import tower.data.CommonTowerComponent;
 
-module Tower {
+module CommonTower {
     requires Common;
     requires com.almasb.fxgl.all;
     requires com.almasb.fxgl.entity;

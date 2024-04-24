@@ -12,7 +12,7 @@
     <module>Player</module>
     <module>CommonEnemy</module>
     <module>Map</module>
-    <module>Tower</module>
+    <module>CommonTower</module>
     <module>ObjectPool</module>
     <module>WaveManager</module>
     <module>Common</module>
