@@ -228,6 +228,13 @@ public class App extends GameApplication {
         // TODO: Use Map module to load scene "Main Menu".
 
         // TODO:
+
+        ui.TowerSelection towerSelection = new ui.TowerSelection();
+        FXGL.getGameScene().addUINode(towerSelection);
+
+        Text textPixels = new Text();
+        textPixels.setTranslateX(50); // x = 50
+        textPixels.setTranslateY(100); // y = 100
  // add to the scene graph
 
 //        Text coinText = new Text();
