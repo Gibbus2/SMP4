@@ -2,7 +2,6 @@ package BossEnemyFactory;
 
 import enemy.data.EnemyComponent;
 import javafx.geometry.Point2D;
-
 import java.util.List;
 
 public class BossEnemyComponent extends EnemyComponent {
