@@ -6,6 +6,7 @@ import com.almasb.fxgl.entity.state.StateComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.time.LocalTimer;
+import enemy.data.EnemyComponent;
 import tower.services.TowerComponentSPI;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;

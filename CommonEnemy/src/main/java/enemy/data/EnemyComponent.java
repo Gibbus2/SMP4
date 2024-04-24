@@ -16,7 +16,6 @@ public class EnemyComponent extends Component implements EnemyComponentSPI {
     private int damage = 0;
     private int speed = 0;
     private int ds;
-    private int score;
     private double distanceTraveled = 0;
     private int score = 0;
     int currentWayPoint = 0;
