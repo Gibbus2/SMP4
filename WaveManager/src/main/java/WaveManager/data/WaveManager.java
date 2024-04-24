@@ -10,6 +10,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Polyline;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
+import objectPool.IObjectPool;
 import objectPool.ObjectPool;
 
 import java.util.List;
@@ -30,9 +31,9 @@ public class WaveManager {
     private AtomicInteger countDown = new AtomicInteger(0);
     private Button startWaveButton;
     private boolean timerRunning = false;
-    private ObjectPool objectPool;
+    private IObjectPool objectPool;
 
-    public WaveManager(ObjectPool objectPool) {
+    public WaveManager(IObjectPool objectPool) {
         this.objectPool = objectPool;
     }
 

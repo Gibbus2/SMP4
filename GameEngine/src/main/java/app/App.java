@@ -8,11 +8,13 @@ import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
+import com.almasb.fxgl.entity.state.StateComponent;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import common.data.EntityType;
 import enemy.data.EnemyComponent;
+import enemy.services.EnemyComponentSPI;
 import health.HealthComponent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
@@ -21,6 +23,7 @@ import javafx.scene.shape.Rectangle;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.ServiceLoader;
 
@@ -33,7 +36,6 @@ import static java.util.stream.Collectors.toList;
 
 import map.MapLoader;
 import objectPool.ObjectPool;
-import org.jetbrains.annotations.NotNull;
 import player.PlayerComponent;
 import objectPool.IObjectPool;
 import ui.GameMenu;
@@ -41,9 +43,8 @@ import ui.GameMenu;
 
 public class App extends GameApplication {
     GameData gameData = new GameData();
-    private WaveManager waveManager;
-
-    private ObjectPool objectPool;
+    private IObjectPool objectPool = new ObjectPool();
+    private WaveManager waveManager = new WaveManager(objectPool);
 
 
 
@@ -128,9 +129,6 @@ public class App extends GameApplication {
     @Override
     protected void initGame() {
 
-        objectPool = new ObjectPool();
-        waveManager = new WaveManager(objectPool);
-
 
         objectPool.createPool(EntityType.ENEMY,
                 () -> FXGL.entityBuilder()
@@ -144,24 +142,27 @@ public class App extends GameApplication {
         );
 
         try {
-            //TODO: ServiceLoad this.
             MapLoader mapLoader = new MapLoader();
             mapLoader.loadLevel(0);
         } catch (MalformedURLException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
 
-        // TODO: ServiceLoad this.
-        objectPool.createPool(EntityType.BULLET,
+        objectPool.createPool(EntityType.NORMAL_ENEMY,
                 () -> FXGL.entityBuilder()
-                        .type(EntityType.BULLET)
-                        .at(0,0)
-                        .view(new Rectangle(5, 5, Color.BLACK))
-                        .buildAndAttach());
+                        .type(EntityType.NORMAL_ENEMY)
+                        .viewWithBBox(new Rectangle(48,48, Color.RED))
+                        .with(new CollidableComponent(true))
+                        //adding enemy component with hp, damage, speed, and score
+                        .with(new StateComponent())
+                        .with(new EnemyComponent(1, 1, 1, 1))
+                        .buildAndAttach()
+        );
 
-        objectPool.getEntityFromPool(EntityType.BULLET).setPosition(50, 50);
+        objectPool.getEntityFromPool(EntityType.NORMAL_ENEMY).setPosition(50, 50);
 
 
+        //TODO: NEEDS TO BE SERVICELOADED
         player = FXGL.entityBuilder()
                 .type(EntityType.PLAYER)
                 .at(300, 100)

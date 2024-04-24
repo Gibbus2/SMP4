@@ -2,6 +2,7 @@ package WaveManager.data;
 
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
+import objectPool.IObjectPool;
 import objectPool.ObjectPool;
 
 import java.util.ArrayList;
@@ -11,10 +12,10 @@ public class WaveData {
 
     private int waveCounter;
     private List<Entity> enemies;
-    private ObjectPool objectPool;
+    private IObjectPool objectPool;
 
 
-    public WaveData(ObjectPool objectPool, int waveCounter) {
+    public WaveData(IObjectPool objectPool, int waveCounter) {
         this.objectPool = objectPool;
         this.waveCounter = waveCounter;
         this.enemies = new ArrayList<>();
