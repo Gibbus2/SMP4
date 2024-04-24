@@ -6,6 +6,7 @@ module Tower {
     requires com.almasb.fxgl.all;
     requires com.almasb.fxgl.entity;
     requires com.almasb.fxgl.core;
+    requires CommonEnemy;
     provides TowerComponentSPI with CommonTowerComponent;
 
     exports tower.data;
