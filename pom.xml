@@ -16,13 +16,14 @@
     <module>ObjectPool</module>
     <module>WaveManager</module>
     <module>Common</module>
-      <module>Bullet</module>
-      <module>PathFinding</module>
+    <module>Bullet</module>
     <module>UI</module>
     <module>Shop</module>
     <module>Health</module>
     <module>NormalEnemy</module>
     <module>NormalTower</module>
+    <module>BossEnemy</module>
+
   </modules>
   <properties>
     <java>java</java>

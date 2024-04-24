@@ -14,10 +14,6 @@ public class PooledObjectComponent extends Component {
         // Moving it so far off-screen that it can't be seen.
         getEntity().setPosition(-10000, -10000);
 
-        for (Component component : getEntity().getComponents()) {
-            component.pause();
-        }
-
-        pool.add(getEntity());
+        pool.returnEntityToPool(getEntity());
     }
 }

@@ -1,30 +1,40 @@
 package enemy.data;
 
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.state.EntityState;
 import com.almasb.fxgl.entity.state.StateComponent;
 import enemy.services.EnemyComponentSPI;
+import javafx.geometry.Point2D;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+
+import java.util.List;
 
 public class EnemyComponent extends Component implements EnemyComponentSPI {
-    private int hp;
-    private int damage;
-    private int speed;
+    private int hp = 0;
+    private int damage = 0;
+    private int speed = 0;
     private int ds;
     private int score;
     private double distanceTraveled = 0;
+    private int score = 0;
+    int currentWayPoint = 0;
+    private List<Point2D> wayPoints;
+    public ImageView image = FXGL.getAssetLoader().loadTexture("normalEnemy.png");
 
     //change private when figured out how to access it
     public StateComponent state;
 
-    public EnemyComponent(int hp, int damage, int speed, int score){
+    public EnemyComponent(int hp, int damage, int speed, int score, List<Point2D> wayPoints){
         this.hp = hp;
         this.damage = damage;
         this.speed = speed;
         this.score = score;
+        this.wayPoints = wayPoints;
     }
-
-    public EnemyComponent() {
-        this(0,0,0,0);
+    public EnemyComponent(){
+        this.wayPoints = null;
     }
 
     public StateComponent getState(){
@@ -34,33 +44,24 @@ public class EnemyComponent extends Component implements EnemyComponentSPI {
     public void setState(StateComponent state) {
         this.state = state;
     }
-    public EnemyComponentSPI createEnemyComponent(int hp, int damage, int speed, int score) {
-        return new EnemyComponent(hp, damage, speed, score);
+    public EnemyComponent createEnemyComponent(List<Point2D> wayPoints) {
+        return new EnemyComponent(hp, damage, speed, score, wayPoints);
     }
 
     @Override
     public void onAdded() {
         state = entity.getComponent(StateComponent.class);
         state.changeState(MOVING);
+        entity.getViewComponent().addChild(image);
     }
 
     private final EntityState MOVING = new EntityState("MOVING") {
         @Override
-        public void onUpdate(double tpf) {
-            // to be implemented
-        }
-        @Override
         public void onEntering() {
             ds = speed;
-            PointMovementSystemComponent pointMovementSystem = new PointMovementSystemComponent();
-            pointMovementSystem.wayPointSystem(entity);
         }
     };
     private final EntityState SLOWED = new EntityState("SLOWED") {
-        @Override
-        public void onUpdate(double tpf) {
-            // to be implemented
-        }
         @Override
         public void onEntering() {
             ds = speed / 2;
@@ -69,24 +70,42 @@ public class EnemyComponent extends Component implements EnemyComponentSPI {
 
     private final EntityState STUNNED = new EntityState("STUNNED") {
         @Override
-        public void onUpdate(double tpf) {
-            // to be implemented
-        }
-        @Override
         public void onEntering() {
             ds = 0;
         }
     };
     private final EntityState DEAD = new EntityState("DEAD") {
         @Override
-        public void onUpdate(double tpf) {
-            // do nothing
-        }
-        @Override
         public void onEntering() {
             ds = 0;
         }
     };
+    @Override
+    public void onUpdate(double tpf) {
+        if(currentWayPoint >= wayPoints.size()){
+            entity.removeFromWorld();
+            FXGL.getEventBus().fireEvent(new EnemyReachedEndEvent());
+            //uhhhhh send data to take dmg yes
+            return;
+        }
+        //System.out.println(wayPoints);
+        Point2D target = wayPoints.get(currentWayPoint);
+        //System.out.println("Speed cuh: "+entity.getComponent(EnemyComponent.class).getDs());
+        Point2D direction = target.subtract(entity.getPosition()).normalize();
+        Point2D velocity = direction.multiply(entity.getComponent(EnemyComponent.class).getDs() * tpf);
+        entity.translate(velocity);
+
+        if(entity.getPosition().distance(target) < 3){
+            incrementWayPoint();
+        }
+    }
+    //entity.getComponent(EnemyComponent.class).getState().changeState(entity.getComponent(EnemyComponent.class).getSLOWED()); //this should be how to set state
+
+
+    @Override
+    public ImageView getImage() {
+        return image;
+    }
 
     public int getHp(){
         return hp;
@@ -96,6 +115,9 @@ public class EnemyComponent extends Component implements EnemyComponentSPI {
     }
     public int getSpeed(){
         return speed;
+    }
+    public void incrementWayPoint() {
+        currentWayPoint++;
     }
     public int getDs(){return ds;}
     public int getScore(){

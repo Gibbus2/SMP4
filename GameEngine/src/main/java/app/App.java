@@ -1,6 +1,5 @@
 package app;
 
-import WaveManager.data.WaveData;
 import WaveManager.data.WaveManagerEntityFactory;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
@@ -9,11 +8,13 @@ import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
+import com.almasb.fxgl.entity.state.StateComponent;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
-import javafx.scene.control.Button;
 import common.data.EntityType;
+import enemy.data.EnemyComponent;
+import enemy.services.EnemyComponentSPI;
 import health.HealthComponent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
@@ -22,26 +23,31 @@ import javafx.scene.shape.Rectangle;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.util.Collection;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.ServiceLoader;
 
 import common.data.GameData;
 import javafx.scene.text.Text;
 import WaveManager.data.WaveManager;
 
 import static com.almasb.fxgl.dsl.FXGLForKtKt.getGameWorld;
+import static java.util.stream.Collectors.toList;
 
-import javafx.util.Duration;
 import map.MapLoader;
-import objectPool.ICreateEntityPool;
 import objectPool.ObjectPool;
 import player.PlayerComponent;
+import objectPool.IObjectPool;
 import ui.GameMenu;
 
 
 public class App extends GameApplication {
     GameData gameData = new GameData();
-    private WaveManager waveManager = new WaveManager();
+    private IObjectPool objectPool = new ObjectPool();
+    private WaveManager waveManager = new WaveManager(objectPool);
+
+
+
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setWidth(gameData.getDisplayWidth());
@@ -122,6 +128,19 @@ public class App extends GameApplication {
     Entity enemy;
     @Override
     protected void initGame() {
+
+
+        objectPool.createPool(EntityType.ENEMY,
+                () -> FXGL.entityBuilder()
+                        // TODO: Build enemy here.
+                        .type(EntityType.ENEMY)
+                        .at(0,0)
+                        .view(new Circle(15, Color.RED))
+                        //.with health
+                        //.with some behavior component
+                        .buildAndAttach()
+        );
+
         try {
             MapLoader mapLoader = new MapLoader();
             mapLoader.loadLevel(0);
@@ -129,14 +148,20 @@ public class App extends GameApplication {
             throw new RuntimeException(e);
         }
 
-        ObjectPool.createPool(EntityType.BULLET,
-                (ICreateEntityPool) () -> FXGL.entityBuilder()
-                   .type(EntityType.BULLET)
-                   .at(0,0)
-                   .buildAndAttach());
+        objectPool.createPool(EntityType.NORMAL_ENEMY,
+                () -> FXGL.entityBuilder()
+                        .type(EntityType.NORMAL_ENEMY)
+                        .viewWithBBox(new Rectangle(48,48, Color.RED))
+                        .with(new CollidableComponent(true))
+                        //adding enemy component with hp, damage, speed, and score
+                        .with(new StateComponent())
+                        .buildAndAttach()
+        );
+
+        objectPool.getEntityFromPool(EntityType.NORMAL_ENEMY).setPosition(50, 50);
 
 
-
+        //TODO: NEEDS TO BE SERVICELOADED
         player = FXGL.entityBuilder()
                 .type(EntityType.PLAYER)
                 .at(300, 100)
