@@ -6,7 +6,6 @@ import com.almasb.fxgl.entity.state.EntityState;
 import com.almasb.fxgl.entity.state.StateComponent;
 import enemy.services.EnemyComponentSPI;
 import javafx.geometry.Point2D;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import java.util.List;
@@ -15,7 +14,7 @@ public class EnemyComponent extends Component implements EnemyComponentSPI {
     private int hp = 0;
     private int damage = 0;
     private int speed = 0;
-    private int ds;
+    private int currentSpeed;
     private double distanceTraveled = 0;
     private int score = 0;
     int currentWayPoint = 0;
@@ -43,6 +42,7 @@ public class EnemyComponent extends Component implements EnemyComponentSPI {
     public void setState(StateComponent state) {
         this.state = state;
     }
+    @Override
     public EnemyComponent createEnemyComponent(List<Point2D> wayPoints) {
         return new EnemyComponent(hp, damage, speed, score, wayPoints);
     }
@@ -57,26 +57,26 @@ public class EnemyComponent extends Component implements EnemyComponentSPI {
     private final EntityState MOVING = new EntityState("MOVING") {
         @Override
         public void onEntering() {
-            ds = speed;
+            currentSpeed = speed;
         }
     };
     private final EntityState SLOWED = new EntityState("SLOWED") {
         @Override
         public void onEntering() {
-            ds = speed / 2;
+            currentSpeed = speed / 2;
         }
     };
 
     private final EntityState STUNNED = new EntityState("STUNNED") {
         @Override
         public void onEntering() {
-            ds = 0;
+            currentSpeed = 0;
         }
     };
     private final EntityState DEAD = new EntityState("DEAD") {
         @Override
         public void onEntering() {
-            ds = 0;
+            currentSpeed = 0;
         }
     };
     @Override
@@ -91,8 +91,9 @@ public class EnemyComponent extends Component implements EnemyComponentSPI {
         Point2D target = wayPoints.get(currentWayPoint);
         //System.out.println("Speed cuh: "+entity.getComponent(EnemyComponent.class).getDs());
         Point2D direction = target.subtract(entity.getPosition()).normalize();
-        Point2D velocity = direction.multiply(entity.getComponent(EnemyComponent.class).getDs() * tpf);
+        Point2D velocity = direction.multiply(entity.getComponent(EnemyComponent.class).getCurrentSpeed() * tpf);
         entity.translate(velocity);
+        distanceTraveled += velocity.magnitude();
 
         if(entity.getPosition().distance(target) < 3){
             incrementWayPoint();
@@ -118,7 +119,7 @@ public class EnemyComponent extends Component implements EnemyComponentSPI {
     public void incrementWayPoint() {
         currentWayPoint++;
     }
-    public int getDs(){return ds;}
+    public int getCurrentSpeed(){return currentSpeed;}
     public int getScore(){
         return score;
     }

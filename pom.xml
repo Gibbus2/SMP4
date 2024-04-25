@@ -23,7 +23,6 @@
     <module>NormalEnemy</module>
     <module>NormalTower</module>
     <module>BossEnemy</module>
-      <module>CommonBullet</module>
 
   </modules>
   <properties>

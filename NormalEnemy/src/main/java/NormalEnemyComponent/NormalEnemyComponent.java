@@ -8,7 +8,7 @@ import java.util.List;
 public class NormalEnemyComponent extends EnemyComponent {
     private int hp = 100;
     private int damage = 10;
-    private int speed = 2;
+    private int speed = 100;
     private int score = 10;
 
     public NormalEnemyComponent() {
