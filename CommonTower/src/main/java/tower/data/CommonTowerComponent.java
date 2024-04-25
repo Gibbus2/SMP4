@@ -8,9 +8,11 @@ import com.almasb.fxgl.entity.state.StateComponent;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.time.LocalTimer;
+import enemy.data.EnemyComponent;
 import enemy.services.EnemyComponentSPI;
 import javafx.scene.image.ImageView;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Polyline;
 import tower.services.TowerComponentSPI;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
@@ -20,7 +22,6 @@ import java.util.stream.Collectors;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static java.util.stream.Collectors.toList;
-
 
 public class CommonTowerComponent extends Component implements TowerComponentSPI {
     private int towerDamage;
@@ -45,32 +46,25 @@ public class CommonTowerComponent extends Component implements TowerComponentSPI
         this.towerX = towerX;
         this.towerY = towerY;
     }
-    public CommonTowerComponent(){
-        this(0,0,0,0,0,0,"");
+
+    public CommonTowerComponent() {
+        this(0, 0, 0, 0, 0, 0, "");
     }
 
     public void updateEnemiesInRange() {
-        Circle range = new Circle(towerX - towerRange / 2, towerY - towerRange / 2, towerRange)
+        Circle range = new Circle(towerX - (double) towerRange / 2, towerY - (double) towerRange / 2, towerRange);
 
         enemiesInRange = getGameWorld().getEntitiesByType(EntityType.ENEMY).stream()
                 .filter(enemy -> range.contains(enemy.getPosition()))
                 .collect(Collectors.toList());
     }
 
-
-   public void sortByDistanceTraveled() {
-       for(EnemyComponentSPI EnemyComponent : getEnemyComponentSPIs()){
-           enemiesInRange.sort(Comparator.comparing(enemy -> enemy.getComponent(EnemyComponent).getDistanceTraveled()));
-       }
+    public void sortByDistanceTraveled(){
+        enemiesInRange.sort(Comparator.comparing(enemy -> enemy.getComponent(EnemyComponent.class).getDistanceTraveled()));
     }
-
     public void sortByHealth() {
-        for(EnemyComponentSPI EnemyComponent : getEnemyComponentSPIs()){
-            enemyComponent = EnemyComponent.createEnemyComponent();
-            enemiesInRange.sort(Comparator.comparing(enemy -> enemy.getComponent(EnemyComponent).getHp()));
-        }
+        enemiesInRange.sort(Comparator.comparing(enemy -> enemy.getComponent(EnemyComponent.class).getHp()));
     }
-
     @Override
     public void onAdded() {
         state = entity.getComponent(StateComponent.class);
@@ -82,20 +76,18 @@ public class CommonTowerComponent extends Component implements TowerComponentSPI
 
     @Override
     public void onUpdate(double tpf) {
-        updateEnemiesInRange();
+        //updateEnemiesInRange();
+        //sortByDistanceTraveled();
+
         if (enemiesInRange != null && !enemiesInRange.isEmpty() && towerTarget == "First") {
             state.changeState(FIRSTTARGET);
-        }
-        else if (enemiesInRange != null && !enemiesInRange.isEmpty() && towerTarget == "Last") {
+        } else if (enemiesInRange != null && !enemiesInRange.isEmpty() && towerTarget == "Last") {
             state.changeState(LASTTARGET);
-        }
-        else if (enemiesInRange != null && !enemiesInRange.isEmpty() && towerTarget == "Strong") {
+        } else if (enemiesInRange != null && !enemiesInRange.isEmpty() && towerTarget == "Strong") {
             state.changeState(STRONGTARGET);
-        }
-        else if (enemiesInRange != null && !enemiesInRange.isEmpty() && towerTarget == "Weak") {
+        } else if (enemiesInRange != null && !enemiesInRange.isEmpty() && towerTarget == "Weak") {
             state.changeState(WEAKTARGET);
-        }
-        else {
+        } else {
             state.changeState(IDLE);
         }
     }
@@ -107,7 +99,7 @@ public class CommonTowerComponent extends Component implements TowerComponentSPI
         EntityBuilder bullet = FXGL.entityBuilder()
                 .type(EntityType.BULLET)
                 .at(entity.getPosition());
-        for(CommonBulletComponentSPI bulletComponent : getBulletComponentSPIs()){
+        for (CommonBulletComponentSPI bulletComponent : getBulletComponentSPIs()) {
             bullet.with((Component) bulletComponent);
         }
     }
@@ -116,13 +108,16 @@ public class CommonTowerComponent extends Component implements TowerComponentSPI
     private final EntityState FIRSTTARGET = new EntityState("FIRSTTARGET") {
         @Override
         public void onEntering() {
-             sortByDistanceTraveled();
+            updateEnemiesInRange();
+            sortByDistanceTraveled();
         }
         @Override
         protected void onUpdate(double tpf) {
             if (shootTimer.elapsed(Duration.seconds(towerFirerate))) {
                 updateEnemiesInRange();
-                shoot();
+                sortByDistanceTraveled();
+                Entity enemy = enemiesInRange.getLast();
+                shoot(enemy);
             }
         }
     };
@@ -130,14 +125,16 @@ public class CommonTowerComponent extends Component implements TowerComponentSPI
     private final EntityState LASTTARGET = new EntityState("LASTTARGET") {
         @Override
         public void onEntering() {
-            //sortByDistanceTraveled()
-            //Should be reversed
+            updateEnemiesInRange();
+            sortByDistanceTraveled();
         }
         @Override
         protected void onUpdate(double tpf) {
             if (shootTimer.elapsed(Duration.seconds(towerFirerate))) {
                 updateEnemiesInRange();
-                shoot();
+                sortByDistanceTraveled();
+                Entity enemy = enemiesInRange.getFirst();
+                shoot(enemy);
             }
         }
     };
@@ -145,14 +142,16 @@ public class CommonTowerComponent extends Component implements TowerComponentSPI
     private final EntityState STRONGTARGET = new EntityState("STRONGTARGET") {
         @Override
         public void onEntering() {
-            //sortByHealth()
-            //Should be reversed
+            updateEnemiesInRange();
+            sortByHealth();
         }
         @Override
         protected void onUpdate(double tpf) {
             if (shootTimer.elapsed(Duration.seconds(towerFirerate))) {
                 updateEnemiesInRange();
-                shoot();
+                sortByHealth();
+                Entity enemy = enemiesInRange.getLast();
+                shoot(enemy);
             }
         }
     };
@@ -160,13 +159,16 @@ public class CommonTowerComponent extends Component implements TowerComponentSPI
     private final EntityState WEAKTARGET = new EntityState("WEAKTARGET") {
         @Override
         public void onEntering() {
+            updateEnemiesInRange();
             sortByHealth();
         }
         @Override
         protected void onUpdate(double tpf) {
             if (shootTimer.elapsed(Duration.seconds(towerFirerate))) {
                 updateEnemiesInRange();
-                shoot();
+                sortByHealth();
+                Entity enemy = enemiesInRange.getFirst();
+                shoot(enemy);
             }
         }
     };
@@ -174,43 +176,44 @@ public class CommonTowerComponent extends Component implements TowerComponentSPI
     private final EntityState IDLE = new EntityState("IDlE") {
         @Override
         public void onEntering() {
-
+            updateEnemiesInRange();
         }
         @Override
         protected void onUpdate(double tpf) {
-
+            updateEnemiesInRange();
         }
-
     };
-
-
-
-    public int getDamage(){
+    @Override
+    public TowerComponentSPI createTowerComponent(int towerDamage, int towerPrice, double towerFirerate, int towerRange, int towerX, int towerY) {
+        return new CommonTowerComponent(towerDamage, towerPrice, towerFirerate, towerRange, towerX, towerY, towerTarget);
+    }
+    public int getTowerDamage() {
         return towerDamage;
     }
-    public int getPrice(){
+    public int getTowerPricePrice() {
         return towerPrice;
     }
-    public double getFirerate(){
+    public double getTowerFirerate() {
         return towerFirerate;
     }
-    public int getRange(){
+    public int getTowerRange() {
         return towerRange;
     }
-    public int getX(){
+    public int getTowerX() {
         return towerX;
     }
-    public int getY(){
+    public int getTowerY() {
         return towerY;
+    }
+    public void setTowerX(int towerX) {
+        this.towerX = towerX;
+    }
+    public void setTowerY(int towerY) {
+        this.towerY = towerY;
     }
     @Override
     public ImageView getImage() {
         return image;
-    }
-
-    @Override
-    public TowerComponentSPI createTowerComponent(int towerDamage, int towerPrice, double towerFirerate, int towerRange, int towerX, int towerY) {
-        return new CommonTowerComponent(towerDamage, towerPrice, towerFirerate, towerRange, towerX, towerY, towerTarget);
     }
     private Collection<? extends CommonBulletComponentSPI> getBulletComponentSPIs() {
         return ServiceLoader.load(CommonBulletComponentSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());

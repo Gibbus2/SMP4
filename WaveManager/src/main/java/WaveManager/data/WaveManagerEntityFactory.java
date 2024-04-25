@@ -28,8 +28,6 @@ public class WaveManagerEntityFactory implements EntityFactory {
 
     List<Point2D> waypoints = map.Waypoint.fromPolyline().getWaypoints();
 
-
-
     @Spawns("NORMAL_ENEMY")
     public Entity normalEnemy(SpawnData data) {
         Image image = FXGL.image("normalEnemy.png");
@@ -45,6 +43,7 @@ public class WaveManagerEntityFactory implements EntityFactory {
                 .with(new StateComponent());
         for(EnemyComponentSPI enemyComponent : getEnemyComponentSPIs()){
             entityBuilder.with((Component) enemyComponent.createEnemyComponent(waypoints));
+            //kalder ikke den overridede createEnemyComponent fra normalEnemyComponent
         }
 
         return entityBuilder.build();

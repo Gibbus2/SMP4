@@ -30,7 +30,6 @@ public class NormalTowerEntityFactory implements EntityFactory {
                 .with(new CollidableComponent(true))
                 .with(new StateComponent());
 
-        for(TowerComponentSPI towerComponent : getTowerComponentSPIs())
 
         return entityBuilder.build();
     }
