@@ -17,6 +17,7 @@ import javafx.scene.shape.Rectangle;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -41,6 +42,7 @@ import objectPool.IObjectPool;
 
 
 import ui.GameMenu;
+import ui.ImageLoader;
 
 
 public class App extends GameApplication {
@@ -200,18 +202,8 @@ public class App extends GameApplication {
         ui.TowerSelection towerSelection = new ui.TowerSelection();
         FXGL.getGameScene().addUINode(towerSelection);
 
-        Text textPixels = new Text();
-        textPixels.setTranslateX(50); // x = 50
-        textPixels.setTranslateY(100); // y = 100
- // add to the scene graph
-
-//        Text coinText = new Text();
-//        coinText.setTranslateX(100); // x = 50
-//        coinText.setTranslateY(100); // y = 100
-//
-//        coinText.textProperty().bind(FXGL.getWorldProperties().intProperty("coinsCollected").asString());
-//
-//        FXGL.getGameScene().addUINode(coinText);
+        ui.ImageLoader imageLoader = new ImageLoader();
+        System.out.println(Arrays.toString(imageLoader.getTextures()));
 
         var brickTexture = FXGL.getAssetLoader().loadTexture("brick.png");
         brickTexture.setTranslateX(50);
@@ -246,6 +238,7 @@ public class App extends GameApplication {
 
     }
 
+
     @Override
     protected void onUpdate(double tpf) {
         //System.out.println("onUpdate : " + waveManager.getEnemyCount() );
@@ -267,4 +260,6 @@ public class App extends GameApplication {
     private Collection<? extends BulletSPI> getBulletSPIs() {
         return ServiceLoader.load(BulletSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
     }
+
+
 }
