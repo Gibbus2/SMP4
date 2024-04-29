@@ -5,11 +5,11 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
-import common.player.PlayerComponentSPI;
+import common.player.PlayerSPI;
 import health.HealthComponent;
 import javafx.scene.input.KeyCode;
 
-public class PlayerComponent extends Component implements PlayerComponentSPI /*IDamageable*/ {
+public class Player extends Component implements PlayerSPI /*IDamageable*/ {
     private static Entity player;
     private int ledger;
 
@@ -21,6 +21,7 @@ public class PlayerComponent extends Component implements PlayerComponentSPI /*I
     public void onAdded() {
         ledger = 0;
         player = getEntity();
+
 
         Input input = FXGL.getInput();
 
@@ -72,7 +73,7 @@ public class PlayerComponent extends Component implements PlayerComponentSPI /*I
 
     @Override
     public Component createComponent() {
-        return new PlayerComponent();
+        return new Player();
     }
 
     @Override

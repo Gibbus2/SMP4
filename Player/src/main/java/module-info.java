@@ -1,4 +1,4 @@
-import common.player.PlayerComponentSPI;
+import common.player.PlayerSPI;
 import player.*;
 
 module Player {
@@ -7,5 +7,5 @@ module Player {
     requires Common;
     requires Health;
     requires CommonPlayer;
-    provides PlayerComponentSPI with PlayerComponent;
+    provides PlayerSPI with Player;
 }

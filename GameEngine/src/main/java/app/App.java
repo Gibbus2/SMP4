@@ -9,8 +9,8 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.entity.state.StateComponent;
 import com.almasb.fxgl.physics.CollisionHandler;
-import common.player.Player;
-import common.player.PlayerComponentSPI;
+import common.bullet.BulletSPI;
+import common.player.PlayerSPI;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -122,17 +122,15 @@ public class App extends GameApplication {
         objectPool.getEntityFromPool("NORMAL_ENEMY").setPosition(50, 50);
 
 
-        //TODO: NEEDS TO BE SERVICELOADED
-        if (!getPlayerSPIs().isEmpty()) {
-            player = FXGL.entityBuilder()
-                    .type(EntityType.PLAYER)
-                    .at(300, 100)
-                    //.view(new Rectangle(25, 25, Color.BLUE))
-                    .viewWithBBox(new Rectangle(25, 25, Color.BLUE))
-                    .with(ServiceLoader.load(PlayerComponentSPI.class).stream().map(ServiceLoader.Provider::get).toList().getFirst().createComponent())
-                    .with(new CollidableComponent(true))
-                    .buildAndAttach();
-        }
+        getPlayerSPIs().stream().findFirst().ifPresent(
+                spi -> player = FXGL.entityBuilder()
+                        .type(EntityType.PLAYER)
+                        .at(300, 100)
+                        .viewWithBBox(new Rectangle(25, 25, Color.BLUE))
+                        .with(spi.createComponent())
+                        .with(new CollidableComponent(true))
+                        .buildAndAttach()
+        );
 
 
         enemy = FXGL.entityBuilder()
@@ -185,9 +183,9 @@ public class App extends GameApplication {
                 if (enemy.getComponent(HealthComponent.class).isDead()) {
                     enemy.removeFromWorld();
                     // TODO: Scales with wave level, or something.
-                    getPlayerSPIs().stream().findFirst().ifPresent(
-                            spi -> spi.changeHealth(-1)
-                    );
+//                    getEnemySPIs().stream().findFirst().ifPresent(
+//                            spi -> spi.changeHealth(-1)
+//                    );
                 }
             }
         });
@@ -258,7 +256,15 @@ public class App extends GameApplication {
         launch(args);
     }
 
-    private Collection<? extends PlayerComponentSPI> getPlayerSPIs() {
-        return ServiceLoader.load(PlayerComponentSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
+    private Collection<? extends PlayerSPI> getPlayerSPIs() {
+        return ServiceLoader.load(PlayerSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
+    }
+
+//    private Collection<? extends EnemySPI> getEnemySPIs() {
+//        return ServiceLoader.load(EnemySPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
+//    }
+
+    private Collection<? extends BulletSPI> getBulletSPIs() {
+        return ServiceLoader.load(BulletSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
     }
 }

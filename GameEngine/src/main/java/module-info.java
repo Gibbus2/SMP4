@@ -1,16 +1,21 @@
+import common.player.PlayerSPI;
+import enemy.services.EnemyComponentSPI;
 import objectPool.IObjectPool;
 
 open module GameEngine {
     requires com.almasb.fxgl.all;
 
     requires Common;
+
     requires CommonEnemy;
+    uses EnemyComponentSPI;
 
     requires CommonPlayer;
-    uses common.player.PlayerComponentSPI;
+    uses PlayerSPI;
 
     requires ObjectPool;
     uses IObjectPool;
+    uses common.bullet.BulletSPI;
 
 
     requires WaveManager;
@@ -19,4 +24,5 @@ open module GameEngine {
 
     requires Health;
     requires UI;
+    requires CommonBullet;
 }
