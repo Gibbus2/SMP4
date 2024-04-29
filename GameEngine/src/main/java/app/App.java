@@ -1,23 +1,16 @@
 package app;
 
-import WaveManager.data.WaveManagerEntityFactory;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.entity.state.StateComponent;
-import com.almasb.fxgl.input.Input;
-import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
-import common.data.EntityType;
-import enemy.data.EnemyComponent;
-import enemy.services.EnemyComponentSPI;
-import health.HealthComponent;
-import javafx.scene.input.KeyCode;
+import common.player.Player;
+import common.player.PlayerComponentSPI;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -28,17 +21,25 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.ServiceLoader;
 
+import common.data.EntityType;
+import enemy.data.EnemyComponent;
+import health.HealthComponent;
+
 import common.data.GameData;
 import javafx.scene.text.Text;
+
 import WaveManager.data.WaveManager;
+import WaveManager.data.WaveManagerEntityFactory;
 
 import static com.almasb.fxgl.dsl.FXGLForKtKt.getGameWorld;
 import static java.util.stream.Collectors.toList;
 
 import map.MapLoader;
+
 import objectPool.ObjectPool;
-import player.PlayerComponent;
 import objectPool.IObjectPool;
+
+
 import ui.GameMenu;
 
 
@@ -74,44 +75,7 @@ public class App extends GameApplication {
 
     @Override
     protected void initInput() {
-        Input input = FXGL.getInput();
 
-        input.addAction(new UserAction("Move Right") {
-            @Override
-            protected void onAction() {
-                player.translateX(5);
-            }
-        }, KeyCode.D);
-
-        input.addAction(new UserAction("Move Left") {
-            @Override
-            protected void onAction() {
-                player.translateX(-5);
-            }
-        }, KeyCode.A);
-
-        input.addAction(new UserAction("Move Up") {
-            @Override
-            protected void onAction() {
-                player.translateY(-5);
-            }
-        }, KeyCode.W);
-
-        input.addAction(new UserAction("Move Down") {
-            @Override
-            protected void onAction() {
-                player.translateY(5);
-            }
-        }, KeyCode.S);
-
-
-
-        input.addAction(new UserAction("Play Sound") {
-            @Override
-            protected void onActionBegin() {
-                FXGL.play("drop.wav");
-            }
-        }, KeyCode.F);
     }
 
     @Override
@@ -159,15 +123,17 @@ public class App extends GameApplication {
 
 
         //TODO: NEEDS TO BE SERVICELOADED
-        player = FXGL.entityBuilder()
-                .type(EntityType.PLAYER)
-                .at(300, 100)
-                //.view(new Rectangle(25, 25, Color.BLUE))
-                .viewWithBBox(new Rectangle(25, 25, Color.BLUE))
-                .with(new HealthComponent(2))
-                .with(new PlayerComponent())
-                .with(new CollidableComponent(true))
-                .buildAndAttach();
+        if (!getPlayerSPIs().isEmpty()) {
+            player = FXGL.entityBuilder()
+                    .type(EntityType.PLAYER)
+                    .at(300, 100)
+                    //.view(new Rectangle(25, 25, Color.BLUE))
+                    .viewWithBBox(new Rectangle(25, 25, Color.BLUE))
+                    .with(ServiceLoader.load(PlayerComponentSPI.class).stream().map(ServiceLoader.Provider::get).toList().getFirst().createComponent())
+                    .with(new CollidableComponent(true))
+                    .buildAndAttach();
+        }
+
 
         enemy = FXGL.entityBuilder()
                 .type(EntityType.ENEMY)
@@ -202,7 +168,9 @@ public class App extends GameApplication {
             @Override
             protected void onCollisionBegin(Entity enemy, Entity player) {
                 enemy.removeFromWorld();
-                player.getComponent(PlayerComponent.class).damage(1);
+                getPlayerSPIs().stream().findFirst().ifPresent(
+                        spi -> spi.changeHealth(-1)
+                );
             }
         });
 
@@ -217,7 +185,9 @@ public class App extends GameApplication {
                 if (enemy.getComponent(HealthComponent.class).isDead()) {
                     enemy.removeFromWorld();
                     // TODO: Scales with wave level, or something.
-                    player.getComponent(PlayerComponent.class).addCurrency(1);
+                    getPlayerSPIs().stream().findFirst().ifPresent(
+                            spi -> spi.changeHealth(-1)
+                    );
                 }
             }
         });
@@ -286,5 +256,9 @@ public class App extends GameApplication {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private Collection<? extends PlayerComponentSPI> getPlayerSPIs() {
+        return ServiceLoader.load(PlayerComponentSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
     }
 }

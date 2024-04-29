@@ -1,3 +1,4 @@
+import common.player.PlayerComponentSPI;
 import player.*;
 
 module Player {
@@ -5,5 +6,6 @@ module Player {
     requires com.almasb.fxgl.all;
     requires Common;
     requires Health;
-    provides IPlayerComponentSPI with PlayerComponent;
+    requires CommonPlayer;
+    provides PlayerComponentSPI with PlayerComponent;
 }

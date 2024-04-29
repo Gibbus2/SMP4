@@ -1,14 +1,22 @@
 import objectPool.IObjectPool;
 
 open module GameEngine {
-    uses IObjectPool;
     requires com.almasb.fxgl.all;
+
     requires Common;
+    requires CommonEnemy;
+
+    requires CommonPlayer;
+    uses common.player.PlayerComponentSPI;
+
+    requires ObjectPool;
+    uses IObjectPool;
+
+
     requires WaveManager;
     requires Map;
-    requires Player;
+
+
     requires Health;
-    requires ObjectPool;
     requires UI;
-    requires CommonEnemy;
 }

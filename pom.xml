@@ -22,6 +22,7 @@
     <module>Health</module>
     <module>NormalEnemy</module>
     <module>BossEnemy</module>
+      <module>CommonPlayer</module>
 
   </modules>
   <properties>
