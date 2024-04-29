@@ -13,7 +13,7 @@ public class BossEnemyComponent extends EnemyComponent {
     public BossEnemyComponent() {
     }
     @Override
-    public EnemyComponent createComponent(List<Point2D> wayPoints) {
+    public EnemyComponent createEnemyComponent(List<Point2D> wayPoints) {
         return new EnemyComponent(hp, damage, speed, score, wayPoints);
     }
 }
