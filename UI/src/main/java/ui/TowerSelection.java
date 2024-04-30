@@ -59,7 +59,7 @@ public class TowerSelection extends HBox {
         list.add("/assets/tower5.png");
         list.add("/assets/tower6.png");
 
-        System.out.println("List: " + list.toString());
+        System.out.println("List: " + list);
 
 
         AtomicBoolean isImageFollowingCursor = new AtomicBoolean(false);
@@ -68,6 +68,7 @@ public class TowerSelection extends HBox {
 
         for (String path : list) {
             InputStream is = TowerSelection.class.getResourceAsStream(path);
+            assert is != null;
             Image img = new Image(is);
             Texture texture = new Texture(img);
             texture.setOnMouseClicked(e -> {
@@ -84,7 +85,7 @@ public class TowerSelection extends HBox {
                 }
             });
             getChildren().add(texture);
-            System.out.println("Texture: " + texture.toString());
+            System.out.println("Texture: " + texture);
         }
 
         FXGL.getGameScene().getContentRoot().setOnMouseClicked(e -> {
