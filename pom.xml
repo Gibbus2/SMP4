@@ -22,7 +22,6 @@
     <module>Health</module>
     <module>NormalEnemy</module>
     <module>NormalTower</module>
-    <module>BossEnemy</module>
 
   </modules>
   <properties>
