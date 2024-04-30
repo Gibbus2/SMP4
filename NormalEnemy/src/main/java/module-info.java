@@ -1,7 +1,11 @@
+import enemy.EnemyComponentSPI;
+import normalEnemy.NormalEnemy;
+
 module NormalEnemy {
-    uses enemy.services.EnemyComponentSPI;
     requires com.almasb.fxgl.all;
     requires CommonEnemy;
     requires Common;
-    //ask if this is correct
+    requires ObjectPool;
+    requires Health;
+    provides EnemyComponentSPI with NormalEnemy;
 }

@@ -6,6 +6,8 @@ public class GameData {
     private int displayWidth  = 1440;
     private int displayHeight = 810;
 
+    public boolean debug = true;
+
 
     public void setDisplayWidth(int width) {
         this.displayWidth = width;

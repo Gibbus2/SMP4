@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WaveData {
+    /*
 
     private int waveCounter;
     private List<Entity> enemies;
@@ -127,6 +128,8 @@ public class WaveData {
     public void setEnemies(List<Entity> enemies) {
         this.enemies = enemies;
     }
+
+     */
 }
 
 

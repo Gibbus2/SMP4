@@ -7,5 +7,5 @@ module Player {
     requires Common;
     requires Health;
     requires CommonPlayer;
-    provides PlayerSPI with Player;
+    provides PlayerSPI with PlayerComponent;
 }

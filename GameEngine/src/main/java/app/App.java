@@ -6,13 +6,14 @@ import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.CollidableComponent;
-import com.almasb.fxgl.entity.state.StateComponent;
 import com.almasb.fxgl.physics.CollisionHandler;
 import common.bullet.BulletSPI;
 import common.player.PlayerSPI;
+import enemy.Enemy;
+import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
 import java.net.MalformedURLException;
@@ -23,16 +24,11 @@ import java.util.Map;
 import java.util.ServiceLoader;
 
 import common.data.EntityType;
-import enemy.data.EnemyComponent;
-import health.HealthComponent;
+    import health.HealthComponent;
 
 import common.data.GameData;
-import javafx.scene.text.Text;
 
 import WaveManager.data.WaveManager;
-import WaveManager.data.WaveManagerEntityFactory;
-
-import static com.almasb.fxgl.dsl.FXGLForKtKt.getGameWorld;
 import static java.util.stream.Collectors.toList;
 
 import map.MapLoader;
@@ -43,12 +39,13 @@ import objectPool.IObjectPool;
 
 import ui.GameMenu;
 import ui.ImageLoader;
+import map.Waypoint;
 
 
 public class App extends GameApplication {
     GameData gameData = new GameData();
     private IObjectPool objectPool = new ObjectPool();
-    private WaveManager waveManager = new WaveManager(objectPool);
+    private WaveManager waveManager = new WaveManager(objectPool, gameData);
 
 
 
@@ -92,69 +89,29 @@ public class App extends GameApplication {
     @Override
     protected void initGame() {
 
-
-        objectPool.createPool(EnemyComponent.class.toString(),
-                () -> FXGL.entityBuilder()
-                        // TODO: Build enemy here.
-                        .type(EntityType.ENEMY)
-                        .at(0,0)
-                        .view(new Circle(15, Color.RED))
-                        //.with health
-                        //.with some behavior component
-                        .buildAndAttach()
-        );
-
+        MapLoader mapLoader;
         try {
-            MapLoader mapLoader = new MapLoader();
+            mapLoader = new MapLoader();
             mapLoader.loadLevel(0);
         } catch (MalformedURLException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
 
-        objectPool.createPool("NORMAL_ENEMY",
-                () -> FXGL.entityBuilder()
-                        .type(EntityType.NORMAL_ENEMY)
-                        .viewWithBBox(new Rectangle(48,48, Color.RED))
-                        .with(new CollidableComponent(true))
-                        //adding enemy component with hp, damage, speed, and score
-                        .with(new StateComponent())
-                        .buildAndAttach()
-        );
 
-        objectPool.getEntityFromPool("NORMAL_ENEMY").setPosition(50, 50);
-
-
+        Point2D end = Waypoint.fromPolyline().getWaypoints().getLast().subtract(24,24);
         getPlayerSPIs().stream().findFirst().ifPresent(
                 spi -> player = FXGL.entityBuilder()
                         .type(EntityType.PLAYER)
-                        .at(300, 100)
-                        .viewWithBBox(new Rectangle(25, 25, Color.BLUE))
+                        .at(end)
+                        .viewWithBBox(new Rectangle(48, 48, Color.RED))
                         .with(spi.createComponent())
                         .with(new CollidableComponent(true))
                         .buildAndAttach()
         );
 
+        System.out.println(player.getWidth());
 
-        enemy = FXGL.entityBuilder()
-                .type(EntityType.ENEMY)
-                .at(100, 100)
-                .viewWithBBox(new Circle(15, Color.RED))
-                .with(new CollidableComponent(true))
-                .buildAndAttach();
-
-//        test.removeFromWorld();
-
-//        coin = FXGL.entityBuilder()
-//                .type(EntityType.COIN)
-//                .at(500, 100)
-//                .viewWithBBox(new Circle(15, Color.YELLOW))
-//                .with(new CollidableComponent(true))
-//                .buildAndAttach();
-
-    //start wave
-
-    //this should prob not be here, move to timer or button later
-        getGameWorld().addEntityFactory(new WaveManagerEntityFactory());
+        // init wave manager
         waveManager.init();
         //waveManager.waveIntermission();
 
@@ -162,12 +119,17 @@ public class App extends GameApplication {
 
     @Override
     protected void initPhysics() {
+        System.out.println("Physics");
         // CommonEnemy and Player collision.
         FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.ENEMY, EntityType.PLAYER) {
             // order of types is the same as passed into the constructor
             @Override
             protected void onCollisionBegin(Entity enemy, Entity player) {
-                enemy.removeFromWorld();
+                for(Component component : enemy.getComponents()){
+                    if(component instanceof Enemy){
+                        ((Enemy) component).returnToObjectPool();
+                    }
+                }
                 getPlayerSPIs().stream().findFirst().ifPresent(
                         spi -> spi.changeHealth(-1)
                 );
@@ -179,7 +141,7 @@ public class App extends GameApplication {
             @Override
             protected void onCollisionBegin(Entity bullet, Entity enemy) {
                 // TODO: Uncomment line below when enemy is merged into dev.
-//                enemy.getComponent(EnemyComponent.class).damage(bullet.getComponent(BulletComponent.class));
+                enemy.getComponent(Enemy.class).damage(5);
 
                 // TODO: Logic should be moved into EnemyComponent.
                 if (enemy.getComponent(HealthComponent.class).isDead()) {
@@ -196,8 +158,6 @@ public class App extends GameApplication {
     @Override
     protected void initUI() {
         // TODO: Use Map module to load scene "Main Menu".
-
-        // TODO:
 
         ui.TowerSelection towerSelection = new ui.TowerSelection();
         FXGL.getGameScene().addUINode(towerSelection);
@@ -227,7 +187,6 @@ public class App extends GameApplication {
 
         FXGL.getGameScene().addUINode(brickTexture);
 
-        waveManager.startWaveUI(waveManager);
 
         //Button for starting wave, need to agree on if we do button to start
         //or just intermission on game start then run after x seconds
@@ -241,8 +200,7 @@ public class App extends GameApplication {
 
     @Override
     protected void onUpdate(double tpf) {
-        //System.out.println("onUpdate : " + waveManager.getEnemyCount() );
-        waveManager.delayButton(waveManager);
+
     }
 
     public static void main(String[] args) {

@@ -21,9 +21,9 @@
     <module>Shop</module>
     <module>Health</module>
     <module>NormalEnemy</module>
-    <module>BossEnemy</module>
-      <module>CommonPlayer</module>
+    <module>CommonPlayer</module>
     <module>CommonBullet</module>
+      <module>CommonTower</module>
 
   </modules>
   <properties>

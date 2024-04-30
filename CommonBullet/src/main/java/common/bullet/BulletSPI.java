@@ -5,4 +5,6 @@ import com.almasb.fxgl.entity.component.Component;
 
 public interface BulletSPI {
     Component createComponent();
+    int getDamage();
+    int setDamage();
 }

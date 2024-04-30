@@ -1,4 +1,4 @@
-import enemy.services.EnemyComponentSPI;
+import enemy.EnemyComponentSPI;
 
 module WaveManager {
     uses EnemyComponentSPI;
