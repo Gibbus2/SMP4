@@ -8,23 +8,21 @@
   <name>SMP4</name>
   <url>http://maven.apache.org</url>
   <modules>
-    <module>GameEngine</module>
-    <module>Player</module>
-    <module>CommonEnemy</module>
-    <module>Map</module>
-    <module>Tower</module>
-    <module>ObjectPool</module>
-    <module>WaveManager</module>
     <module>Common</module>
+    <module>CommonPlayer</module>
+    <module>CommonBullet</module>
+    <module>CommonTower</module>
+    <module>CommonEnemy</module>
+    <module>GameEngine</module>
+    <module>ObjectPool</module>
+    <module>Player</module>
+    <module>Map</module>
+    <module>WaveManager</module>
     <module>Bullet</module>
     <module>UI</module>
     <module>Shop</module>
     <module>Health</module>
     <module>NormalEnemy</module>
-    <module>CommonPlayer</module>
-    <module>CommonBullet</module>
-      <module>CommonTower</module>
-
     <module>NormalTower</module>
   </modules>
   <properties>

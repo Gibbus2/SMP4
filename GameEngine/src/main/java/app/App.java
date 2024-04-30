@@ -7,13 +7,18 @@ import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
+import com.almasb.fxgl.entity.components.BoundingBoxComponent;
 import com.almasb.fxgl.entity.components.CollidableComponent;
+import com.almasb.fxgl.entity.components.ViewComponent;
+import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.CollisionHandler;
+import com.almasb.fxgl.physics.HitBox;
 import common.bullet.BulletSPI;
 import common.player.PlayerSPI;
 import enemy.Enemy;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
 import java.net.MalformedURLException;
@@ -108,6 +113,17 @@ public class App extends GameApplication {
                         .with(new CollidableComponent(true))
                         .buildAndAttach()
         );
+
+
+        player = FXGL.entityBuilder()
+                .type(EntityType.PLAYER)
+                .at(end)
+                .viewWithBBox(new Rectangle(48, 48, Color.RED))
+                //.with(spi.createComponent())
+                .with(new CollidableComponent(true))
+                .buildAndAttach();
+
+
 
         System.out.println(player.getWidth());
 

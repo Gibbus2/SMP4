@@ -1,5 +1,5 @@
 <archetype>
-  <id>Tower</id>
+  <id>NormalTower</id>
   <sources>
     <source>src/main/java/App.java</source>
   </sources>
