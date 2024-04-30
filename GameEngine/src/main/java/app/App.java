@@ -159,8 +159,6 @@ public class App extends GameApplication {
     protected void initUI() {
         // TODO: Use Map module to load scene "Main Menu".
 
-        // TODO:
-
         ui.TowerSelection towerSelection = new ui.TowerSelection();
         FXGL.getGameScene().addUINode(towerSelection);
 

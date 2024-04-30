@@ -6,22 +6,15 @@
         <artifactId>SMP4</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>CommonPlayer</artifactId>
-    <name>CommonPlayer</name>
+    <artifactId>CommonTower</artifactId>
+    <name>CommonTower</name>
     <url>http://maven.apache.org</url>
-
+    <packaging>jar</packaging>
     <dependencies>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>RELEASE</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>com.github.almasb</groupId>
             <artifactId>fxgl</artifactId>
             <version>21.1</version>
         </dependency>
     </dependencies>
-    <packaging>jar</packaging>
 </project>
