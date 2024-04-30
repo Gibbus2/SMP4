@@ -13,6 +13,7 @@ import common.bullet.BulletSPI;
 import common.player.PlayerSPI;
 import enemy.Enemy;
 import javafx.geometry.Point2D;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
@@ -40,6 +41,7 @@ import objectPool.IObjectPool;
 import ui.GameMenu;
 import ui.ImageLoader;
 import map.Waypoint;
+import ui.TowerSelection;
 
 
 public class App extends GameApplication {
@@ -159,11 +161,9 @@ public class App extends GameApplication {
     protected void initUI() {
         // TODO: Use Map module to load scene "Main Menu".
 
-        ui.TowerSelection towerSelection = new ui.TowerSelection();
-        FXGL.getGameScene().addUINode(towerSelection);
-
-        ui.ImageLoader imageLoader = new ImageLoader();
-        System.out.println(Arrays.toString(imageLoader.getTextures()));
+        TowerSelection towerSelection = new TowerSelection();
+        HBox hbox = towerSelection.createTowerSelection();
+        FXGL.getGameScene().addUINode(hbox);
 
         var brickTexture = FXGL.getAssetLoader().loadTexture("brick.png");
         brickTexture.setTranslateX(50);
