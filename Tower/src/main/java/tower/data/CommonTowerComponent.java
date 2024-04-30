@@ -1,0 +1,199 @@
+package tower.data;
+
+import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.entity.state.EntityState;
+import com.almasb.fxgl.entity.state.StateComponent;
+import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.component.Component;
+import com.almasb.fxgl.time.LocalTimer;
+import tower.services.TowerComponentSPI;
+import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
+import javafx.util.Duration;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.almasb.fxgl.dsl.FXGL.*;
+
+
+public class CommonTowerComponent extends Component implements TowerComponentSPI {
+    private int towerDamage;
+    private int towerPrice;
+    private double towerFirerate;
+    private int towerRange;
+    private int towerX;
+    private int towerY;
+    private String towerTarget = "";
+
+    public List<Entity> enemiesInRange;
+
+    private LocalTimer shootTimer;
+
+    private StateComponent state;
+
+    public CommonTowerComponent(int towerDamage, int towerPrice, double towerFirerate, int towerRange, int towerX, int towerY, String towerTarget) {
+        this.towerDamage = towerDamage;
+        this.towerPrice = towerPrice;
+        this.towerFirerate = towerFirerate;
+        this.towerRange = towerRange;
+        this.towerTarget = towerTarget;
+        this.towerX = towerX;
+        this.towerY = towerY;
+    }
+
+    public void updateEnemiesInRange() {
+        Rectangle2D range = new Rectangle2D(towerX - towerRange / 2, towerY - towerRange / 2, towerRange, towerRange);
+
+        enemiesInRange = getGameWorld().getEntitiesByType(EntityType.ENEMY).stream()
+                .filter(enemy -> range.contains(enemy.getPosition()))
+                .collect(Collectors.toList());
+    }
+
+
+   /* public void sortByDistanceTraveled() {
+        enemiesInRange.sort(Comparator.comparing(enemy -> enemy.getComponent(EnemyComponent.class).getDistanceTraveled()));
+    }
+
+    public void sortByHealth() {
+        enemiesInRange.sort(Comparator.comparing(enemy -> enemy.getComponent(EnemyComponent.class).getHealth()));
+    } */
+
+    @Override
+    public void onAdded() {
+        state = entity.getComponent(StateComponent.class);
+        state.changeState(IDLE);
+
+        shootTimer = newLocalTimer();
+        shootTimer.capture();
+    }
+
+    @Override
+    public void onUpdate(double tpf) {
+        updateEnemiesInRange();
+        if (enemiesInRange != null && !enemiesInRange.isEmpty() && towerTarget == "First") {
+            state.changeState(FIRSTTARGET);
+        }
+        else if (enemiesInRange != null && !enemiesInRange.isEmpty() && towerTarget == "Last") {
+            state.changeState(LASTTARGET);
+        }
+        else if (enemiesInRange != null && !enemiesInRange.isEmpty() && towerTarget == "Strong") {
+            state.changeState(STRONGTARGET);
+        }
+        else if (enemiesInRange != null && !enemiesInRange.isEmpty() && towerTarget == "Weak") {
+            state.changeState(WEAKTARGET);
+        }
+        else {
+            state.changeState(IDLE);
+        }
+    }
+
+    private void shoot(Entity enemy) {
+        Point2D direction = enemy.getPosition().subtract(entity.getPosition());
+        entity.rotateToVector(direction);
+
+        Entity bullet = FXGL.entityBuilder()
+                .type(EntityType.BULLET)
+                .at(entity.getPosition())
+                .with(new BulletComponent())
+                .buildAndAttach();
+
+        BulletComponent bulletComponent = bullet.getComponent(BulletComponent.class);
+        bulletComponent.setDirection(direction);
+    }
+
+
+    private final EntityState FIRSTTARGET = new EntityState("FIRSTTARGET") {
+        @Override
+        public void onEntering() {
+             //sortByDistanceTraveled();
+        }
+        @Override
+        protected void onUpdate(double tpf) {
+            if (shootTimer.elapsed(Duration.seconds(towerFirerate))) {
+                updateEnemiesInRange();
+                shoot();
+            }
+        }
+    };
+
+    private final EntityState LASTTARGET = new EntityState("LASTTARGET") {
+        @Override
+        public void onEntering() {
+            //sortByDistanceTraveled().reversed();
+        }
+        @Override
+        protected void onUpdate(double tpf) {
+            if (shootTimer.elapsed(Duration.seconds(towerFirerate))) {
+                updateEnemiesInRange();
+                shoot();
+            }
+        }
+    };
+
+    private final EntityState STRONGTARGET = new EntityState("STRONGTARGET") {
+        @Override
+        public void onEntering() {
+            //sortByHealth().reversed();
+        }
+        @Override
+        protected void onUpdate(double tpf) {
+            if (shootTimer.elapsed(Duration.seconds(towerFirerate))) {
+                updateEnemiesInRange();
+                shoot();
+            }
+        }
+    };
+
+    private final EntityState WEAKTARGET = new EntityState("WEAKTARGET") {
+        @Override
+        public void onEntering() {
+            //sortByHealth();
+        }
+        @Override
+        protected void onUpdate(double tpf) {
+            if (shootTimer.elapsed(Duration.seconds(towerFirerate))) {
+                updateEnemiesInRange();
+                shoot();
+            }
+        }
+    };
+
+    private final EntityState IDLE = new EntityState("IDlE") {
+        @Override
+        public void onEntering() {
+
+        }
+        @Override
+        protected void onUpdate(double tpf) {
+
+        }
+
+    };
+
+
+
+    public int getDamage(){
+        return towerDamage;
+    }
+    public int getPrice(){
+        return towerPrice;
+    }
+    public double getFirerate(){
+        return towerFirerate;
+    }
+    public int getRange(){
+        return towerRange;
+    }
+    public int getX(){
+        return towerX;
+    }
+    public int getY(){
+        return towerY;
+    }
+
+    @Override
+    public TowerComponentSPI createTowerComponent(int towerDamage, int towerPrice, double towerFirerate, int towerRange, int towerX, int towerY) {
+        return new CommonTowerComponent(towerDamage, towerPrice, towerFirerate, towerRange, towerX, towerY, towerTarget);
+    }
+}
