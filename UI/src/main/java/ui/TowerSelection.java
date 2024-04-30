@@ -4,6 +4,7 @@ import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.texture.Texture;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -63,6 +64,7 @@ public class TowerSelection extends HBox {
 
         AtomicBoolean isImageFollowingCursor = new AtomicBoolean(false);
         ImageView imageView = new ImageView();
+        imageView.setMouseTransparent(true);
 
         for (String path : list) {
             InputStream is = TowerSelection.class.getResourceAsStream(path);
@@ -72,6 +74,8 @@ public class TowerSelection extends HBox {
                 System.out.println("Clicked on texture: " + path);
                 if (!isImageFollowingCursor.get()) {
                     imageView.setImage(texture.getImage());
+                    imageView.setX(e.getSceneX() - imageView.getImage().getWidth() / 2);
+                    imageView.setY(e.getSceneY() - imageView.getImage().getHeight() / 2);
                     FXGL.getGameScene().addUINode(imageView);
                     isImageFollowingCursor.set(true);
                 } else {
@@ -82,6 +86,14 @@ public class TowerSelection extends HBox {
             getChildren().add(texture);
             System.out.println("Texture: " + texture.toString());
         }
+
+        FXGL.getGameScene().getContentRoot().setOnMouseClicked(e -> {
+            if (e.getButton() == MouseButton.SECONDARY && isImageFollowingCursor.get()) { // Check if right button was clicked and an image is following the cursor
+                FXGL.getGameScene().removeUINode(imageView);
+                isImageFollowingCursor.set(false);
+                System.out.println("Removed image from cursor. By right click.");
+            }
+        });
 
         FXGL.getGameScene().getContentRoot().setOnMouseMoved(e -> {
             if (isImageFollowingCursor.get()) {
