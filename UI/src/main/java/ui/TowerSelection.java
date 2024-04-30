@@ -1,6 +1,8 @@
 package ui;
 
 import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.texture.Texture;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -15,6 +17,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TowerSelection {
+    private Entity imageEntity;
 
     public HBox createTowerSelection() {
         HBox hbox = new HBox();
@@ -49,12 +52,20 @@ public class TowerSelection {
             assert is != null;
             Image img = new Image(is);
             Texture texture = new Texture(img);
+
             texture.setOnMouseClicked(e -> {
                 System.out.println("Clicked on texture: " + path);
                 if (!isImageFollowingCursor.get()) {
                     imageView.setImage(texture.getImage());
                     imageView.setX(e.getSceneX() - imageView.getImage().getWidth() / 2);
                     imageView.setY(e.getSceneY() - imageView.getImage().getHeight() / 2);
+
+                    imageEntity = FXGL.entityBuilder()
+                            .viewWithBBox(imageView)
+                            .at(imageView.getX(), imageView.getY())
+                            .with(new CollidableComponent(true))
+                            .buildAndAttach();
+                    System.out.println("Entity created: " + imageEntity);
                     FXGL.getGameScene().addUINode(imageView);
                     isImageFollowingCursor.set(true);
                 } else {
@@ -67,10 +78,15 @@ public class TowerSelection {
         }
 
         FXGL.getGameScene().getContentRoot().setOnMouseClicked(e -> {
-            if (e.getButton() == MouseButton.SECONDARY && isImageFollowingCursor.get()) { // Check if right button was clicked and an image is following the cursor
+            if (e.getButton() == MouseButton.SECONDARY && isImageFollowingCursor.get()) {
                 FXGL.getGameScene().removeUINode(imageView);
                 isImageFollowingCursor.set(false);
                 System.out.println("Removed image from cursor. By right click.");
+
+                // Remove the entity from the game world
+                FXGL.getGameWorld().removeEntity(imageEntity);
+
+
             }
         });
 
@@ -79,7 +95,10 @@ public class TowerSelection {
                 imageView.setX(e.getSceneX() - imageView.getImage().getWidth() / 2);
                 imageView.setY(e.getSceneY() - imageView.getImage().getHeight() / 2);
             }
+            System.out.println("test for entity: " + imageEntity);
         });
+
+        ;
 
         return hbox;
     }
