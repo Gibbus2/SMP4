@@ -123,6 +123,7 @@ public class App extends GameApplication {
             // order of types is the same as passed into the constructor
             @Override
             protected void onCollisionBegin(Entity enemy, Entity player) {
+                // TODO:
                 enemy.removeFromWorld();
                 getPlayerSPIs().stream().findFirst().ifPresent(
                         spi -> spi.changeHealth(-1)
@@ -152,8 +153,6 @@ public class App extends GameApplication {
     @Override
     protected void initUI() {
         // TODO: Use Map module to load scene "Main Menu".
-
-        // TODO:
 
         ui.TowerSelection towerSelection = new ui.TowerSelection();
         FXGL.getGameScene().addUINode(towerSelection);

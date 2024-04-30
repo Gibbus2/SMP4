@@ -11,7 +11,7 @@ import javafx.scene.input.KeyCode;
 
 public class PlayerComponent extends Component implements PlayerSPI {
     private static Entity player;
-    private int ledger;
+    private static int ledger;
 
     public Entity getPlayerEntity() {
         return player;
@@ -45,6 +45,11 @@ public class PlayerComponent extends Component implements PlayerSPI {
             System.out.println("Player died.");
             // TODO: End game.
         }
+    }
+
+    @Override
+    public int getHealth() {
+        return getPlayerEntity().getComponent(HealthComponent.class).getHealth();
     }
 
     @Override
