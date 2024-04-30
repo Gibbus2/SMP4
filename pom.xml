@@ -21,11 +21,9 @@
     <module>Shop</module>
     <module>Health</module>
     <module>NormalEnemy</module>
-    <module>CommonPlayer</module>
-    <module>CommonBullet</module>
-      <module>CommonTower</module>
-
     <module>NormalTower</module>
+    <module>BossEnemy</module>
+
   </modules>
   <properties>
     <java>java</java>
