@@ -6,10 +6,12 @@ import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.physics.CollisionHandler;
 import common.bullet.BulletSPI;
 import common.player.PlayerSPI;
+import enemy.Enemy;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -22,7 +24,7 @@ import java.util.Map;
 import java.util.ServiceLoader;
 
 import common.data.EntityType;
-import health.HealthComponent;
+    import health.HealthComponent;
 
 import common.data.GameData;
 
@@ -43,7 +45,7 @@ import map.Waypoint;
 public class App extends GameApplication {
     GameData gameData = new GameData();
     private IObjectPool objectPool = new ObjectPool();
-    private WaveManager waveManager = new WaveManager(objectPool);
+    private WaveManager waveManager = new WaveManager(objectPool, gameData);
 
 
 
@@ -123,7 +125,11 @@ public class App extends GameApplication {
             // order of types is the same as passed into the constructor
             @Override
             protected void onCollisionBegin(Entity enemy, Entity player) {
-                enemy.removeFromWorld();
+                for(Component component : enemy.getComponents()){
+                    if(component instanceof Enemy){
+                        ((Enemy) component).returnToObjectPool();
+                    }
+                }
                 getPlayerSPIs().stream().findFirst().ifPresent(
                         spi -> spi.changeHealth(-1)
                 );
@@ -135,7 +141,7 @@ public class App extends GameApplication {
             @Override
             protected void onCollisionBegin(Entity bullet, Entity enemy) {
                 // TODO: Uncomment line below when enemy is merged into dev.
-//                enemy.getComponent(EnemyComponent.class).damage(bullet.getComponent(BulletComponent.class));
+                enemy.getComponent(Enemy.class).damage(5);
 
                 // TODO: Logic should be moved into EnemyComponent.
                 if (enemy.getComponent(HealthComponent.class).isDead()) {

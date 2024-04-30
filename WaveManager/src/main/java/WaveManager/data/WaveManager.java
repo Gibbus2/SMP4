@@ -5,10 +5,9 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.entity.state.StateComponent;
-import com.almasb.fxgl.physics.BoundingShape;
-import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.texture.Texture;
 import common.data.EntityType;
+import common.data.GameData;
 import enemy.Enemy;
 import enemy.EnemyComponentSPI;
 import javafx.geometry.Point2D;
@@ -37,9 +36,11 @@ public class WaveManager {
     private IObjectPool objectPool;
     private ArrayList<Generation> generations;
     private List<String> enemies;
+    private GameData gameData;
 
-    public WaveManager(IObjectPool objectPool) {
+    public WaveManager(IObjectPool objectPool, GameData gameData) {
         this.objectPool = objectPool;
+        this.gameData = gameData;
     }
 
     public void init(){
@@ -67,12 +68,12 @@ public class WaveManager {
 
         for (int i = 0; i < enemies.size(); i++) {
 
-            Enemy enemy = enemies.get(i).createEnemyComponent(wayPoints);
+            Enemy enemy = enemies.get(i).createEnemyComponent(wayPoints, this.objectPool,"HELLO");
             Texture texture = new Texture(enemies.get(i).getImage());
 
-            this.objectPool.createPool("HELLO",
+            this.objectPool.createPool(("HELLO"),
                     () -> FXGL.entityBuilder()
-                            .viewWithBBox(new Rectangle(48, 48, Color.GREEN))
+                            .viewWithBBox(new Rectangle(texture.getWidth(), texture.getHeight(), (gameData.debug) ? Color.GREEN : new Color(0,0,0,0)))
                             .type(EntityType.ENEMY)
                             .with(new CollidableComponent(true))
                             .with(enemy)
@@ -84,13 +85,12 @@ public class WaveManager {
         }
 
         Entity e = this.objectPool.getEntityFromPool("HELLO");
-        e.getComponent(Enemy.class).reset();
 
-        System.out.println("Enemy added");
-        System.out.println(e.getComponent(Enemy.class).getEntity().getWidth());
-        //e.setRotation(0);
-
-       // generations.getFirst().createEnemies(this.wayPoints, this.objectPool);
+        for(Component component : e.getComponents()){
+            if(component instanceof Enemy){
+                 ((Enemy) component).reset();
+            }
+        }
     }
 
 //    private void createNextGeneration(){

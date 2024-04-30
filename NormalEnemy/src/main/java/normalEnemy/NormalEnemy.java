@@ -4,6 +4,7 @@ import enemy.Enemy;
 import enemy.EnemyComponentSPI;
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
+import objectPool.IObjectPool;
 
 import java.io.InputStream;
 import java.util.List;
@@ -11,8 +12,8 @@ import java.util.List;
 public class NormalEnemy implements EnemyComponentSPI {
 
     @Override
-    public Enemy createEnemyComponent(List<Point2D> wayPoints) {
-        return new Enemy(wayPoints, 100, 48);
+    public Enemy createEnemyComponent(List<Point2D> wayPoints, IObjectPool objectPool, String objectPoolName) {
+        return new NormalEnemyComponent(wayPoints, 100, objectPool, objectPoolName);
     }
 
     @Override
