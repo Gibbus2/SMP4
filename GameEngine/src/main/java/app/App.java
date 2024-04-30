@@ -17,19 +17,21 @@ import common.bullet.BulletSPI;
 import common.player.PlayerSPI;
 import enemy.Enemy;
 import javafx.geometry.Point2D;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.ServiceLoader;
 
 import common.data.EntityType;
-    import health.HealthComponent;
+import health.HealthComponent;
 
 import common.data.GameData;
 
@@ -45,14 +47,13 @@ import objectPool.IObjectPool;
 import ui.GameMenu;
 import ui.ImageLoader;
 import map.Waypoint;
+import ui.TowerSelection;
 
 
 public class App extends GameApplication {
     GameData gameData = new GameData();
     private IObjectPool objectPool = new ObjectPool();
     private WaveManager waveManager = new WaveManager(objectPool, gameData);
-
-
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -129,7 +130,6 @@ public class App extends GameApplication {
 
         // init wave manager
         waveManager.init();
-        //waveManager.waveIntermission();
 
     }
 
@@ -175,11 +175,9 @@ public class App extends GameApplication {
     protected void initUI() {
         // TODO: Use Map module to load scene "Main Menu".
 
-        ui.TowerSelection towerSelection = new ui.TowerSelection();
-        FXGL.getGameScene().addUINode(towerSelection);
-
-        ui.ImageLoader imageLoader = new ImageLoader();
-        System.out.println(Arrays.toString(imageLoader.getTextures()));
+        TowerSelection towerSelection = new TowerSelection();
+        HBox hbox = towerSelection.createTowerSelection();
+        FXGL.getGameScene().addUINode(hbox);
 
         var brickTexture = FXGL.getAssetLoader().loadTexture("brick.png");
         brickTexture.setTranslateX(50);
@@ -203,6 +201,7 @@ public class App extends GameApplication {
 
         FXGL.getGameScene().addUINode(brickTexture);
 
+        waveManager.startWaveUI();
 
         //Button for starting wave, need to agree on if we do button to start
         //or just intermission on game start then run after x seconds

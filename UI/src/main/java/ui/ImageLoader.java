@@ -11,10 +11,14 @@ import java.util.Arrays;
 public class ImageLoader {
 
     private Texture[] textures;
+
+    public ImageLoader(Texture[] textures) {
+        this.textures = textures;
+    }
+
     public ImageLoader() {}
 
-    /*
-    public void loadTextures() {
+/*    public void loadTextures() {
             URL url = ImageLoader.class.getResource("/assets");
             File folder = new File(url.getPath());
             File[] listOfFiles = folder.listFiles();
@@ -47,19 +51,20 @@ public class ImageLoader {
     }*/
 
 
-    public Texture[] getTextures() {
+    public File[] getTexturesPath() {
         URL url = ImageLoader.class.getResource("/assets");
         File folder = new File(url.getPath());
-        File[] listOfFiles = folder.listFiles();
 
-        if (listOfFiles != null) {
+        System.out.println("Folder: " + Arrays.toString(folder.listFiles()));
+
+        /*if (listOfFiles != null) {
             int pngCount = 0;
             for (File file : listOfFiles) {
                 if (file.isFile() && file.getName().endsWith(".png")) {
                     pngCount++;
                 }
-            }
-
+            }*/
+/*
             // Initialize the textures array with the PNG count
             textures = new Texture[pngCount];
 
@@ -69,16 +74,16 @@ public class ImageLoader {
                     InputStream is = ImageLoader.class.getResourceAsStream("/assets/" + file.getName());
                     Image img = new Image(is);
                     textures[index] = new Texture(img);
-                    /*System.out.println("Processing PNG file: " + file.getName());*/
+                    System.out.println("Processing PNG file: " + file.getName());
                     index++;
                 }
             }
         } else {
             System.out.println("No files found in /assets directory.");
-        }
+        }*/
 
 
-        return textures;
+        return folder.listFiles();
     }
 
 /*    public static void main(String[] args) {
