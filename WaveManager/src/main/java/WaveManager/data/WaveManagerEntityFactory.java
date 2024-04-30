@@ -9,7 +9,7 @@ import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.entity.state.StateComponent;
-import enemy.services.EnemyComponentSPI;
+import enemy.EnemyComponentSPI;
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -24,6 +24,7 @@ import java.util.ServiceLoader;
 import static java.util.stream.Collectors.toList;
 
 public class WaveManagerEntityFactory implements EntityFactory {
+
     List<Point2D> waypoints = map.Waypoint.fromPolyline().getWaypoints();
 
 
@@ -96,5 +97,7 @@ public class WaveManagerEntityFactory implements EntityFactory {
     private Collection<? extends EnemyComponentSPI> getEnemyComponentSPIs() {
         return ServiceLoader.load(EnemyComponentSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
     }
+
+
 
 }
