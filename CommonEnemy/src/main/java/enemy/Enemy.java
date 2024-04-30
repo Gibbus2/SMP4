@@ -15,13 +15,23 @@ public class Enemy extends Component {
     private int targetWaypoint;
     private final IObjectPool objectPool;
     private final String objectPoolName;
+    private Runnable onRemove;
+
+    private double distanceTravelled;
 
     public Enemy(List<Point2D> wayPoints, double speed, IObjectPool objectPool, String objectPoolName){
         this.wayPoints = wayPoints;
         this.speed = speed;
         this.objectPool = objectPool;
         this.objectPoolName = objectPoolName;
+        this.distanceTravelled = 0;
+        this.onRemove = null;
     }
+
+    public double getDistanceTravelled() {
+        return distanceTravelled;
+    }
+
     @Override
     public void onUpdate(double tpf) {
         //move in rotation heading
@@ -29,6 +39,8 @@ public class Enemy extends Component {
         double y = speed * Math.sin(radians) * tpf;
         double x = speed * Math.cos(radians) * tpf;
         setPos(getPos().add(x,y));
+
+        this.distanceTravelled += y + x;
 
         //check if we have passed the waypoint
         double distMoved = getPos().distance(wayPoints.get(targetWaypoint - 1));
@@ -48,6 +60,10 @@ public class Enemy extends Component {
 
     }
 
+    public void setOnRemove(Runnable onRemove){
+        this.onRemove = onRemove;
+    }
+
     public void reset(){
         rotate(0);
         setPos(wayPoints.getFirst());
@@ -55,6 +71,9 @@ public class Enemy extends Component {
     }
 
     public void returnToObjectPool(){
+        if(this.onRemove != null) {
+            this.onRemove.run();
+        }
         objectPool.getPool(objectPoolName).returnEntityToPool(getEntity());
     }
 

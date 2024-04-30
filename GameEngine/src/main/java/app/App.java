@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.ServiceLoader;
 
 import common.data.EntityType;
-    import health.HealthComponent;
+import health.HealthComponent;
 
 import common.data.GameData;
 
@@ -49,8 +49,6 @@ public class App extends GameApplication {
     GameData gameData = new GameData();
     private IObjectPool objectPool = new ObjectPool();
     private WaveManager waveManager = new WaveManager(objectPool, gameData);
-
-
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -116,7 +114,6 @@ public class App extends GameApplication {
 
         // init wave manager
         waveManager.init();
-        //waveManager.waveIntermission();
 
     }
 
@@ -188,6 +185,7 @@ public class App extends GameApplication {
 
         FXGL.getGameScene().addUINode(brickTexture);
 
+        waveManager.startWaveUI();
 
         //Button for starting wave, need to agree on if we do button to start
         //or just intermission on game start then run after x seconds
