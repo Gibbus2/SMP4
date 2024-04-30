@@ -7,31 +7,26 @@ import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
-import com.almasb.fxgl.entity.state.StateComponent;
 import com.almasb.fxgl.physics.CollisionHandler;
 import common.bullet.BulletSPI;
 import common.player.PlayerSPI;
+import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.ServiceLoader;
 
 import common.data.EntityType;
-import enemy.data.EnemyComponent;
 import health.HealthComponent;
 
 import common.data.GameData;
-import javafx.scene.text.Text;
 
 import WaveManager.data.WaveManager;
-import WaveManager.data.WaveManagerEntityFactory;
-
-import static com.almasb.fxgl.dsl.FXGLForKtKt.getGameWorld;
 import static java.util.stream.Collectors.toList;
 
 import map.MapLoader;
@@ -41,6 +36,8 @@ import objectPool.IObjectPool;
 
 
 import ui.GameMenu;
+import ui.ImageLoader;
+import map.Waypoint;
 
 
 public class App extends GameApplication {
@@ -90,69 +87,29 @@ public class App extends GameApplication {
     @Override
     protected void initGame() {
 
-
-        objectPool.createPool(EnemyComponent.class.toString(),
-                () -> FXGL.entityBuilder()
-                        // TODO: Build enemy here.
-                        .type(EntityType.ENEMY)
-                        .at(0,0)
-                        .view(new Circle(15, Color.RED))
-                        //.with health
-                        //.with some behavior component
-                        .buildAndAttach()
-        );
-
+        MapLoader mapLoader;
         try {
-            MapLoader mapLoader = new MapLoader();
+            mapLoader = new MapLoader();
             mapLoader.loadLevel(0);
         } catch (MalformedURLException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
 
-        objectPool.createPool("NORMAL_ENEMY",
-                () -> FXGL.entityBuilder()
-                        .type(EntityType.NORMAL_ENEMY)
-                        .viewWithBBox(new Rectangle(48,48, Color.RED))
-                        .with(new CollidableComponent(true))
-                        //adding enemy component with hp, damage, speed, and score
-                        .with(new StateComponent())
-                        .buildAndAttach()
-        );
 
-        objectPool.getEntityFromPool("NORMAL_ENEMY").setPosition(50, 50);
-
-
+        Point2D end = Waypoint.fromPolyline().getWaypoints().getLast().subtract(24,24);
         getPlayerSPIs().stream().findFirst().ifPresent(
                 spi -> player = FXGL.entityBuilder()
                         .type(EntityType.PLAYER)
-                        .at(300, 100)
-                        .viewWithBBox(new Rectangle(25, 25, Color.BLUE))
+                        .at(end)
+                        .viewWithBBox(new Rectangle(48, 48, Color.RED))
                         .with(spi.createComponent())
                         .with(new CollidableComponent(true))
                         .buildAndAttach()
         );
 
+        System.out.println(player.getWidth());
 
-        enemy = FXGL.entityBuilder()
-                .type(EntityType.ENEMY)
-                .at(100, 100)
-                .viewWithBBox(new Circle(15, Color.RED))
-                .with(new CollidableComponent(true))
-                .buildAndAttach();
-
-//        test.removeFromWorld();
-
-//        coin = FXGL.entityBuilder()
-//                .type(EntityType.COIN)
-//                .at(500, 100)
-//                .viewWithBBox(new Circle(15, Color.YELLOW))
-//                .with(new CollidableComponent(true))
-//                .buildAndAttach();
-
-    //start wave
-
-    //this should prob not be here, move to timer or button later
-        getGameWorld().addEntityFactory(new WaveManagerEntityFactory());
+        // init wave manager
         waveManager.init();
         //waveManager.waveIntermission();
 
@@ -160,6 +117,7 @@ public class App extends GameApplication {
 
     @Override
     protected void initPhysics() {
+        System.out.println("Physics");
         // CommonEnemy and Player collision.
         FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.ENEMY, EntityType.PLAYER) {
             // order of types is the same as passed into the constructor
@@ -200,18 +158,8 @@ public class App extends GameApplication {
         ui.TowerSelection towerSelection = new ui.TowerSelection();
         FXGL.getGameScene().addUINode(towerSelection);
 
-        Text textPixels = new Text();
-        textPixels.setTranslateX(50); // x = 50
-        textPixels.setTranslateY(100); // y = 100
- // add to the scene graph
-
-//        Text coinText = new Text();
-//        coinText.setTranslateX(100); // x = 50
-//        coinText.setTranslateY(100); // y = 100
-//
-//        coinText.textProperty().bind(FXGL.getWorldProperties().intProperty("coinsCollected").asString());
-//
-//        FXGL.getGameScene().addUINode(coinText);
+        ui.ImageLoader imageLoader = new ImageLoader();
+        System.out.println(Arrays.toString(imageLoader.getTextures()));
 
         var brickTexture = FXGL.getAssetLoader().loadTexture("brick.png");
         brickTexture.setTranslateX(50);
@@ -235,7 +183,6 @@ public class App extends GameApplication {
 
         FXGL.getGameScene().addUINode(brickTexture);
 
-        waveManager.startWaveUI(waveManager);
 
         //Button for starting wave, need to agree on if we do button to start
         //or just intermission on game start then run after x seconds
@@ -246,10 +193,10 @@ public class App extends GameApplication {
 
     }
 
+
     @Override
     protected void onUpdate(double tpf) {
-        //System.out.println("onUpdate : " + waveManager.getEnemyCount() );
-        waveManager.delayButton(waveManager);
+
     }
 
     public static void main(String[] args) {
@@ -267,4 +214,6 @@ public class App extends GameApplication {
     private Collection<? extends BulletSPI> getBulletSPIs() {
         return ServiceLoader.load(BulletSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
     }
+
+
 }
