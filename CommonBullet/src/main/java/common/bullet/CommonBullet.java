@@ -2,17 +2,23 @@ package common.bullet;
 
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
+import enemy.Enemy;
 import javafx.geometry.Point2D;
+import objectPool.IObjectPool;
 
 public class CommonBullet extends Component {
     private double speed;
-    private double damage;
+    private int damage;
     private Entity target;
+    private IObjectPool objectPool;
+    private String objectPoolName;
 
-    public CommonBullet(double speed, double damage, Entity target) {
+    public CommonBullet(double speed, int damage, Entity target,IObjectPool objectPool, String objectPoolName) {
         this.speed = speed;
         this.damage = damage;
         this.target = target;
+        this.objectPool = objectPool;
+        this.objectPoolName = objectPoolName;
     }
     @Override
     public void onUpdate(double tpf) {
@@ -37,7 +43,12 @@ public class CommonBullet extends Component {
         double y = speed * Math.sin(radians) * tpf;
         double x = speed * Math.cos(radians) * tpf;
         getEntity().setPosition(getEntity().getPosition().add(x,y));
+
     }
+    public void returnToObjectPool() {
+        objectPool.getPool(objectPoolName).returnEntityToPool(getEntity());
+    }
+
     public double getSpeed() {
         return speed;
     }

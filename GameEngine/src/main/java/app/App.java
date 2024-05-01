@@ -157,7 +157,8 @@ public class App extends GameApplication {
             @Override
             protected void onCollisionBegin(Entity bullet, Entity enemy) {
                 // TODO: Uncomment line below when enemy is merged into dev.
-                enemy.getComponent(Enemy.class).damage(5);
+                // make sure to check for bullets target
+                enemy.getComponent(Enemy.class).damage(1);
 
                 // TODO: Logic should be moved into EnemyComponent.
                 if (enemy.getComponent(HealthComponent.class).isDead()) {
