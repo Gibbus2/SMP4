@@ -11,7 +11,7 @@ import java.io.InputStream;
 public class Bullet implements BulletSPI {
     @Override
     public CommonBullet createComponent(double speed, int damage, Entity target, IObjectPool objectPool, String objectPoolName) {
-        return new BulletComponent(500.0, 34, target, objectPool, objectPoolName);
+        return new BulletComponent(500.0, damage, target, objectPool, objectPoolName);
     }
 
     @Override
