@@ -95,7 +95,6 @@ public class TowerSelection {
                 imageView.setX(e.getSceneX() - imageView.getImage().getWidth() / 2);
                 imageView.setY(e.getSceneY() - imageView.getImage().getHeight() / 2);
             }
-            System.out.println("test for entity: " + imageEntity);
         });
 
         ;
