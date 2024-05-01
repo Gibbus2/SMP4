@@ -2,24 +2,36 @@ package enemy;
 
 import com.almasb.fxgl.entity.component.Component;
 import javafx.geometry.Point2D;
-import com.almasb.fxgl.entity.state.EntityState;
+import health.HealthComponent;
+import objectPool.IObjectPool;
+
 
 import java.util.List;
 
 public class Enemy extends Component {
 
     private double speed;
-    private double currentSpeed;
     private final List<Point2D> wayPoints;
     private int targetWaypoint;
+    private final IObjectPool objectPool;
+    private final String objectPoolName;
+    private Runnable onRemove;
 
-    private final double radius;
+    private double distanceTravelled;
 
-    public Enemy(List<Point2D> wayPoints, double speed, double imgSize){
+    public Enemy(List<Point2D> wayPoints, double speed, IObjectPool objectPool, String objectPoolName){
         this.wayPoints = wayPoints;
         this.speed = speed;
-        this.radius = Point2D.ZERO.distance(imgSize/2, imgSize/2);
+        this.objectPool = objectPool;
+        this.objectPoolName = objectPoolName;
+        this.distanceTravelled = 0;
+        this.onRemove = null;
     }
+
+    public double getDistanceTravelled() {
+        return distanceTravelled;
+    }
+
     @Override
     public void onUpdate(double tpf) {
         //move in rotation heading
@@ -27,6 +39,8 @@ public class Enemy extends Component {
         double y = speed * Math.sin(radians) * tpf;
         double x = speed * Math.cos(radians) * tpf;
         setPos(getPos().add(x,y));
+
+        this.distanceTravelled += y + x;
 
         //check if we have passed the waypoint
         double distMoved = getPos().distance(wayPoints.get(targetWaypoint - 1));
@@ -39,10 +53,36 @@ public class Enemy extends Component {
         }
     }
 
+    @Override
+    public void onAdded() {
+        super.onAdded();
+        getEntity().addComponent(new HealthComponent(100));
+
+    }
+
+    public void setOnRemove(Runnable onRemove){
+        this.onRemove = onRemove;
+    }
+
     public void reset(){
         rotate(0);
         setPos(wayPoints.getFirst());
         this.targetWaypoint = 1;
+    }
+
+    public void returnToObjectPool(){
+        if(this.onRemove != null) {
+            this.onRemove.run();
+        }
+        objectPool.getPool(objectPoolName).returnEntityToPool(getEntity());
+    }
+
+    public void damage(int dmg){
+        HealthComponent health = getEntity().getComponent(HealthComponent.class);
+        health.setHealth(health.getHealth() - dmg);
+        if(health.isDead()){
+            this.returnToObjectPool();
+        }
     }
 
     private void rotate(int waypointIndex){
@@ -67,7 +107,7 @@ public class Enemy extends Component {
 
     private Point2D getPos(){
         // add offset to get position of center
-        return entity.getPosition().add(offset());
+        return getEntity().getPosition().add(offset());
     }
 
     private void setPos(Point2D point){

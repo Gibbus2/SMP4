@@ -6,8 +6,20 @@
         <artifactId>SMP4</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>Tower</artifactId>
-    <name>Tower</name>
+    <artifactId>NormalTower</artifactId>
+    <name>Archetype - NormalTower</name>
     <url>http://maven.apache.org</url>
     <packaging>jar</packaging>
+    <dependencies>
+        <dependency>
+            <groupId>com.github.almasb</groupId>
+            <artifactId>fxgl</artifactId>
+            <version>21.1</version>
+        </dependency>
+        <dependency>
+            <groupId>dk.sdu.mmmi.GRP7</groupId>
+            <artifactId>CommonTower</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 </project>

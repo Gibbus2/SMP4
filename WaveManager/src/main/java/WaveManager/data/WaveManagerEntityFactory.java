@@ -24,6 +24,7 @@ import java.util.ServiceLoader;
 import static java.util.stream.Collectors.toList;
 
 public class WaveManagerEntityFactory implements EntityFactory {
+    /*
 
     List<Point2D> waypoints = map.Waypoint.fromPolyline().getWaypoints();
 
@@ -97,6 +98,8 @@ public class WaveManagerEntityFactory implements EntityFactory {
     private Collection<? extends EnemyComponentSPI> getEnemyComponentSPIs() {
         return ServiceLoader.load(EnemyComponentSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
     }
+
+     */
 
 
 

@@ -1,26 +1,22 @@
 package WaveManager.data;
 
 import com.almasb.fxgl.dsl.FXGL;
-import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.entity.state.StateComponent;
-import com.almasb.fxgl.physics.BoundingShape;
-import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.texture.Texture;
 import common.data.EntityType;
-import enemy.Enemy;
+import common.data.GameData;
 import enemy.EnemyComponentSPI;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import objectPool.IObjectPool;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
-import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class WaveManager {
@@ -29,119 +25,99 @@ public class WaveManager {
     //so 0 = no spawning, need to offset counter by 1 or do i?
     private int currentWave = 1;
     private List<Point2D> wayPoints;
-    private int enemyCount = 0;
-    private WaveData waveData;
-    private AtomicInteger countDown = new AtomicInteger(0);
     private Button startWaveButton;
-    private boolean timerRunning = false;
     private IObjectPool objectPool;
     private ArrayList<Generation> generations;
     private List<String> enemies;
+    private GameData gameData;
 
-    public WaveManager(IObjectPool objectPool) {
+    public WaveManager(IObjectPool objectPool, GameData gameData) {
         this.objectPool = objectPool;
+        this.gameData = gameData;
+        this.enemies = new ArrayList<>();
+        this.generations = new ArrayList<>();
     }
 
     public void init(){
-        //FXGL.getEventBus().addEventHandler(EnemyReachedEndEvent.ANY, event -> enemyCount--);
-        this.generations = new ArrayList<>();
-
-
-
-
-//        for (EnemyComponentSPI enemy : enemiesSPI){
-//            enemies.add("");
-//        }
-
-        //generations.add(new Generation(enemies));
+        //get waypoints
         this.wayPoints = map.Waypoint.fromPolyline().getWaypoints();
 
-        for (Point2D p : wayPoints){
-            FXGL.entityBuilder()
-                    .at(p)
-                    .viewWithBBox(new Rectangle(1,1, Color.RED))
-                    .buildAndAttach();
-        }
-
+        //get config for enemies and add them to object pool
         List<EnemyComponentSPI> enemies = ServiceLoader.load(EnemyComponentSPI.class).stream().map(ServiceLoader.Provider::get).toList();
-
         for (int i = 0; i < enemies.size(); i++) {
 
-            Enemy enemy = enemies.get(i).createEnemyComponent(wayPoints);
+            String id = "WaveManager_enemy_" + i;
             Texture texture = new Texture(enemies.get(i).getImage());
+            EnemyComponentSPI componentSPI = enemies.get(i);
 
-            this.objectPool.createPool("HELLO",
+            this.objectPool.createPool((id),
                     () -> FXGL.entityBuilder()
-                            .viewWithBBox(new Rectangle(48, 48, Color.GREEN))
+                            .viewWithBBox(new Rectangle(texture.getWidth(), texture.getHeight(), (gameData.debug) ? Color.GREEN : new Color(0,0,0,0)))
                             .type(EntityType.ENEMY)
                             .with(new CollidableComponent(true))
-                            .with(enemy)
-                            .view(texture)
+                            .with(componentSPI.createEnemyComponent(wayPoints, this.objectPool,id))
+                            .view(texture.copy())
                             .with(new StateComponent())
                             .buildAndAttach()
             );
 
+            this.enemies.add(id);
         }
 
-        Entity e = this.objectPool.getEntityFromPool("HELLO");
-        e.getComponent(Enemy.class).reset();
+        //add first generation
+        Generation generation = new Generation(this::createNextGeneration);
+        generation.generate(this.enemies, null);
+        this.generations.add(generation);
 
-        System.out.println("Enemy added");
-        System.out.println(e.getComponent(Enemy.class).getEntity().getWidth());
-        //e.setRotation(0);
-
-       // generations.getFirst().createEnemies(this.wayPoints, this.objectPool);
     }
 
-//    private void createNextGeneration(){
-//        //find best wave
-//        Generation bestGeneration = this.generations.getFirst();
-//        for (Generation gen : this.generations){
-//            if(gen.getAvgDistance() > bestGeneration.getAvgDistance()){
-//                bestGeneration = gen;
-//            }
-//        }
-//
-//        //generate new wave
-//        this.generations.add(new Generation(bestGeneration.getEnemies(), bestGeneration.getGeneration()));
-//
-//    }
+    private void createNextGeneration(){
+
+        //find best wave
+        Generation bestGeneration = this.generations.getFirst();
+        for (Generation gen : this.generations){
+            if(gen.averageDistance() > bestGeneration.averageDistance()){
+                bestGeneration = gen;
+            }
+        }
+
+        //generate new wave
+        Generation generation = new Generation(this::createNextGeneration);
+        generation.generate(this.enemies, bestGeneration);
+        this.generations.add(generation);
+
+        startWaveButton.setVisible(true);
+        currentWave++;
+
+    }
 
     public void startWave(){
-       // wayPoints = map.Waypoint.fromPolyline().getWaypoints();
-        //start wave eh
-//        waveData = new WaveData(objectPool, currentWave);
-//        waveData.enemyArrayLoader(currentWave, waveData.getEnemies());
-//        enemySpawner(waveData);
-//        FXGL.getWorldProperties().setValue("currentWave", currentWave);
-//        currentWave++;
+        FXGL.getWorldProperties().setValue("currentWave", currentWave);
+        this.generations.getLast().launch(this.objectPool);
     }
 
-    public void setButtonVisible(){
-        startWaveButton.setVisible(true);
+    public void startWaveUI(){
+        startWaveButton = new Button("Start Wave");
+
+
+        startWaveButton.setTranslateX(50);
+        startWaveButton.setTranslateY(50);
+        startWaveButton.setOnAction(e -> {
+            this.startWave();
+            startWaveButton.setVisible(false);
+        });
+        FXGL.getGameScene().addUINode(startWaveButton);
+
+        //waveCounter text
+        Text waveCounterText = new Text();
+        waveCounterText.setTranslateX(50);
+        waveCounterText.setTranslateY(150);
+        waveCounterText.textProperty().bind(FXGL.getWorldProperties().intProperty("currentWave").asString("Wave: %d"));
+
+        FXGL.getGameScene().addUINode(waveCounterText);
+
     }
 
-//    public void startWaveUI(WaveManager waveManager){
-//        startWaveButton = new Button("Start Wave");
-//
-//
-//        startWaveButton.setTranslateX(50);
-//        startWaveButton.setTranslateY(50);
-//        startWaveButton.setOnAction(e -> {
-//            waveManager.waveIntermission();
-//            startWaveButton.setVisible(false);
-//        });
-//        FXGL.getGameScene().addUINode(startWaveButton);
-//
-//        //waveCounter text
-//        Text waveCounterText = new Text();
-//        waveCounterText.setTranslateX(50);
-//        waveCounterText.setTranslateY(150);
-//        waveCounterText.textProperty().bind(FXGL.getWorldProperties().intProperty("currentWave").asString("Wave: %d"));
-//
-//        FXGL.getGameScene().addUINode(waveCounterText);
-//
-//    }
 
 //    public void stopWave(){
 //        //stop wave, use this on player death
@@ -154,13 +130,6 @@ public class WaveManager {
     public int getCurrentWave(){
         return currentWave;
     }
-//    public int getEnemyCount(){
-//        return enemyCount;
-//    }
-//    public void setEnemyCount(int enemyCount) {
-//        this.enemyCount = enemyCount;
-//    }
-
 
 //
 //    public void waveIntermission(){
@@ -187,37 +156,5 @@ public class WaveManager {
 //                countDownText.setText("");
 //            }
 //        }, Duration.seconds(1));
-//    }
-
-//    public AtomicInteger getCountDown(){
-//        return countDown;
-//    }
-
-//    public void delayButton(WaveManager waveManager) {
-//        if (!timerRunning && waveManager.getEnemyCount() == 0 && waveManager.getCountDown().get() == 0) {
-//            timerRunning = true;
-//            FXGL.getGameTimer().runOnceAfter(() -> {
-//                // Check the conditions again after the delay
-//                if (waveManager.getEnemyCount() == 0 && waveManager.getCountDown().get() == 0) {
-//                    waveManager.setButtonVisible();
-//                }
-//                timerRunning = false;
-//            }, Duration.seconds(1)); // delay in seconds
-//        }
-//    }
-//    private void enemySpawner(WaveData waveData){
-//
-//        Polyline polyline = FXGL.getGameWorld().getEntitiesByType(EntityType.WAYPOINT).getFirst().getObject("polyline");
-//        //polyline.getPoints returns an array of the points in the polyline
-//
-//        for(int i = 0; i < waveData.getEnemies().size();i++){
-//            int j = i;
-//            getGameTimer().runOnceAfter(() -> {
-//                Entity enemy = waveData.getEnemies().get(j);
-//                  spawn(enemy.getType().toString(), wayPoints.get(0).getX(), wayPoints.get(0).getY());// get x and y from map, prob add some variance to the spawn
-//                enemyCount++;
-//            }, Duration.seconds(1 + i));
-//
-//        }
 //    }
 }

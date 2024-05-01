@@ -1,33 +1,29 @@
 package ui;
 
 import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.texture.Texture;
-import com.almasb.fxgl.ui.UI;
-import javafx.event.EventHandler;
-import javafx.geometry.Pos;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
-import com.almasb.fxgl.entity.Entity;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
 import java.io.InputStream;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class TowerSelection extends HBox {
+public class TowerSelection {
+    private Entity imageEntity;
 
-    private Entity cell;
-    public TowerSelection(){
-
-        setLayoutX(0);
-        setLayoutY(720);
-        setPrefSize(1440, 88);
-
+    public HBox createTowerSelection() {
+        HBox hbox = new HBox();
+        hbox.setLayoutX(0);
+        hbox.setLayoutY(720);
+        hbox.setPrefSize(1440, 88);
 
         Rectangle rectangle = new Rectangle(10, 10, Color.RED);
         Rectangle rectangle2 = new Rectangle(10, 10, Color.BLUE);
@@ -37,46 +33,73 @@ public class TowerSelection extends HBox {
         rectangle2.setTranslateX(1420);
         rectangle2.setTranslateY(78);
 
+        List<String> list = new ArrayList<>();
+        list.add("/assets/tower1.png");
+        list.add("/assets/tower2.png");
+        list.add("/assets/tower3.png");
+        list.add("/assets/tower4.png");
+        list.add("/assets/tower5.png");
+        list.add("/assets/tower6.png");
 
-        ImageLoader imageLoader = new ImageLoader();
+        System.out.println("List: " + list);
 
-        /*
-        System.out.println("From TowerSelection"+ Arrays.toString(imageLoader.getTextures()));*/
+        AtomicBoolean isImageFollowingCursor = new AtomicBoolean(false);
+        ImageView imageView = new ImageView();
+        imageView.setMouseTransparent(true);
 
-    /*    for (Texture texture : imageLoader.getTextures()) {
-            System.out.println("Texture: ");
-        }*/
+        for (String path : list) {
+            InputStream is = TowerSelection.class.getResourceAsStream(path);
+            assert is != null;
+            Image img = new Image(is);
+            Texture texture = new Texture(img);
+
+            texture.setOnMouseClicked(e -> {
+                System.out.println("Clicked on texture: " + path);
+                if (!isImageFollowingCursor.get()) {
+                    imageView.setImage(texture.getImage());
+                    imageView.setX(e.getSceneX() - imageView.getImage().getWidth() / 2);
+                    imageView.setY(e.getSceneY() - imageView.getImage().getHeight() / 2);
+
+                    imageEntity = FXGL.entityBuilder()
+                            .viewWithBBox(imageView)
+                            .at(imageView.getX(), imageView.getY())
+                            .with(new CollidableComponent(true))
+                            .buildAndAttach();
+                    System.out.println("Entity created: " + imageEntity);
+                    FXGL.getGameScene().addUINode(imageView);
+                    isImageFollowingCursor.set(true);
+                } else {
+                    FXGL.getGameScene().removeUINode(imageView);
+                    isImageFollowingCursor.set(false);
+                }
+            });
+            hbox.getChildren().add(texture);
+            System.out.println("Texture: " + texture);
+        }
+
+        FXGL.getGameScene().getContentRoot().setOnMouseClicked(e -> {
+            if (e.getButton() == MouseButton.SECONDARY && isImageFollowingCursor.get()) {
+                FXGL.getGameScene().removeUINode(imageView);
+                isImageFollowingCursor.set(false);
+                System.out.println("Removed image from cursor. By right click.");
+
+                // Remove the entity from the game world
+                FXGL.getGameWorld().removeEntity(imageEntity);
 
 
-        InputStream is = TowerSelection.class.getResourceAsStream("/assets/tower2.png");
-        Image img = new Image(is);
-        Texture texture = new Texture(img);
-        getChildren().add(texture);
-        System.out.println(Arrays.toString(imageLoader.getTextures()));
-        System.out.println("Texture: " + texture.toString());
+            }
+        });
 
+        FXGL.getGameScene().getContentRoot().setOnMouseMoved(e -> {
+            if (isImageFollowingCursor.get()) {
+                imageView.setX(e.getSceneX() - imageView.getImage().getWidth() / 2);
+                imageView.setY(e.getSceneY() - imageView.getImage().getHeight() / 2);
+            }
+            System.out.println("test for entity: " + imageEntity);
+        });
 
-        System.out.println("TowerMenu Loaded.");
-        System.out.println(Arrays.toString(imageLoader.getTextures()));
-        /*
-        Texture[] textures = imageLoader.getTextures();
-        System.out.println("Textures: " + Arrays.toString(textures));*/
-/*        for (Texture texture : textures) {
-            getChildren().add(texture);
-        }*/
+        ;
 
-        getChildren().addAll(rectangle, rectangle2);
-
-
-
-
-
-
+        return hbox;
     }
-
-/*    public static void main(String[] args) {
-        ImageLoader imageLoader = new ImageLoader();
-        System.out.println(Arrays.toString(imageLoader.getTextures()));
-    }*/
-
 }
