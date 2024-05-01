@@ -17,7 +17,7 @@ public class Enemy extends Component {
     private final String objectPoolName;
     private Runnable onRemove;
 
-    private double distanceTravelled;
+    private int distanceTravelled;
 
     public Enemy(List<Point2D> wayPoints, double speed, IObjectPool objectPool, String objectPoolName){
         this.wayPoints = wayPoints;
@@ -28,7 +28,7 @@ public class Enemy extends Component {
         this.onRemove = null;
     }
 
-    public double getDistanceTravelled() {
+    public int getDistanceTravelled() {
         return distanceTravelled;
     }
 
@@ -38,9 +38,10 @@ public class Enemy extends Component {
         double radians = Math.toRadians(getEntity().getRotation());
         double y = speed * Math.sin(radians) * tpf;
         double x = speed * Math.cos(radians) * tpf;
+
         setPos(getPos().add(x,y));
 
-        this.distanceTravelled += y + x;
+        this.distanceTravelled += (int) (x + y);
 
         //check if we have passed the waypoint
         double distMoved = getPos().distance(wayPoints.get(targetWaypoint - 1));
