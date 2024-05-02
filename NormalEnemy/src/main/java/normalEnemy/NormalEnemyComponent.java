@@ -8,8 +8,9 @@ import health.HealthComponent;
 import java.util.List;
 
 public class NormalEnemyComponent extends Enemy {
-    public NormalEnemyComponent(List<Point2D> wayPoints, double speed, IObjectPool objectPool, String objectPoolName) {
-        super(wayPoints, speed, objectPool, objectPoolName);
+    public NormalEnemyComponent(List<Point2D> wayPoints) {
+        super(wayPoints);
+        this.speed = 100;
     }
 
     @Override

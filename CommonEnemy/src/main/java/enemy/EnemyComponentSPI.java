@@ -8,7 +8,7 @@ import objectPool.IObjectPool;
 import java.util.List;
 
 public interface EnemyComponentSPI {
-    Enemy createEnemyComponent(List<Point2D> wayPoints, IObjectPool objectPool, String objectPoolName);
+    Enemy createEnemyComponent(List<Point2D> wayPoints);
 
     Image getImage();
 }
