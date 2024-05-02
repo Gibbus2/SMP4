@@ -14,8 +14,8 @@ public class Enemy extends Component {
     private double speed;
     private final List<Point2D> wayPoints;
     private int targetWaypoint;
-
     private int distanceTravelled;
+    private Runnable onRemove;
 
     public Enemy(List<Point2D> wayPoints, double speed){
         this.wayPoints = wayPoints;
@@ -25,6 +25,10 @@ public class Enemy extends Component {
 
     public int getDistanceTravelled() {
         return distanceTravelled;
+    }
+
+    public void setOnRemove(Runnable onRemove) {
+        this.onRemove = onRemove;
     }
 
     @Override
@@ -60,12 +64,14 @@ public class Enemy extends Component {
         rotate(0);
         setPos(wayPoints.getFirst());
         this.targetWaypoint = 1;
+        this.distanceTravelled = 0;
     }
 
     public void damage(int dmg){
         HealthComponent health = getEntity().getComponent(HealthComponent.class);
         health.setHealth(health.getHealth() - dmg);
         if(health.isDead()){
+            this.onRemove.run();
             if (getEntity().hasComponent(PooledObjectComponent.class)) {
                 getEntity().getComponent(PooledObjectComponent.class).returnToPool();
             } else {
