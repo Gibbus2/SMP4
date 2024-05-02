@@ -3,7 +3,6 @@ package enemy;
 import com.almasb.fxgl.entity.component.Component;
 import javafx.geometry.Point2D;
 import health.HealthComponent;
-import objectPool.IObjectPool;
 import objectPool.PooledObjectComponent;
 
 
@@ -11,15 +10,15 @@ import java.util.List;
 
 public class Enemy extends Component {
 
-    private double speed;
+    protected double speed;
     private final List<Point2D> wayPoints;
     private int targetWaypoint;
     private int distanceTravelled;
     private Runnable onRemove;
 
-    public Enemy(List<Point2D> wayPoints, double speed){
+    public Enemy(List<Point2D> wayPoints){
         this.wayPoints = wayPoints;
-        this.speed = speed;
+        this.speed = 10;
         this.distanceTravelled = 0;
     }
 
@@ -45,7 +44,7 @@ public class Enemy extends Component {
         //check if we have passed the waypoint
         double distMoved = getPos().distance(wayPoints.get(targetWaypoint - 1));
         double maxDist = wayPoints.get(targetWaypoint - 1).distance(wayPoints.get(targetWaypoint));
-        if( distMoved >= maxDist && targetWaypoint < wayPoints.size() - 1){
+        if (distMoved >= maxDist && targetWaypoint < wayPoints.size() - 1){
             //rotate to next waypoint and reset position to the current waypoint
             rotate(targetWaypoint);
             setPos(wayPoints.get(targetWaypoint));
@@ -67,7 +66,7 @@ public class Enemy extends Component {
         this.distanceTravelled = 0;
     }
 
-    public void damage(int dmg){
+    public void damage(int dmg, boolean isPlayer){
         HealthComponent health = getEntity().getComponent(HealthComponent.class);
         health.setHealth(health.getHealth() - dmg);
         if(health.isDead()){
@@ -77,6 +76,9 @@ public class Enemy extends Component {
             } else {
                 getEntity().removeFromWorld();
             }
+        }
+        if (!isPlayer) {
+            // TODO: Give player x Money.
         }
     }
 

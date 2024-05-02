@@ -1,6 +1,5 @@
 package common.tower;
 
-
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
@@ -12,210 +11,282 @@ import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.time.LocalTimer;
+import common.bullet.BulletSPI;
 import common.data.EntityType;
+import enemy.Enemy;
+import health.HealthComponent;
 import javafx.geometry.Point2D;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
+import objectPool.IObjectPool;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
+import static java.util.stream.Collectors.toList;
 
-public class CommonTowerComponent extends Component /*implements TowerComponentSPI*/ {
-    private int damage;
-    private int cost;
-    private double firerate;
-    private int range;
-    private Targetting targetting;
+public class CommonTowerComponent extends Component implements TowerSPI {
+    protected int damage;
+    public int getDamage(){ return damage; }
 
-    public List<Entity> enemiesInRange;
+    protected int cost;
+    @Override
+    public int getCost(){ return cost; }
 
-    private LocalTimer shootTimer;
+    protected double firerate; // in seconds
+    public double getFirerate(){ return firerate; }
+
+    protected int range;
+    public int getRange(){ return range; }
+
+    @Override
+    public String getName() {
+        return "";
+    }
+
+    protected IObjectPool objectPool;
+
+    private TowerState targetting;
+
+    protected List<Entity> enemiesInRange;
+    public void addEnemy(Entity enemy) { enemiesInRange.add(enemy); }
+    public void removeEnemy(Entity enemy) { enemiesInRange.remove(enemy); }
+
+    protected LocalTimer shootTimer;
 
     private StateComponent state;
 
-    private CollisionHandler collisionHandler;
+    private EntityState IDLE_STATE;
+    private EntityState FIRST_STATE;
+    private EntityState LAST_STATE;
+    private EntityState STRONGEST_STATE;
+    private EntityState WEAKEST_STATE;
 
-    public CommonTowerComponent() {
-
+    public CommonTowerComponent(IObjectPool objectPool) {
+        this.damage = 1;
+        this.cost = 10;
+        this.firerate = 0.5;
+        this.range = 15;
+        this.targetting = TowerState.FIRST;
+        enemiesInRange = new ArrayList<>();
+        this.objectPool = objectPool;
     }
 
-    public CommonTowerComponent(int towerDamage, int towerPrice, double towerFirerate, int towerRange, int towerX, int towerY, String towerTarget) {
-        this.damage = towerDamage;
-        this.cost = towerPrice;
-        this.firerate = towerFirerate;
-        this.range = towerRange;
-        this.targetting = Targetting.FIRST;
+    public Component createComponent(IObjectPool objectPool) {
+        return new CommonTowerComponent(objectPool);
+    }
 
-        collisionHandler = new CollisionHandler(EntityType.ENEMY, EntityType.TOWER) {
+    @Override
+    public void onAdded() {
+        entity.addComponent(new StateComponent());
+        state = entity.getComponent(StateComponent.class);
+
+        getEntity().getComponent(BoundingBoxComponent.class).addHitBox(new HitBox(BoundingShape.circle(range)));
+        getEntity().getComponent(ViewComponent.class).addChild(new Circle(range, Color.BLUE));
+
+        shootTimer = FXGL.newLocalTimer();
+        shootTimer.capture();
+
+        enemiesInRange = new ArrayList<>();
+        targetting = TowerState.FIRST; // Changed outside of this class.
+
+        IDLE_STATE = new EntityState(TowerState.IDLE.toString()) {
             @Override
-            protected void onCollisionBegin(Entity a, Entity b) {
-                enemiesInRange.add(a);
+            protected void onUpdate(double tpf) {
+                if (enemiesInRange != null && !enemiesInRange.isEmpty()) {
+                    switch (targetting) {
+                        case FIRST:
+                            state.changeState(FIRST_STATE);
+                            break;
+                        case LAST:
+                            state.changeState(LAST_STATE);
+                            break;
+                        case STRONGEST:
+                            state.changeState(STRONGEST_STATE);
+                            break;
+                        case WEAKEST:
+                            state.changeState(WEAKEST_STATE);
+                            break;
+                    }
+                }
             }
-
+        };
+        FIRST_STATE = new EntityState(TowerState.FIRST.toString()) {
             @Override
-            protected void onCollisionEnd(Entity a, Entity b) {
-                enemiesInRange.remove(a);
+            protected void onUpdate(double tpf) {
+                if (enemiesInRange == null || !enemiesInRange.isEmpty()) {
+                    state.changeState(IDLE_STATE);
+                }
+
+                if (targetting != TowerState.FIRST) {
+                    switch (targetting) {
+                        case LAST:
+                            state.changeState(LAST_STATE);
+                            break;
+                        case STRONGEST:
+                            state.changeState(STRONGEST_STATE);
+                            break;
+                        case WEAKEST:
+                            state.changeState(WEAKEST_STATE);
+                            break;
+                    }
+                }
+
+                Entity target = sortByDistanceTraveled(enemiesInRange).getFirst();
+                rotateToTarget(target);
+
+                if (shootTimer.elapsed(Duration.seconds(firerate))) {
+                    shoot(target);
+                }
+            }
+        };
+        LAST_STATE = new EntityState(TowerState.LAST.toString()) {
+            @Override
+            protected void onUpdate(double tpf) {
+                if (enemiesInRange == null || !enemiesInRange.isEmpty()) {
+                    state.changeState(IDLE_STATE);
+                }
+
+                if (targetting != TowerState.LAST) {
+                    switch (targetting) {
+                        case FIRST:
+                            state.changeState(FIRST_STATE);
+                            break;
+                        case STRONGEST:
+                            state.changeState(STRONGEST_STATE);
+                            break;
+                        case WEAKEST:
+                            state.changeState(WEAKEST_STATE);
+                            break;
+                    }
+                }
+
+                Entity target = sortByDistanceTraveled(enemiesInRange).getFirst();
+                rotateToTarget(target);
+
+                if (shootTimer.elapsed(Duration.seconds(firerate))) {
+                    shoot(target);
+                }
+            }
+        };
+        STRONGEST_STATE = new EntityState(TowerState.STRONGEST.toString()) {
+            @Override
+            protected void onUpdate(double tpf) {
+                if (enemiesInRange == null || !enemiesInRange.isEmpty()) {
+                    state.changeState(IDLE_STATE);
+                }
+
+                if (targetting != TowerState.STRONGEST) {
+                    switch (targetting) {
+                        case FIRST:
+                            state.changeState(FIRST_STATE);
+                            break;
+                        case LAST:
+                            state.changeState(LAST_STATE);
+                            break;
+                        case WEAKEST:
+                            state.changeState(WEAKEST_STATE);
+                            break;
+                    }
+                }
+
+                Entity target = sortByHealth(enemiesInRange).getFirst();
+                rotateToTarget(target);
+
+                if (shootTimer.elapsed(Duration.seconds(firerate))) {
+                    shoot(target);
+                }
+            }
+        };
+        WEAKEST_STATE = new EntityState(TowerState.WEAKEST.toString()) {
+            @Override
+            protected void onUpdate(double tpf) {
+                if (enemiesInRange == null || !enemiesInRange.isEmpty()) {
+                    state.changeState(IDLE_STATE);
+                }
+
+                if (targetting != TowerState.WEAKEST) {
+                    switch (targetting) {
+                        case FIRST:
+                            state.changeState(FIRST_STATE);
+                            break;
+                        case LAST:
+                            state.changeState(LAST_STATE);
+                            break;
+                        case STRONGEST:
+                            state.changeState(STRONGEST_STATE);
+                            break;
+                    }
+                }
+
+                Entity target = sortByHealth(enemiesInRange).getLast();
+                rotateToTarget(target);
+
+                if (shootTimer.elapsed(Duration.seconds(firerate))) {
+                    shoot(target);
+                }
             }
         };
 
+        state.changeState(IDLE_STATE);
     }
 
+    private void shoot(Entity enemy) {
 
-   /* public void sortByDistanceTraveled() {
-        enemiesInRange.sort(Comparator.comparing(enemy -> enemy.getComponent(EnemyComponent.class).getDistanceTraveled()));
+        getBulletSPIs().stream().findFirst().ifPresent(SPI -> {
+            objectPool.createPool(EntityType.BULLET.toString(), () -> FXGL.entityBuilder()
+                    .type(EntityType.BULLET)
+                    .at(entity.getPosition())
+                    .with(SPI.createComponent(enemy))
+                    .build()
+            );
+
+            objectPool.getEntityFromPool(EntityType.BULLET.toString());
+        });
+
+        // TODO: ObjectPool this.
+//        Entity bullet = FXGL.entityBuilder()
+//                .type(EntityType.BULLET)
+//                .at(entity.getPosition())
+//                .with(new Bullet())
+//                .buildAndAttach();
+
+//        Bullet Bullet = bullet.getComponent(Bullet.class);
+//        Bullet.setDirection(direction);
     }
 
-    public void sortByHealth() {
-        enemiesInRange.sort(Comparator.comparing(enemy -> enemy.getComponent(EnemyComponent.class).getHealth()));
-    } */
-//
-//    @Override
-//    public void onAdded() {
-//        state = entity.getComponent(StateComponent.class);
-//        state.changeState(IDLE);
-//
-//        getEntity().getComponent(BoundingBoxComponent.class).addHitBox(new HitBox(BoundingShape.circle(range)));
-//        getEntity().getComponent(ViewComponent.class).addChild(new Circle(range, Color.BLUE));
-//
-//        // TODO: Huge red flag. Might be a bug when trying to build.
-//        FXGL.getPhysicsWorld().addCollisionHandler(collisionHandler);
-//
-//        shootTimer = FXGL.newLocalTimer();
-//        shootTimer.capture();
-//    }
-//
-//    @Override
-//    public void onRemoved() {
-//        FXGL.getPhysicsWorld().removeCollisionHandler(collisionHandler);
-//    }
-//
-//    @Override
-//    public void onUpdate(double tpf) {
-//        if (enemiesInRange != null && !enemiesInRange.isEmpty()) {
-//            switch (targetting) {
-//                case FIRST:
-//                    state.changeState(FIRSTTARGET);
-//                    break;
-//                case LAST:
-//                    state.changeState(LASTTARGET);
-//                    break;
-//                case STRONGEST:
-//                    state.changeState(STRONGTARGET);
-//                    break;
-//                case WEAKEST:
-//                    state.changeState(WEAKTARGET);
-//                    break;
-//                default:
-//                    state.changeState(IDLE);
-//                    break;
-//            }
-//        }
-//    }
-//
-//    private void shoot(Entity enemy) {
-//        Point2D direction = enemy.getPosition().subtract(entity.getPosition());
-//        entity.rotateToVector(direction);
-//
-//        // TODO: ObjectPool this.
-////        Entity bullet = FXGL.entityBuilder()
-////                .type(EntityType.BULLET)
-////                .at(entity.getPosition())
-////                .with(new Bullet())
-////                .buildAndAttach();
-//
-////        Bullet Bullet = bullet.getComponent(Bullet.class);
-////        Bullet.setDirection(direction);
-//    }
-//
-//
-//    private final EntityState FIRSTTARGET = new EntityState("FIRSTTARGET") {
-//        @Override
-//        protected void onUpdate(double tpf) {
-//        //  TODO: PriorityQueue based on distance traveled from enemiesInRange.
-//
-//        //  sortByDistanceTraveled();
-//            if (shootTimer.elapsed(Duration.seconds(firerate))) {
-////                shoot(); // TODO: Implement shoot method.
-//            }
-//        }
-//    };
-//
-//
-//    private final EntityState LASTTARGET = new EntityState("LASTTARGET") {
-//        @Override
-//        public void onEntering() {
-//            //sortByDistanceTraveled().reversed();
-//        }
-//        @Override
-//        protected void onUpdate(double tpf) {
-//            if (shootTimer.elapsed(Duration.seconds(firerate))) {
-//                updateEnemiesInRange();
-////                shoot();
-//            }
-//        }
-//    };
-//
-//    private final EntityState STRONGTARGET = new EntityState("STRONGTARGET") {
-//        @Override
-//        public void onEntering() {
-//            //sortByHealth().reversed();
-//        }
-//        @Override
-//        protected void onUpdate(double tpf) {
-//            if (shootTimer.elapsed(Duration.seconds(firerate))) {
-//                updateEnemiesInRange();
-////                shoot();
-//            }
-//        }
-//    };
-//
-//    private final EntityState WEAKTARGET = new EntityState("WEAKTARGET") {
-//        @Override
-//        public void onEntering() {
-//            //sortByHealth();
-//        }
-//        @Override
-//        protected void onUpdate(double tpf) {
-//            if (shootTimer.elapsed(Duration.seconds(firerate))) {
-//                updateEnemiesInRange();
-////                shoot();
-//            }
-//        }
-//    };
-//
-//    private final EntityState IDLE = new EntityState("IDlE") {
-//        @Override
-//        public void onEntering() {
-//
-//        }
-//        @Override
-//        protected void onUpdate(double tpf) {
-//
-//        }
-//
-//    };
-//
-//
-//
-//    public int getDamage(){
-//        return damage;
-//    }
-    public int getPrice(){
-        return cost;
+    private void rotateToTarget(Entity target) {
+        entity.rotateToVector(target.getPosition().subtract(entity.getPosition()));
     }
-//    public double getFirerate(){
-//        return firerate;
-//    }
-//    public int getRange(){
-//        return range;
-//    }
-//    public int getX(){
-//        return towerX;
-//    }
-//    public int getY(){
-//        return towerY;
-//    }
+
+    private List<Entity> sortByDistanceTraveled(List<Entity> enemiesInRange) {
+        List<Entity> list = new ArrayList<>(enemiesInRange);
+        list.sort((o1, o2) -> {
+            List<Component> components1 = o1.getComponents();
+            List<Component> components2 = o2.getComponents();
+
+            for (Component c1 : components1) {
+                for (Component c2 : components2) {
+                    if (c1 instanceof Enemy && c2 instanceof Enemy) {
+                        return ((Enemy) c1).getDistanceTravelled() - ((Enemy) c2).getDistanceTravelled();
+                    }
+                }
+            }
+            return 0;
+        });
+
+        return list;
+    }
+
+    public List<Entity> sortByHealth(List<Entity> enemiesInRange) {
+        List<Entity> list = new ArrayList<>(enemiesInRange);
+        enemiesInRange.sort(Comparator.comparingInt(o -> o.getComponent(HealthComponent.class).getHealth()));
+
+        return list;
+    }
+
+    private Collection<? extends BulletSPI> getBulletSPIs() {
+        return ServiceLoader.load(BulletSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
+    }
+
 }

@@ -1,6 +1,7 @@
 package bullet;
 
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.component.Component;
 import common.bullet.BulletSPI;
 import common.bullet.CommonBullet;
 import javafx.scene.image.Image;
@@ -8,10 +9,20 @@ import objectPool.IObjectPool;
 
 import java.io.InputStream;
 
-public class Bullet implements BulletSPI {
+public class Bullet extends CommonBullet implements BulletSPI {
+
+    public Bullet(Entity target) {
+        super(target);
+    }
+
     @Override
-    public CommonBullet createComponent(double speed, int damage, Entity target, IObjectPool objectPool, String objectPoolName) {
-        return new BulletComponent(500.0, damage, target, objectPool, objectPoolName);
+    public Component createComponent(Entity target) {
+        return new Bullet(target);
+    }
+
+    @Override
+    public int getDamage() {
+        return 0;
     }
 
     @Override

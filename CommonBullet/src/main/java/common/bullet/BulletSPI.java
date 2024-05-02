@@ -6,6 +6,7 @@ import javafx.scene.image.Image;
 import objectPool.IObjectPool;
 
 public interface BulletSPI {
-    CommonBullet createComponent(double speed, int damage, Entity target, IObjectPool objectPool, String objectPoolName);
+    Component createComponent(Entity target);
+    int getDamage();
     Image getImage();
 }

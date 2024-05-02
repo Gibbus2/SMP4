@@ -1,8 +1,9 @@
 package common.tower;
 
-public enum Targetting {
+public enum TowerState {
     FIRST,
     LAST,
     WEAKEST,
-    STRONGEST
+    STRONGEST,
+    IDLE
 }

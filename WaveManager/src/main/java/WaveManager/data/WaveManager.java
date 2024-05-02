@@ -55,7 +55,7 @@ public class WaveManager {
                             .viewWithBBox(new Rectangle(texture.getWidth(), texture.getHeight(), (gameData.debug) ? Color.GREEN : new Color(0,0,0,0)))
                             .type(EntityType.ENEMY)
                             .with(new CollidableComponent(true))
-                            .with(componentSPI.createEnemyComponent(wayPoints, this.objectPool,id))
+                            .with(componentSPI.createEnemyComponent(wayPoints))
                             .view(texture.copy())
                             .with(new StateComponent())
                             .buildAndAttach()

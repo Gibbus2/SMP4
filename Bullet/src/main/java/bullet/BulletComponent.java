@@ -5,7 +5,9 @@ import common.bullet.CommonBullet;
 import objectPool.IObjectPool;
 
 public class BulletComponent extends CommonBullet {
-    public BulletComponent(double speed, int damage, Entity target, IObjectPool objectPool, String objectPoolName) {
-        super(speed, damage, target, objectPool, objectPoolName);
+    public BulletComponent(Entity target) {
+        super(target);
+        this.speed = 1;
+        this.damage = 2;
     }
 }

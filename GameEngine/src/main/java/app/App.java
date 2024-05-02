@@ -7,25 +7,20 @@ import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
-import com.almasb.fxgl.entity.components.BoundingBoxComponent;
 import com.almasb.fxgl.entity.components.CollidableComponent;
-import com.almasb.fxgl.entity.components.ViewComponent;
-import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.CollisionHandler;
-import com.almasb.fxgl.physics.HitBox;
-import common.bullet.BulletSPI;
+import common.bullet.CommonBullet;
 import common.player.PlayerSPI;
+import common.tower.CommonTowerComponent;
+import common.tower.TowerSPI;
 import enemy.Enemy;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -44,8 +39,8 @@ import objectPool.ObjectPool;
 import objectPool.IObjectPool;
 
 
+import objectPool.PooledObjectComponent;
 import ui.GameMenu;
-import ui.ImageLoader;
 import map.Waypoint;
 import ui.TowerSelection;
 
@@ -59,7 +54,7 @@ public class App extends GameApplication {
     protected void initSettings(GameSettings settings) {
         settings.setWidth(gameData.getDisplayWidth());
         settings.setHeight(gameData.getDisplayHeight());
-        settings.setTitle("Dick N Bauss");
+        settings.setTitle("SDU TD");
         settings.setGameMenuEnabled(true);
         settings.setMainMenuEnabled(true);
         settings.setSceneFactory(new SceneFactory() {
@@ -125,6 +120,21 @@ public class App extends GameApplication {
                 .buildAndAttach();
 
 
+        Entity tower = FXGL.entityBuilder()
+                        .type(EntityType.TOWER)
+                        .at(600,600)
+                        .viewWithBBox(new Rectangle(48, 48, Color.BLUE))
+                        .with(new CollidableComponent(true))
+                        .with(new CommonTowerComponent(objectPool))
+                        .buildAndAttach();
+
+        Entity enemy = FXGL.entityBuilder()
+                        .type(EntityType.ENEMY)
+                        .at(700, 700)
+                        .viewWithBBox(new Rectangle(48, 48, Color.GREEN))
+                        .with(new CollidableComponent(true))
+                        .buildAndAttach();
+
 
         System.out.println(player.getWidth());
 
@@ -135,38 +145,68 @@ public class App extends GameApplication {
 
     @Override
     protected void initPhysics() {
-        System.out.println("Physics");
+        System.out.println("Creating physics handlers.");
+        System.out.println(" - Enemy and Player collision.");
         // CommonEnemy and Player collision.
         FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.ENEMY, EntityType.PLAYER) {
-            // order of types is the same as passed into the constructor
             @Override
             protected void onCollisionBegin(Entity enemy, Entity player) {
                 for(Component component : enemy.getComponents()){
                     if(component instanceof Enemy){
-                        ((Enemy) component).returnToObjectPool();
+                        ((Enemy) component).damage(1000000000, true);
                     }
                 }
+
                 getPlayerSPIs().stream().findFirst().ifPresent(
                         spi -> spi.changeHealth(-1)
                 );
             }
         });
 
+        System.out.println(" - Enemy and Tower collision.");
+        // CommonEnemy and Tower collision.
+        FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.ENEMY, EntityType.TOWER) {
+            @Override
+            protected void onCollisionBegin(Entity a, Entity b) {
+                for(Component component : b.getComponents()){
+                    if(component instanceof CommonTowerComponent){
+                        ((CommonTowerComponent) component).addEnemy(a);
+                    }
+                }
+            }
+
+            @Override
+            protected void onCollisionEnd(Entity a, Entity b) {
+                for(Component component : b.getComponents()){
+                    if(component instanceof CommonTowerComponent){
+                        ((CommonTowerComponent) component).removeEnemy(a);
+                    }
+                }
+            }
+        });
+
+        System.out.println(" - Bullet and Enemy collision.");
         // Bullet and CommonEnemy collision.
         FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.BULLET, EntityType.ENEMY) {
             @Override
             protected void onCollisionBegin(Entity bullet, Entity enemy) {
                 // TODO: Uncomment line below when enemy is merged into dev.
                 // make sure to check for bullets target
-                enemy.getComponent(Enemy.class).damage(1);
+                int damage = 0;
+                for(Component component : enemy.getComponents()){
+                    if(component instanceof CommonBullet){
+                        damage = ((CommonBullet) component).getDamage();
+                    }
+                }
 
-                // TODO: Logic should be moved into EnemyComponent.
-                if (enemy.getComponent(HealthComponent.class).isDead()) {
-                    enemy.removeFromWorld();
-                    // TODO: Scales with wave level, or something.
-//                    getEnemySPIs().stream().findFirst().ifPresent(
-//                            spi -> spi.changeHealth(-1)
-//                    );
+                for(Component component : enemy.getComponents()){
+                    if(component instanceof Enemy){
+                        ((Enemy) component).damage(damage, false);
+                    }
+                }
+
+                if (bullet.hasComponent(PooledObjectComponent.class)){
+                    bullet.getComponent(PooledObjectComponent.class).returnToPool();
                 }
             }
         });
@@ -224,15 +264,20 @@ public class App extends GameApplication {
     }
 
     private Collection<? extends PlayerSPI> getPlayerSPIs() {
+        System.out.println("Loading PlayerSPI.");
         return ServiceLoader.load(PlayerSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
     }
 
 //    private Collection<? extends EnemySPI> getEnemySPIs() {
+//        System.out.println("Loading EnemySPIs.");
 //        return ServiceLoader.load(EnemySPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
 //    }
 
-    private Collection<? extends BulletSPI> getBulletSPIs() {
-        return ServiceLoader.load(BulletSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
+
+
+    private Collection<? extends TowerSPI> getTowerSPIs() {
+        System.out.println("Loading TowerSPIs.");
+        return ServiceLoader.load(TowerSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
     }
 
 

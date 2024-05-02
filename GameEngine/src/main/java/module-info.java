@@ -11,6 +11,7 @@ open module GameEngine {
     requires ObjectPool;
     uses IObjectPool;
     uses common.bullet.BulletSPI;
+    uses common.tower.TowerSPI;
 
 
     requires WaveManager;
@@ -20,4 +21,5 @@ open module GameEngine {
     requires Health;
     requires UI;
     requires CommonBullet;
+    requires CommonTower;
 }
