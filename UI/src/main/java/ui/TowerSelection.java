@@ -5,6 +5,7 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.texture.Texture;
 import common.player.PlayerSPI;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -51,6 +52,7 @@ public class TowerSelection {
         Moneh = 0;
 
 
+
         for (String path : list) {
             InputStream is = TowerSelection.class.getResourceAsStream(path);
             assert is != null;
@@ -58,6 +60,16 @@ public class TowerSelection {
             Image img = new Image(is);
             imageView.setImage(img);
             Texture texture = new Texture(img);
+            hbox.getChildren().add(texture);
+
+            Button setMoneyButton = new Button("Set Money to 200");
+            setMoneyButton.setOnAction(e -> {
+                getPlayerSPIs().stream().findFirst().ifPresent(
+                        spi -> spi.setMoney(200)
+                );
+            });
+
+            hbox.getChildren().add(setMoneyButton);
 
             texture.setOnMouseClicked(e -> {
                 getPlayerSPIs().stream().findFirst().ifPresent(
@@ -81,11 +93,12 @@ public class TowerSelection {
                             }
 
                             if (cost > spi.getMoney()) {
-                                texture.setEffect(new javafx.scene.effect.ColorAdjust(0, 0.5, 0, 0));
+                                texture.setEffect(new javafx.scene.effect.ColorAdjust(0, -0.5, 0, 0));
                             }
-                            hbox.getChildren().add(texture);
+
                         }
                 );
+
             });
 
             FXGL.getGameScene().getContentRoot().setOnMouseClicked(e -> {

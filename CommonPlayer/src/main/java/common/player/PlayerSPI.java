@@ -7,7 +7,7 @@ public interface PlayerSPI {
     Component createComponent();
     void changeHealth(int amount);
     int getHealth();
-    void changeLedger(int amount);
+    void setMoney(int amount);
     int getMoney();
     Entity getPlayerEntity();
 }
