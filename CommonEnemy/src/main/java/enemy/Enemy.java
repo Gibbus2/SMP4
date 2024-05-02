@@ -4,6 +4,7 @@ import com.almasb.fxgl.entity.component.Component;
 import javafx.geometry.Point2D;
 import health.HealthComponent;
 import objectPool.IObjectPool;
+import objectPool.PooledObjectComponent;
 
 
 import java.util.List;
@@ -13,19 +14,13 @@ public class Enemy extends Component {
     private double speed;
     private final List<Point2D> wayPoints;
     private int targetWaypoint;
-    private final IObjectPool objectPool;
-    private final String objectPoolName;
-    private Runnable onRemove;
 
     private int distanceTravelled;
 
-    public Enemy(List<Point2D> wayPoints, double speed, IObjectPool objectPool, String objectPoolName){
+    public Enemy(List<Point2D> wayPoints, double speed){
         this.wayPoints = wayPoints;
         this.speed = speed;
-        this.objectPool = objectPool;
-        this.objectPoolName = objectPoolName;
         this.distanceTravelled = 0;
-        this.onRemove = null;
     }
 
     public int getDistanceTravelled() {
@@ -61,28 +56,21 @@ public class Enemy extends Component {
 
     }
 
-    public void setOnRemove(Runnable onRemove){
-        this.onRemove = onRemove;
-    }
-
     public void reset(){
         rotate(0);
         setPos(wayPoints.getFirst());
         this.targetWaypoint = 1;
     }
 
-    public void returnToObjectPool(){
-        if(this.onRemove != null) {
-            this.onRemove.run();
-        }
-        objectPool.getPool(objectPoolName).returnEntityToPool(getEntity());
-    }
-
     public void damage(int dmg){
         HealthComponent health = getEntity().getComponent(HealthComponent.class);
         health.setHealth(health.getHealth() - dmg);
         if(health.isDead()){
-            this.returnToObjectPool();
+            if (getEntity().hasComponent(PooledObjectComponent.class)) {
+                getEntity().getComponent(PooledObjectComponent.class).returnToPool();
+            } else {
+                getEntity().removeFromWorld();
+            }
         }
     }
 
