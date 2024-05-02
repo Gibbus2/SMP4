@@ -63,7 +63,7 @@ public class PlayerSPITest {
         getPlayerSPIs().stream().findFirst().ifPresent(
                 spi -> {
                     spi.changeLedger(10);
-                    Assertions.assertEquals(10, spi.getLedger());    ;
+                    Assertions.assertEquals(10, spi.getMoney());    ;
                 }
         );
     }

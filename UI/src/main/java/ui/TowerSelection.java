@@ -4,6 +4,7 @@ import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.texture.Texture;
+import common.player.PlayerSPI;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -13,11 +14,20 @@ import javafx.scene.shape.Rectangle;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.ServiceLoader;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static java.util.stream.Collectors.toList;
 
 public class TowerSelection {
     private Entity imageEntity;
+    private int Moneh;
+
+    private Collection<? extends PlayerSPI> getPlayerSPIs() {
+        return ServiceLoader.load(PlayerSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
+    }
 
     public HBox createTowerSelection() {
         HBox hbox = new HBox();
@@ -25,81 +35,71 @@ public class TowerSelection {
         hbox.setLayoutY(720);
         hbox.setPrefSize(1440, 88);
 
-        Rectangle rectangle = new Rectangle(10, 10, Color.RED);
-        Rectangle rectangle2 = new Rectangle(10, 10, Color.BLUE);
-
-        rectangle.setTranslateX(0);
-        rectangle.setTranslateY(0);
-        rectangle2.setTranslateX(1420);
-        rectangle2.setTranslateY(78);
-
         List<String> list = new ArrayList<>();
-        list.add("/assets/tower1.png");
-        list.add("/assets/tower2.png");
-        list.add("/assets/tower3.png");
-        list.add("/assets/tower4.png");
-        list.add("/assets/tower5.png");
-        list.add("/assets/tower6.png");
+        list.add("/assets/tower1_48px.png");
+        list.add("/assets/tower2_48px.png");
+        list.add("/assets/tower3_48px.png");
+        list.add("/assets/tower4_48px.png");
+        list.add("/assets/tower5_48px.png");
+        list.add("/assets/tower6_48px.png");
 
-        System.out.println("List: " + list);
 
         AtomicBoolean isImageFollowingCursor = new AtomicBoolean(false);
         ImageView imageView = new ImageView();
         imageView.setMouseTransparent(true);
 
+        Moneh = 0;
+
+
         for (String path : list) {
             InputStream is = TowerSelection.class.getResourceAsStream(path);
             assert is != null;
+            int cost = 101;
             Image img = new Image(is);
+            imageView.setImage(img);
             Texture texture = new Texture(img);
 
             texture.setOnMouseClicked(e -> {
-                System.out.println("Clicked on texture: " + path);
-                if (!isImageFollowingCursor.get()) {
-                    imageView.setImage(texture.getImage());
-                    imageView.setX(e.getSceneX() - imageView.getImage().getWidth() / 2);
-                    imageView.setY(e.getSceneY() - imageView.getImage().getHeight() / 2);
+                getPlayerSPIs().stream().findFirst().ifPresent(
+                        spi -> {
+                            if (cost <= spi.getMoney()) {
+                                //TowerMenu click on tower to buy / build on click gfx logic
+                                if (!isImageFollowingCursor.get()) {
 
-                    imageEntity = FXGL.entityBuilder()
-                            .viewWithBBox(imageView)
-                            .at(imageView.getX(), imageView.getY())
-                            .with(new CollidableComponent(true))
-                            .buildAndAttach();
-                    System.out.println("Entity created: " + imageEntity);
-                    FXGL.getGameScene().addUINode(imageView);
-                    isImageFollowingCursor.set(true);
-                } else {
-                    FXGL.getGameScene().removeUINode(imageView);
+                                    imageEntity = FXGL.entityBuilder()
+                                            .viewWithBBox(new Rectangle(texture.getWidth(), texture.getHeight(), Color.GREEN))
+                                            .with(new CollidableComponent(true))
+                                            .view(texture.copy())
+                                            .buildAndAttach();
+                                    isImageFollowingCursor.set(true);
+                                    imageEntity.setPosition(e.getSceneX() - imageEntity.getHeight() / 2, e.getSceneY() - imageEntity.getWidth() / 2 );
+                                }
+                            }
+                            else {
+                                System.out.println("Not enough money");
+
+                            }
+
+                            if (cost > spi.getMoney()) {
+                                texture.setEffect(new javafx.scene.effect.ColorAdjust(0, 0.5, 0, 0));
+                            }
+                            hbox.getChildren().add(texture);
+                        }
+                );
+            });
+
+            FXGL.getGameScene().getContentRoot().setOnMouseClicked(e -> {
+                if (e.getButton() == MouseButton.SECONDARY && isImageFollowingCursor.get()) {
                     isImageFollowingCursor.set(false);
+                    FXGL.getGameWorld().removeEntity(imageEntity);
                 }
             });
-            hbox.getChildren().add(texture);
-            System.out.println("Texture: " + texture);
+            FXGL.getGameScene().getContentRoot().setOnMouseMoved(e -> {
+                if (isImageFollowingCursor.get()) {;
+                    imageEntity.setPosition(e.getSceneX() - imageEntity.getHeight() / 2, e.getSceneY() - imageEntity.getWidth() / 2 );
+                }
+            });
         }
-
-        FXGL.getGameScene().getContentRoot().setOnMouseClicked(e -> {
-            if (e.getButton() == MouseButton.SECONDARY && isImageFollowingCursor.get()) {
-                FXGL.getGameScene().removeUINode(imageView);
-                isImageFollowingCursor.set(false);
-                System.out.println("Removed image from cursor. By right click.");
-
-                // Remove the entity from the game world
-                FXGL.getGameWorld().removeEntity(imageEntity);
-
-
-            }
-        });
-
-        FXGL.getGameScene().getContentRoot().setOnMouseMoved(e -> {
-            if (isImageFollowingCursor.get()) {
-                imageView.setX(e.getSceneX() - imageView.getImage().getWidth() / 2);
-                imageView.setY(e.getSceneY() - imageView.getImage().getHeight() / 2);
-            }
-            System.out.println("test for entity: " + imageEntity);
-        });
-
-        ;
-
         return hbox;
     }
 }

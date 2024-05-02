@@ -8,6 +8,6 @@ public interface PlayerSPI {
     void changeHealth(int amount);
     int getHealth();
     void changeLedger(int amount);
-    int getLedger();
+    int getMoney();
     Entity getPlayerEntity();
 }
