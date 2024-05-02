@@ -110,16 +110,6 @@ public class App extends GameApplication {
                         .buildAndAttach()
         );
 
-
-        player = FXGL.entityBuilder()
-                .type(EntityType.PLAYER)
-                .at(end)
-                .viewWithBBox(new Rectangle(48, 48, Color.RED))
-                //.with(spi.createComponent())
-                .with(new CollidableComponent(true))
-                .buildAndAttach();
-
-
         Entity tower = FXGL.entityBuilder()
                         .type(EntityType.TOWER)
                         .at(600,600)
