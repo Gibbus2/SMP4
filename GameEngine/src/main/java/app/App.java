@@ -26,11 +26,10 @@ import java.util.Map;
 import java.util.ServiceLoader;
 
 import common.data.EntityType;
-import health.HealthComponent;
 
 import common.data.GameData;
 
-import WaveManager.data.WaveManager;
+import WaveManager.WaveManager;
 import static java.util.stream.Collectors.toList;
 
 import map.MapLoader;

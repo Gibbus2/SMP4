@@ -7,7 +7,5 @@ module WaveManager {
     requires Common;
     requires Map;
     requires ObjectPool;
-    exports WaveManager.data;
-    exports WaveManager.services;
-    //ask if this is correct
+    exports WaveManager;
 }

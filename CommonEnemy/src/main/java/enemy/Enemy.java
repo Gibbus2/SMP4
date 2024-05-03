@@ -11,6 +11,7 @@ import java.util.List;
 public class Enemy extends Component {
 
     protected double speed;
+    protected int maxHealth;
     private final List<Point2D> wayPoints;
     private int targetWaypoint;
     private int distanceTravelled;
@@ -20,6 +21,7 @@ public class Enemy extends Component {
         this.wayPoints = wayPoints;
         this.speed = 10;
         this.distanceTravelled = 0;
+        this.maxHealth = 100;
     }
 
     public int getDistanceTravelled() {
@@ -55,8 +57,7 @@ public class Enemy extends Component {
     @Override
     public void onAdded() {
         super.onAdded();
-        getEntity().addComponent(new HealthComponent(100));
-
+        getEntity().addComponent(new HealthComponent(this.maxHealth));
     }
 
     public void reset(){
@@ -64,6 +65,7 @@ public class Enemy extends Component {
         setPos(wayPoints.getFirst());
         this.targetWaypoint = 1;
         setDistanceTravelled(0);
+        getEntity().getComponent(HealthComponent.class).setHealth(this.maxHealth);
     }
 
     public void setDistanceTravelled(int i) {
@@ -74,12 +76,12 @@ public class Enemy extends Component {
         HealthComponent health = getEntity().getComponent(HealthComponent.class);
         health.changeHealth(-dmg);
         if(health.isDead()){
-            this.onRemove.run();
             if (getEntity().hasComponent(PooledObjectComponent.class)) {
                 getEntity().getComponent(PooledObjectComponent.class).returnToPool();
             } else {
                 getEntity().removeFromWorld();
             }
+            this.onRemove.run();
         }
         if (!isPlayer) {
             // TODO: Give player x Money.

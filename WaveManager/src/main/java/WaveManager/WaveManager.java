@@ -1,4 +1,4 @@
-package WaveManager.data;
+package WaveManager;
 
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.components.CollidableComponent;
@@ -14,31 +14,35 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import objectPool.IObjectPool;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ServiceLoader;
+import java.util.*;
 
 
 public class WaveManager {
     //this should prob be 0 since startWave() increments on call?
     //nvm it actually needs to be 1 since spawning is based on that number
     //so 0 = no spawning, need to offset counter by 1 or do i?
-    private int currentWave = 1;
+    private int currentWave;
+    private int waveSize;
     private List<Point2D> wayPoints;
     private Button startWaveButton;
-    private IObjectPool objectPool;
-    private ArrayList<Generation> generations;
-    private List<String> enemies;
-    private GameData gameData;
+    private final IObjectPool objectPool;
+    private final ArrayList<Generation> generations;
+    private final List<String> enemies;
+    private final GameData gameData;
+    private final int reallocationRatio;
 
     public WaveManager(IObjectPool objectPool, GameData gameData) {
+        this.reallocationRatio = 10;
+
         this.objectPool = objectPool;
         this.gameData = gameData;
         this.enemies = new ArrayList<>();
         this.generations = new ArrayList<>();
+        this.currentWave = 1;
+        this.waveSize = 10; //TODO: consider if we can increase wave size without disrupting the ai
     }
 
-    public void init(){
+    public void init(){waveSize += 3;
         //get waypoints
         this.wayPoints = map.Waypoint.fromPolyline().getWaypoints();
 
@@ -64,31 +68,72 @@ public class WaveManager {
             this.enemies.add(id);
         }
 
-        //add first generation
-        Generation generation = new Generation(this::createNextGeneration);
-        generation.generate(this.enemies, null);
-        this.generations.add(generation);
-
+        createFirstWave();
     }
 
-    private void createNextGeneration(){
+    private void createFirstWave(){
+        System.out.println("Creating the first wave");
+        Map<String, Integer> generationValues = new HashMap<>();
+        for (String enemy : this.enemies){
+            generationValues.put(enemy, 0);
+        }
+        Generation generation = generateGeneration(new Generation(null, generationValues));
+        this.generations.add(generation);
+    }
+
+    private void createNextWave(){
+        currentWave++;
+        System.out.println("Creating wave nr. " + currentWave);
 
         //find best wave
         Generation bestGeneration = this.generations.getFirst();
         for (Generation gen : this.generations){
-            if(gen.averageDistance() > bestGeneration.averageDistance()){
+            if(gen.getTotalDistance() > bestGeneration.getTotalDistance()){
                 bestGeneration = gen;
             }
         }
 
-        //generate new wave
-        Generation generation = new Generation(this::createNextGeneration);
-        generation.generate(this.enemies, bestGeneration);
+        //generate new generation
+        Generation generation = generateGeneration(bestGeneration);
         this.generations.add(generation);
 
+        //update UI
         startWaveButton.setVisible(true);
-        currentWave++;
 
+    }
+
+
+    private Generation generateGeneration(Generation bestGeneration){
+        //calculate what to remove and redistribute
+        int toRemove = (bestGeneration.getTotalEntities() / 100) * reallocationRatio;
+        int toDistribute = toRemove + (waveSize - bestGeneration.getTotalEntities());
+
+        //copy best generation
+        Map<String, Integer> generationValues = new HashMap<>();
+        for (String enemy : bestGeneration.getDistribution().keySet()){
+            generationValues.put(enemy, bestGeneration.getDistribution().get(enemy));
+        }
+
+        //remove
+        while (toRemove > 0) {
+            for (String enemy : enemies) {
+                int randomValue = (int) (Math.random() * (toRemove + 1));
+                generationValues.put(enemy, generationValues.get(enemy) - randomValue);
+                toRemove -= randomValue;
+            }
+        }
+
+        //redistribute
+        while (toDistribute > 0) {
+            for (String enemy : enemies) {
+                int randomValue = (int) (Math.random() * (toDistribute + 1));
+                int newValue = generationValues.get(enemy) + randomValue;
+                generationValues.put(enemy, newValue);
+                toDistribute -= randomValue;
+            }
+        }
+
+        return new Generation(this::createNextWave, generationValues);
     }
 
     public void startWave(){
