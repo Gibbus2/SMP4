@@ -63,12 +63,16 @@ public class Enemy extends Component {
         rotate(0);
         setPos(wayPoints.getFirst());
         this.targetWaypoint = 1;
-        this.distanceTravelled = 0;
+        setDistanceTravelled(0);
+    }
+
+    public void setDistanceTravelled(int i) {
+        this.distanceTravelled = i;
     }
 
     public void damage(int dmg, boolean isPlayer){
         HealthComponent health = getEntity().getComponent(HealthComponent.class);
-        health.setHealth(health.getHealth() - dmg);
+        health.changeHealth(-dmg);
         if(health.isDead()){
             this.onRemove.run();
             if (getEntity().hasComponent(PooledObjectComponent.class)) {
@@ -115,5 +119,9 @@ public class Enemy extends Component {
 
     private Point2D offset(){
         return new Point2D(getEntity().getWidth()/2, getEntity().getHeight()/2);
+    }
+
+    public int getHealth() {
+        return getEntity().getComponent(HealthComponent.class).getHealth();
     }
 }

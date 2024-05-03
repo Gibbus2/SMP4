@@ -131,7 +131,7 @@ public class CommonTowerComponent extends Component implements TowerSPI {
                         }
                     }
 
-                    Entity target = sortByDistanceTraveled(enemiesInRange).getFirst();
+                    Entity target = sortByDistanceTraveled(enemiesInRange).getLast();
                     rotateToTarget(target);
 
                     if (shootTimer.elapsed(Duration.seconds(firerate))) {
@@ -189,7 +189,7 @@ public class CommonTowerComponent extends Component implements TowerSPI {
                         }
                     }
 
-                    Entity target = sortByHealth(enemiesInRange).getFirst();
+                    Entity target = sortByHealth(enemiesInRange).getLast();
                     rotateToTarget(target);
 
                     if (shootTimer.elapsed(Duration.seconds(firerate))) {
@@ -218,7 +218,7 @@ public class CommonTowerComponent extends Component implements TowerSPI {
                         }
                     }
 
-                    Entity target = sortByHealth(enemiesInRange).getLast();
+                    Entity target = sortByHealth(enemiesInRange).getFirst();
                     rotateToTarget(target);
 
                     if (shootTimer.elapsed(Duration.seconds(firerate))) {
@@ -259,7 +259,7 @@ public class CommonTowerComponent extends Component implements TowerSPI {
         entity.rotateToVector(target.getPosition().subtract(entity.getPosition()));
     }
 
-    private List<Entity> sortByDistanceTraveled(List<Entity> enemiesInRange) {
+    public List<Entity> sortByDistanceTraveled(List<Entity> enemiesInRange) {
         List<Entity> list = new ArrayList<>(enemiesInRange);
         list.sort((o1, o2) -> {
             List<Component> components1 = o1.getComponents();
@@ -280,7 +280,7 @@ public class CommonTowerComponent extends Component implements TowerSPI {
 
     public List<Entity> sortByHealth(List<Entity> enemiesInRange) {
         List<Entity> list = new ArrayList<>(enemiesInRange);
-        enemiesInRange.sort(Comparator.comparingInt(o -> o.getComponent(HealthComponent.class).getHealth()));
+        list.sort(Comparator.comparingInt((Entity o) -> o.getComponent(HealthComponent.class).getHealth()));
 
         return list;
     }

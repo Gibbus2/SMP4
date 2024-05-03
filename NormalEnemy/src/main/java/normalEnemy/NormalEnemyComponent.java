@@ -2,7 +2,6 @@ package normalEnemy;
 
 import enemy.Enemy;
 import javafx.geometry.Point2D;
-import objectPool.IObjectPool;
 import health.HealthComponent;
 
 import java.util.List;

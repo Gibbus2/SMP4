@@ -180,9 +180,8 @@ public class App extends GameApplication {
         FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.BULLET, EntityType.ENEMY) {
             @Override
             protected void onCollisionBegin(Entity bullet, Entity enemy) {
-                // TODO: Uncomment line below when enemy is merged into dev.
-                // make sure to check for bullets target
                 int damage = 0;
+
                 for(Component component : enemy.getComponents()){
                     if(component instanceof CommonBullet){
                         damage = ((CommonBullet) component).getDamage();
