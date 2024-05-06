@@ -1,11 +1,14 @@
 package WaveManager;
 
 import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.entity.state.StateComponent;
 import com.almasb.fxgl.texture.Texture;
 import common.data.EntityType;
 import common.data.GameData;
+import enemy.Enemy;
 import enemy.EnemyComponentSPI;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
@@ -13,36 +16,29 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import objectPool.IObjectPool;
+import javafx.util.Duration;
+
 
 import java.util.*;
 
 
 public class WaveManager {
-    //this should prob be 0 since startWave() increments on call?
-    //nvm it actually needs to be 1 since spawning is based on that number
-    //so 0 = no spawning, need to offset counter by 1 or do i?
     private int currentWave;
-    private int waveSize;
     private List<Point2D> wayPoints;
     private Button startWaveButton;
     private final IObjectPool objectPool;
-    private final ArrayList<Generation> generations;
-    private final List<String> enemies;
+    private final List<String> enemyKeys;
     private final GameData gameData;
-    private final int reallocationRatio;
+    private Generations generations;
 
     public WaveManager(IObjectPool objectPool, GameData gameData) {
-        this.reallocationRatio = 10;
-
         this.objectPool = objectPool;
-        this.gameData = gameData;
-        this.enemies = new ArrayList<>();
-        this.generations = new ArrayList<>();
+        this.gameData = gameData; //TODO: what was this for?
+        this.enemyKeys = new ArrayList<>();
         this.currentWave = 1;
-        this.waveSize = 10; //TODO: consider if we can increase wave size without disrupting the ai
     }
 
-    public void init(){waveSize += 3;
+    public void init() {
         //get waypoints
         this.wayPoints = map.Waypoint.fromPolyline().getWaypoints();
 
@@ -56,7 +52,7 @@ public class WaveManager {
 
             this.objectPool.createPool((id),
                     () -> FXGL.entityBuilder()
-                            .viewWithBBox(new Rectangle(texture.getWidth(), texture.getHeight(), (gameData.debug) ? Color.GREEN : new Color(0,0,0,0)))
+                            .viewWithBBox(new Rectangle(texture.getWidth(), texture.getHeight(), (gameData.debug) ? Color.GREEN : new Color(0, 0, 0, 0)))
                             .type(EntityType.ENEMY)
                             .with(new CollidableComponent(true))
                             .with(componentSPI.createEnemyComponent(wayPoints))
@@ -65,90 +61,62 @@ public class WaveManager {
                             .buildAndAttach()
             );
 
-            this.enemies.add(id);
+            this.enemyKeys.add(id);
         }
 
-        createFirstWave();
+        this.generations = new Generations(this.enemyKeys.size(), 10);
+
     }
 
-    private void createFirstWave(){
-        System.out.println("Creating the first wave");
-        Map<String, Integer> generationValues = new HashMap<>();
-        for (String enemy : this.enemies){
-            generationValues.put(enemy, 0);
-        }
-        Generation generation = generateGeneration(new Generation(null, generationValues));
-        this.generations.add(generation);
-    }
+    public void launchNextWave() {
+        FXGL.getWorldProperties().setValue("currentWave", currentWave); //TODO: move into UI
+        Genome genome = generations.getLatest();
+        int delay = 0;
+        // for each gene (enemy) in the chromosome
+        for (int i = 0; i < genome.getChromosome().size(); i++) {
 
-    private void createNextWave(){
-        currentWave++;
-        System.out.println("Creating wave nr. " + currentWave);
-
-        //find best wave
-        Generation bestGeneration = this.generations.getFirst();
-        for (Generation gen : this.generations){
-            if(gen.getTotalDistance() > bestGeneration.getTotalDistance()){
-                bestGeneration = gen;
+            //launch the amount of entities defined by the gene
+            int toLaunch = genome.getChromosome().get(i);
+            for (int j = 0; j < toLaunch; j++) {
+                String key = this.enemyKeys.get(i);
+                FXGL.getGameTimer().runOnceAfter(() -> {
+                    Entity e = objectPool.getEntityFromPool(key);
+                    //reset enemy component
+                    for (Component component : e.getComponents()) {
+                        if (component instanceof Enemy) {
+                            Enemy enemy = (Enemy) component;
+                            enemy.setOnRemove(() -> {
+                                genome.entityRemoved(enemy.getDistanceTravelled());
+                                generateNextWave();
+                            });
+                            enemy.reset();
+                        }
+                    }
+                }, Duration.millis(delay));
+                delay += 300;
             }
+
         }
-
-        //generate new generation
-        Generation generation = generateGeneration(bestGeneration);
-        this.generations.add(generation);
-
-        //update UI
-        startWaveButton.setVisible(true);
-
     }
 
-
-    private Generation generateGeneration(Generation bestGeneration){
-        //calculate what to remove and redistribute
-        int toRemove = (bestGeneration.getTotalEntities() / 100) * reallocationRatio;
-        int toDistribute = toRemove + (waveSize - bestGeneration.getTotalEntities());
-
-        //copy best generation
-        Map<String, Integer> generationValues = new HashMap<>();
-        for (String enemy : bestGeneration.getDistribution().keySet()){
-            generationValues.put(enemy, bestGeneration.getDistribution().get(enemy));
+    private void generateNextWave() {
+        if (generations.getLatest().isDead()) {
+            System.out.println("Generating next wave");
+            generations.reproduce();
+            currentWave++;
+            startWaveButton.setVisible(true);
         }
-
-        //remove
-        while (toRemove > 0) {
-            for (String enemy : enemies) {
-                int randomValue = (int) (Math.random() * (toRemove + 1));
-                generationValues.put(enemy, generationValues.get(enemy) - randomValue);
-                toRemove -= randomValue;
-            }
-        }
-
-        //redistribute
-        while (toDistribute > 0) {
-            for (String enemy : enemies) {
-                int randomValue = (int) (Math.random() * (toDistribute + 1));
-                int newValue = generationValues.get(enemy) + randomValue;
-                generationValues.put(enemy, newValue);
-                toDistribute -= randomValue;
-            }
-        }
-
-        return new Generation(this::createNextWave, generationValues);
     }
 
-    public void startWave(){
-        FXGL.getWorldProperties().setValue("currentWave", currentWave);
-        this.generations.getLast().launch(this.objectPool);
-    }
-
-    public void startWaveUI(){
+    //TODO: move into UI
+    public void startWaveUI() {
         startWaveButton = new Button("Start Wave");
 
 
         startWaveButton.setTranslateX(50);
         startWaveButton.setTranslateY(50);
         startWaveButton.setOnAction(e -> {
-            this.startWave();
+            this.launchNextWave();
             startWaveButton.setVisible(false);
         });
         FXGL.getGameScene().addUINode(startWaveButton);
@@ -163,43 +131,7 @@ public class WaveManager {
 
     }
 
-
-//    public void stopWave(){
-//        //stop wave, use this on player death
-//        //need to figure out if we return to main screen on death
-//        //or just go back to start
-//        //need to also use fxgl to remove all enemies, figure out how to remove specific entities
-//        waveData.getEnemies().clear();
-//    }
-//
-    public int getCurrentWave(){
+    public int getCurrentWave() {
         return currentWave;
     }
-
-//
-//    public void waveIntermission(){
-//        //intermission between waves
-//        //guess call this on wave end, then
-//        //new wave starts after x(30) seconds or something
-//        var countDownText = FXGL.getUIFactoryService().newText("");
-//        //countDownText.setFont(FXGL.getUIFactoryService().newFont(24)); // this bricks something forgot what
-//        countDownText.setTranslateX(300);
-//        countDownText.setTranslateY(300);
-//        countDownText.setFill(Paint.valueOf("BLACK"));
-//        //add countdown text to screen
-//        FXGL.getGameScene().addUINode(countDownText);
-//
-//        //getGameTimer wants AtomicInteger for thread safety, no clue if needed
-//        countDown = new AtomicInteger(5);
-//
-//        FXGL.getGameTimer().runAtInterval(() -> {
-//            countDown.getAndDecrement();
-//            countDownText.setText("Next wave in: " + countDown);
-//            if (countDown.get() == 0) {
-//                FXGL.getGameTimer().clear();
-//                startWave();
-//                countDownText.setText("");
-//            }
-//        }, Duration.seconds(1));
-//    }
 }
