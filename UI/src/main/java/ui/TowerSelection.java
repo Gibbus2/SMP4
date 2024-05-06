@@ -49,8 +49,15 @@ public class TowerSelection {
         ImageView imageView = new ImageView();
         imageView.setMouseTransparent(true);
 
-        Moneh = 0;
+        Button setMoneyButton = new Button("Set Money to 200");
+        setMoneyButton.setOnAction(e -> {
+            getPlayerSPIs().stream().findFirst().ifPresent(
+                    spi -> spi.setMoney(200)
+            );
 
+        });
+
+        hbox.getChildren().add(setMoneyButton);
 
 
         for (String path : list) {
@@ -62,22 +69,10 @@ public class TowerSelection {
             Texture texture = new Texture(img);
             hbox.getChildren().add(texture);
 
-            Button setMoneyButton = new Button("Set Money to 200");
-            setMoneyButton.setOnAction(e -> {
-                getPlayerSPIs().stream().findFirst().ifPresent(
-                        spi -> spi.setMoney(200)
-                );
-            });
-
-            hbox.getChildren().add(setMoneyButton);
-
             texture.setOnMouseClicked(e -> {
                 getPlayerSPIs().stream().findFirst().ifPresent(
                         spi -> {
-                            if (cost <= spi.getMoney()) {
-                                //TowerMenu click on tower to buy / build on click gfx logic
-                                if (!isImageFollowingCursor.get()) {
-
+                            if (cost <= spi.getMoney() && !isImageFollowingCursor.get()) {
                                     imageEntity = FXGL.entityBuilder()
                                             .viewWithBBox(new Rectangle(texture.getWidth(), texture.getHeight(), Color.GREEN))
                                             .with(new CollidableComponent(true))
@@ -86,16 +81,9 @@ public class TowerSelection {
                                     isImageFollowingCursor.set(true);
                                     imageEntity.setPosition(e.getSceneX() - imageEntity.getHeight() / 2, e.getSceneY() - imageEntity.getWidth() / 2 );
                                 }
-                            }
                             else {
                                 System.out.println("Not enough money");
-
                             }
-
-                            if (cost > spi.getMoney()) {
-                                texture.setEffect(new javafx.scene.effect.ColorAdjust(0, -0.5, 0, 0));
-                            }
-
                         }
                 );
 
