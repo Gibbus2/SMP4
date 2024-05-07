@@ -23,6 +23,10 @@ public class HealthComponent extends Component implements IHealthComponentSPI {
     }
 
     public void setHealth(int amount) {
+        health = amount;
+    }
+
+    public void changeHealth(int amount) {
         health += amount;
     }
 

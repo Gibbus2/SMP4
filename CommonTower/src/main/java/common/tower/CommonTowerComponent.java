@@ -116,27 +116,27 @@ public class CommonTowerComponent extends Component implements TowerSPI {
             protected void onUpdate(double tpf) {
                 if (enemiesInRange == null || !enemiesInRange.isEmpty()) {
                     state.changeState(IDLE_STATE);
-                }
 
-                if (targetting != TowerState.FIRST) {
-                    switch (targetting) {
-                        case LAST:
-                            state.changeState(LAST_STATE);
-                            break;
-                        case STRONGEST:
-                            state.changeState(STRONGEST_STATE);
-                            break;
-                        case WEAKEST:
-                            state.changeState(WEAKEST_STATE);
-                            break;
+                    if (targetting != TowerState.FIRST) {
+                        switch (targetting) {
+                            case LAST:
+                                state.changeState(LAST_STATE);
+                                break;
+                            case STRONGEST:
+                                state.changeState(STRONGEST_STATE);
+                                break;
+                            case WEAKEST:
+                                state.changeState(WEAKEST_STATE);
+                                break;
+                        }
                     }
-                }
 
-                Entity target = sortByDistanceTraveled(enemiesInRange).getFirst();
-                rotateToTarget(target);
+                    Entity target = sortByDistanceTraveled(enemiesInRange).getLast();
+                    rotateToTarget(target);
 
-                if (shootTimer.elapsed(Duration.seconds(firerate))) {
-                    shoot(target);
+                    if (shootTimer.elapsed(Duration.seconds(firerate))) {
+                        shoot(target);
+                    }
                 }
             }
         };
@@ -145,27 +145,27 @@ public class CommonTowerComponent extends Component implements TowerSPI {
             protected void onUpdate(double tpf) {
                 if (enemiesInRange == null || !enemiesInRange.isEmpty()) {
                     state.changeState(IDLE_STATE);
-                }
 
-                if (targetting != TowerState.LAST) {
-                    switch (targetting) {
-                        case FIRST:
-                            state.changeState(FIRST_STATE);
-                            break;
-                        case STRONGEST:
-                            state.changeState(STRONGEST_STATE);
-                            break;
-                        case WEAKEST:
-                            state.changeState(WEAKEST_STATE);
-                            break;
+                    if (targetting != TowerState.LAST) {
+                        switch (targetting) {
+                            case FIRST:
+                                state.changeState(FIRST_STATE);
+                                break;
+                            case STRONGEST:
+                                state.changeState(STRONGEST_STATE);
+                                break;
+                            case WEAKEST:
+                                state.changeState(WEAKEST_STATE);
+                                break;
+                        }
                     }
-                }
 
-                Entity target = sortByDistanceTraveled(enemiesInRange).getFirst();
-                rotateToTarget(target);
+                    Entity target = sortByDistanceTraveled(enemiesInRange).getFirst();
+                    rotateToTarget(target);
 
-                if (shootTimer.elapsed(Duration.seconds(firerate))) {
-                    shoot(target);
+                    if (shootTimer.elapsed(Duration.seconds(firerate))) {
+                        shoot(target);
+                    }
                 }
             }
         };
@@ -174,27 +174,27 @@ public class CommonTowerComponent extends Component implements TowerSPI {
             protected void onUpdate(double tpf) {
                 if (enemiesInRange == null || !enemiesInRange.isEmpty()) {
                     state.changeState(IDLE_STATE);
-                }
 
-                if (targetting != TowerState.STRONGEST) {
-                    switch (targetting) {
-                        case FIRST:
-                            state.changeState(FIRST_STATE);
-                            break;
-                        case LAST:
-                            state.changeState(LAST_STATE);
-                            break;
-                        case WEAKEST:
-                            state.changeState(WEAKEST_STATE);
-                            break;
+                    if (targetting != TowerState.STRONGEST) {
+                        switch (targetting) {
+                            case FIRST:
+                                state.changeState(FIRST_STATE);
+                                break;
+                            case LAST:
+                                state.changeState(LAST_STATE);
+                                break;
+                            case WEAKEST:
+                                state.changeState(WEAKEST_STATE);
+                                break;
+                        }
                     }
-                }
 
-                Entity target = sortByHealth(enemiesInRange).getFirst();
-                rotateToTarget(target);
+                    Entity target = sortByHealth(enemiesInRange).getLast();
+                    rotateToTarget(target);
 
-                if (shootTimer.elapsed(Duration.seconds(firerate))) {
-                    shoot(target);
+                    if (shootTimer.elapsed(Duration.seconds(firerate))) {
+                        shoot(target);
+                    }
                 }
             }
         };
@@ -203,27 +203,27 @@ public class CommonTowerComponent extends Component implements TowerSPI {
             protected void onUpdate(double tpf) {
                 if (enemiesInRange == null || !enemiesInRange.isEmpty()) {
                     state.changeState(IDLE_STATE);
-                }
 
-                if (targetting != TowerState.WEAKEST) {
-                    switch (targetting) {
-                        case FIRST:
-                            state.changeState(FIRST_STATE);
-                            break;
-                        case LAST:
-                            state.changeState(LAST_STATE);
-                            break;
-                        case STRONGEST:
-                            state.changeState(STRONGEST_STATE);
-                            break;
+                    if (targetting != TowerState.WEAKEST) {
+                        switch (targetting) {
+                            case FIRST:
+                                state.changeState(FIRST_STATE);
+                                break;
+                            case LAST:
+                                state.changeState(LAST_STATE);
+                                break;
+                            case STRONGEST:
+                                state.changeState(STRONGEST_STATE);
+                                break;
+                        }
                     }
-                }
 
-                Entity target = sortByHealth(enemiesInRange).getLast();
-                rotateToTarget(target);
+                    Entity target = sortByHealth(enemiesInRange).getFirst();
+                    rotateToTarget(target);
 
-                if (shootTimer.elapsed(Duration.seconds(firerate))) {
-                    shoot(target);
+                    if (shootTimer.elapsed(Duration.seconds(firerate))) {
+                        shoot(target);
+                    }
                 }
             }
         };
@@ -259,7 +259,7 @@ public class CommonTowerComponent extends Component implements TowerSPI {
         entity.rotateToVector(target.getPosition().subtract(entity.getPosition()));
     }
 
-    private List<Entity> sortByDistanceTraveled(List<Entity> enemiesInRange) {
+    public List<Entity> sortByDistanceTraveled(List<Entity> enemiesInRange) {
         List<Entity> list = new ArrayList<>(enemiesInRange);
         list.sort((o1, o2) -> {
             List<Component> components1 = o1.getComponents();
@@ -280,7 +280,7 @@ public class CommonTowerComponent extends Component implements TowerSPI {
 
     public List<Entity> sortByHealth(List<Entity> enemiesInRange) {
         List<Entity> list = new ArrayList<>(enemiesInRange);
-        enemiesInRange.sort(Comparator.comparingInt(o -> o.getComponent(HealthComponent.class).getHealth()));
+        list.sort(Comparator.comparingInt((Entity o) -> o.getComponent(HealthComponent.class).getHealth()));
 
         return list;
     }

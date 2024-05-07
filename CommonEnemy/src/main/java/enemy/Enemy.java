@@ -11,6 +11,7 @@ import java.util.List;
 public class Enemy extends Component {
 
     protected double speed;
+    protected int maxHealth;
     private final List<Point2D> wayPoints;
     private int targetWaypoint;
     private int distanceTravelled;
@@ -20,6 +21,7 @@ public class Enemy extends Component {
         this.wayPoints = wayPoints;
         this.speed = 10;
         this.distanceTravelled = 0;
+        this.maxHealth = 100;
     }
 
     public int getDistanceTravelled() {
@@ -55,27 +57,31 @@ public class Enemy extends Component {
     @Override
     public void onAdded() {
         super.onAdded();
-        getEntity().addComponent(new HealthComponent(100));
-
+        getEntity().addComponent(new HealthComponent(this.maxHealth));
     }
 
     public void reset(){
         rotate(0);
         setPos(wayPoints.getFirst());
         this.targetWaypoint = 1;
-        this.distanceTravelled = 0;
+        setDistanceTravelled(0);
+        getEntity().getComponent(HealthComponent.class).setHealth(this.maxHealth);
+    }
+
+    public void setDistanceTravelled(int i) {
+        this.distanceTravelled = i;
     }
 
     public void damage(int dmg, boolean isPlayer){
         HealthComponent health = getEntity().getComponent(HealthComponent.class);
-        health.setHealth(health.getHealth() - dmg);
+        health.changeHealth(-dmg);
         if(health.isDead()){
-            this.onRemove.run();
             if (getEntity().hasComponent(PooledObjectComponent.class)) {
                 getEntity().getComponent(PooledObjectComponent.class).returnToPool();
             } else {
                 getEntity().removeFromWorld();
             }
+            this.onRemove.run();
         }
         if (!isPlayer) {
             // TODO: Give player x Money.
@@ -115,5 +121,9 @@ public class Enemy extends Component {
 
     private Point2D offset(){
         return new Point2D(getEntity().getWidth()/2, getEntity().getHeight()/2);
+    }
+
+    public int getHealth() {
+        return getEntity().getComponent(HealthComponent.class).getHealth();
     }
 }
