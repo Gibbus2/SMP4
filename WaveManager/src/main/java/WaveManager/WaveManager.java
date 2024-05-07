@@ -64,7 +64,7 @@ public class WaveManager {
             this.enemyKeys.add(id);
         }
 
-        this.generations = new Generations(this.enemyKeys.size(), 10);
+        this.generations = new Generations(this.enemyKeys.size(), 4);
 
     }
 
@@ -93,7 +93,7 @@ public class WaveManager {
                         }
                     }
                 }, Duration.millis(delay));
-                delay += 300;
+                delay += 500;
             }
 
         }

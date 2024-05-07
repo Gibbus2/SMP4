@@ -20,7 +20,7 @@ public class Generations {
         List<Integer> chromosome = new ArrayList<>();
 
         for (int i = 0; i < chromosomeLength; i++) {
-            int gene = (int) (Math.random() * sizeModifier);
+            int gene = (int) (Math.random() * (sizeModifier + 1));
             chromosome.add(gene);
         }
 

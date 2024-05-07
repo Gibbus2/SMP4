@@ -24,6 +24,8 @@
     <module>Health</module>
     <module>NormalEnemy</module>
     <module>NormalTower</module>
+    <module>FastEnemy</module>
+    <module>HeavyEnemy</module>
   </modules>
   <properties>
     <java>java</java>
