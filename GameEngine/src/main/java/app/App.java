@@ -103,7 +103,7 @@ public class App extends GameApplication {
                 spi -> player = FXGL.entityBuilder()
                         .type(EntityType.PLAYER)
                         .at(end)
-                        .viewWithBBox(new Rectangle(48, 48, Color.RED))
+                        .viewWithBBox(new Rectangle(48, 48, (gameData.debug) ? Color.RED : new Color(0, 0, 0, 0)))
                         .with(spi.createComponent())
                         .with(new CollidableComponent(true))
                         .buildAndAttach()
