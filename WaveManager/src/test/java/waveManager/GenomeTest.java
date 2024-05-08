@@ -39,4 +39,15 @@ public class GenomeTest {
         genome.entityRemoved(10);
         assertEquals(15, genome.fitness());
     }
+
+    @Test
+    public void testGetChromosome(){
+        List<Integer> chromosome = new ArrayList<>();
+        chromosome.add(6);
+        chromosome.add(2);
+
+        Genome genome = new Genome(chromosome);
+
+        assertEquals(chromosome, genome.getChromosome());
+    }
 }

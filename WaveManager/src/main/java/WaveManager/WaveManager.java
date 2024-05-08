@@ -33,7 +33,7 @@ public class WaveManager {
 
     public WaveManager(IObjectPool objectPool, GameData gameData) {
         this.objectPool = objectPool;
-        this.gameData = gameData; //TODO: what was this for?
+        this.gameData = gameData;
         this.enemyKeys = new ArrayList<>();
         this.currentWave = 1;
     }
@@ -64,7 +64,7 @@ public class WaveManager {
             this.enemyKeys.add(id);
         }
 
-        this.generations = new Generations(this.enemyKeys.size(), 10);
+        this.generations = new Generations(this.enemyKeys.size(), 4);
 
     }
 
@@ -93,7 +93,7 @@ public class WaveManager {
                         }
                     }
                 }, Duration.millis(delay));
-                delay += 300;
+                delay += 500;
             }
 
         }
