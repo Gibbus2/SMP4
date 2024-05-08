@@ -57,6 +57,8 @@ public class TowerSelection {
 
         });
 
+
+
         hbox.getChildren().add(setMoneyButton);
 
 
@@ -100,6 +102,19 @@ public class TowerSelection {
                     imageEntity.setPosition(e.getSceneX() - imageEntity.getHeight() / 2, e.getSceneY() - imageEntity.getWidth() / 2 );
                 }
             });
+
+
+/* grayscale shit for money
+
+if ("money".equals(evt.getPropertyName())) {
+                int newMoney = (int) evt.getNewValue();
+                if (newMoney < cost) {
+                    texture.setEffect(new javafx.scene.effect.ColorAdjust(0, -1, 0, 0)); // grayscale
+                } else {
+                    texture.setEffect(null); // original color
+                }
+            }*/
+
         }
         return hbox;
     }
