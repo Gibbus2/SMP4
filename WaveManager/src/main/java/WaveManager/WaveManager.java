@@ -33,7 +33,7 @@ public class WaveManager {
 
     public WaveManager(IObjectPool objectPool, GameData gameData) {
         this.objectPool = objectPool;
-        this.gameData = gameData; //TODO: what was this for?
+        this.gameData = gameData;
         this.enemyKeys = new ArrayList<>();
         this.currentWave = 1;
     }
