@@ -1,17 +1,17 @@
 package fastEnemy;
 
-import enemy.Enemy;
-import enemy.EnemyComponentSPI;
+import enemy.CommonEnemyComponent;
+import enemy.EnemySPI;
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 
 import java.io.InputStream;
 import java.util.List;
 
-public class FastEnemy implements EnemyComponentSPI {
+public class FastEnemy implements EnemySPI {
     @Override
-    public Enemy createEnemyComponent(List<Point2D> wayPoints) {
-        return new FastEnemyComponent(wayPoints);
+    public CommonEnemyComponent createEnemyComponent(List<Point2D> wayPoints) {
+        return new FastCommonEnemyComponentComponent(wayPoints);
     }
 
     @Override

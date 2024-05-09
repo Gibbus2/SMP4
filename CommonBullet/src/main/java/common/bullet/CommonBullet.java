@@ -2,10 +2,6 @@ package common.bullet;
 
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
-import enemy.Enemy;
-import javafx.geometry.Point2D;
-import objectPool.IObjectPool;
-import objectPool.PooledObjectComponent;
 
 public class CommonBullet extends Component {
     protected double speed;

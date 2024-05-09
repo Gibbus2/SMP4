@@ -3,7 +3,10 @@ package tower.normal;
 import com.almasb.fxgl.entity.component.Component;
 import common.tower.CommonTowerComponent;
 import common.tower.TowerSPI;
+import javafx.scene.image.Image;
 import objectPool.IObjectPool;
+
+import java.io.InputStream;
 
 public class NormalTower extends CommonTowerComponent implements TowerSPI {
 
@@ -13,10 +16,20 @@ public class NormalTower extends CommonTowerComponent implements TowerSPI {
         this.cost = 10;
         this.firerate = 1;
         this.range = 15;
+
     }
 
     @Override
     public Component createComponent(IObjectPool objectPool) {
         return new NormalTower(objectPool);
+    }
+
+    @Override
+    public Image getImage(){
+        InputStream is = NormalTower.class.getResourceAsStream("/assets/tower.png");
+        if (is != null) {
+            return new Image(is);
+        }
+        return null;
     }
 }

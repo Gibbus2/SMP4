@@ -9,14 +9,13 @@ import com.almasb.fxgl.entity.components.ViewComponent;
 import com.almasb.fxgl.entity.state.EntityState;
 import com.almasb.fxgl.entity.state.StateComponent;
 import com.almasb.fxgl.physics.BoundingShape;
-import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.time.LocalTimer;
 import common.bullet.BulletSPI;
 import common.data.EntityType;
-import enemy.Enemy;
+import enemy.CommonEnemyComponent;
 import health.HealthComponent;
-import javafx.geometry.Point2D;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -30,7 +29,6 @@ import static java.util.stream.Collectors.toList;
 public class CommonTowerComponent extends Component  {
     protected int damage;
     public int getDamage(){ return damage; }
-
     protected int cost;
     public int getCost(){ return cost; }
 
@@ -43,6 +41,10 @@ public class CommonTowerComponent extends Component  {
     protected String name;
     public String getName() {
         return name;
+    }
+
+    public Image getImage() {
+        return null;
     }
 
     protected IObjectPool objectPool;
@@ -71,6 +73,7 @@ public class CommonTowerComponent extends Component  {
         this.targetting = TowerState.FIRST;
         enemiesInRange = new ArrayList<>();
         this.objectPool = objectPool;
+
     }
 
     public Component createComponent(IObjectPool objectPool) {
@@ -279,8 +282,8 @@ public class CommonTowerComponent extends Component  {
 
             for (Component c1 : components1) {
                 for (Component c2 : components2) {
-                    if (c1 instanceof Enemy && c2 instanceof Enemy) {
-                        return ((Enemy) c1).getDistanceTravelled() - ((Enemy) c2).getDistanceTravelled();
+                    if (c1 instanceof CommonEnemyComponent && c2 instanceof CommonEnemyComponent) {
+                        return ((CommonEnemyComponent) c1).getDistanceTravelled() - ((CommonEnemyComponent) c2).getDistanceTravelled();
                     }
                 }
             }

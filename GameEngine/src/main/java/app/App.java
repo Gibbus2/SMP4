@@ -14,7 +14,7 @@ import common.player.PlayerSPI;
 import common.tower.CommonTowerCollider;
 import common.tower.CommonTowerComponent;
 import common.tower.TowerSPI;
-import enemy.Enemy;
+import enemy.CommonEnemyComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -111,7 +111,7 @@ public class App extends GameApplication {
         );
 
         Entity tower = FXGL.entityBuilder()
-                        .type(EntityType.NO_BUILD_ZONE)
+                        .type(EntityType.TOWER)
                         .at(600,600)
                         .viewWithBBox(new Rectangle(48, 48, Color.BLUE))
                         .with(new CollidableComponent(true))
@@ -143,8 +143,8 @@ public class App extends GameApplication {
             protected void onCollisionBegin(Entity enemy, Entity player) {
                 System.out.println("Enemy colliding with player");
                 for(Component component : enemy.getComponents()){
-                    if(component instanceof Enemy){
-                        ((Enemy) component).damage(((Enemy) component).getHealth(), true);
+                    if(component instanceof CommonEnemyComponent){
+                        ((CommonEnemyComponent) component).damage(((CommonEnemyComponent) component).getHealth(), true);
                     }
                 }
 
@@ -201,8 +201,8 @@ public class App extends GameApplication {
                 }
 
                 for(Component component : enemy.getComponents()){
-                    if(component instanceof Enemy){
-                        ((Enemy) component).damage(damage, false);
+                    if(component instanceof CommonEnemyComponent){
+                        ((CommonEnemyComponent) component).damage(damage, false);
                     }
                 }
 
@@ -213,7 +213,7 @@ public class App extends GameApplication {
         });
 
         // Tower and NoBuildZone collision.
-        FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.BUILD, EntityType.TOWER) {
+        FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.BUILD, EntityType.NO_BUILD_ZONE) {
 
             @Override
             protected void onCollisionBegin(Entity a, Entity b) {

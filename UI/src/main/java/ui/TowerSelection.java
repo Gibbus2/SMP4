@@ -3,10 +3,12 @@ package ui;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
-import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.texture.Texture;
+
 import common.data.EntityType;
 import common.player.PlayerSPI;
+import common.tower.TowerSPI;
+
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -26,12 +28,14 @@ import static java.util.stream.Collectors.toList;
 
 public class TowerSelection {
     private Entity imageEntity;
-    private int Moneh;
     private boolean canBuild;
 
 
     private Collection<? extends PlayerSPI> getPlayerSPIs() {
         return ServiceLoader.load(PlayerSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
+    }
+    private Collection<? extends TowerSPI> getTowerSPIs() {
+        return ServiceLoader.load(TowerSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
     }
 
     public HBox createTowerSelection() {
@@ -60,6 +64,7 @@ public class TowerSelection {
             );
 
         });
+
 
         hbox.getChildren().add(setMoneyButton);
 
