@@ -5,8 +5,8 @@ import javafx.geometry.Point2D;
 
 import java.util.List;
 
-public class NormalCommonEnemyComponentComponent extends CommonEnemyComponent {
-    public NormalCommonEnemyComponentComponent(List<Point2D> wayPoints) {
+public class NormalEnemyComponent extends CommonEnemyComponent {
+    public NormalEnemyComponent(List<Point2D> wayPoints) {
         super(wayPoints);
         this.speed = 150;
         this.maxHealth = 1;

@@ -28,13 +28,19 @@ import static java.util.stream.Collectors.toList;
 
 public class TowerSelection {
     private Entity imageEntity;
-    private boolean canBuild;
+
+    public void setCanBuild(boolean canBuild) {
+        this.canBuild = canBuild;
+    }
+
+    private boolean canBuild = true;
 
 
-    private Collection<? extends PlayerSPI> getPlayerSPIs() {
+    private Collection<? extends PlayerSPI> player() {
         return ServiceLoader.load(PlayerSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
     }
-    private Collection<? extends TowerSPI> getTowerSPIs() {
+
+    private Collection<? extends TowerSPI> towers() {
         return ServiceLoader.load(TowerSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
     }
 
@@ -44,43 +50,31 @@ public class TowerSelection {
         hbox.setLayoutY(720);
         hbox.setPrefSize(1440, 88);
 
-        List<String> list = new ArrayList<>();
-        list.add("/assets/tower1_48px.png");
-        list.add("/assets/tower2_48px.png");
-        list.add("/assets/tower3_48px.png");
-        list.add("/assets/tower4_48px.png");
-        list.add("/assets/tower5_48px.png");
-        list.add("/assets/tower6_48px.png");
-
-
         AtomicBoolean isImageFollowingCursor = new AtomicBoolean(false);
         ImageView imageView = new ImageView();
         imageView.setMouseTransparent(true);
 
+
+        //Testing area start
+
         Button setMoneyButton = new Button("Set Money to 200");
         setMoneyButton.setOnAction(e -> {
-            getPlayerSPIs().stream().findFirst().ifPresent(
+            player().stream().findFirst().ifPresent(
                     spi -> spi.setMoney(200)
             );
 
         });
-
-
         hbox.getChildren().add(setMoneyButton);
 
-        for (String path : list) {
-            InputStream is = TowerSelection.class.getResourceAsStream(path);
-            assert is != null;
-            int cost = 101;
-            Image img = new Image(is);
-            imageView.setImage(img);
-            Texture texture = new Texture(img);
-            hbox.getChildren().add(texture);
+        //Testing area end
 
+        for (TowerSPI tower : towers()) {
+            Texture texture = new Texture(tower.getImage());
+            hbox.getChildren().add(texture);
             texture.setOnMouseClicked(e -> {
-                getPlayerSPIs().stream().findFirst().ifPresent(
+                player().stream().findFirst().ifPresent(
                         spi -> {
-                            if (cost <= spi.getMoney() && !isImageFollowingCursor.get()) {
+                            if (tower.getCost() <= spi.getMoney() && !isImageFollowingCursor.get()) {
                                 imageEntity = FXGL.entityBuilder()
                                         .type(EntityType.BUILD)
                                         .viewWithBBox(new Rectangle(texture.getWidth() - 2, texture.getHeight() - 2, Color.GREEN))
@@ -88,27 +82,42 @@ public class TowerSelection {
                                         .view(texture.copy())
                                         .buildAndAttach();
                                 isImageFollowingCursor.set(true);
-                                imageEntity.setPosition(e.getSceneX() - imageEntity.getHeight() / 2, e.getSceneY() - imageEntity.getWidth() / 2 );
+                                imageEntity.setPosition(e.getSceneX() - imageEntity.getHeight() / 2, e.getSceneY() - imageEntity.getWidth() / 2);
 
-
-                            }
-                            else {
+                            } else {
                                 System.out.println("Not enough money");
                             }
                         }
                 );
+            });
+
+            FXGL.getGameScene().getContentRoot().setOnMouseClicked(event -> {
+                if (event.getButton() == MouseButton.PRIMARY && canBuild && isImageFollowingCursor.get()) {
+                    player().stream().findFirst().ifPresent(spi -> {spi.setMoney(- tower.getCost());});
+                    System.out.println("Building tower : " + tower.getName());
+
+
+                    /*FXGL.getGameWorld().removeEntity(imageEntity);*/
+
+                    //TODO: Add tower to the game world
+                }
+                if (event.getButton() == MouseButton.SECONDARY && isImageFollowingCursor.get()) {
+                    isImageFollowingCursor.set(false);
+                    FXGL.getGameWorld().removeEntity(imageEntity);
+                }
 
             });
 
-            FXGL.getGameScene().getContentRoot().setOnMouseClicked(e -> {
+/*            FXGL.getGameScene().getContentRoot().setOnMouseClicked(e -> {
                 if (e.getButton() == MouseButton.SECONDARY && isImageFollowingCursor.get()) {
                     isImageFollowingCursor.set(false);
                     FXGL.getGameWorld().removeEntity(imageEntity);
                 }
-            });
+            });*/
             FXGL.getGameScene().getContentRoot().setOnMouseMoved(e -> {
-                if (isImageFollowingCursor.get()) {;
-                    imageEntity.setPosition(e.getSceneX() - imageEntity.getHeight() / 2, e.getSceneY() - imageEntity.getWidth() / 2 );
+                if (isImageFollowingCursor.get()) {
+                    ;
+                    imageEntity.setPosition(e.getSceneX() - imageEntity.getHeight() / 2, e.getSceneY() - imageEntity.getWidth() / 2);
                 }
             });
 

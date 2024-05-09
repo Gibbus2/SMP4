@@ -10,6 +10,14 @@ import java.io.InputStream;
 
 public class NormalTower extends CommonTowerComponent implements TowerSPI {
 
+    public NormalTower() {
+        super(null);
+        this.damage = 1;
+        this.cost = 10;
+        this.firerate = 1;
+        this.range = 15;
+
+    }
     public NormalTower(IObjectPool objectPool) {
         super(objectPool);
         this.damage = 1;
@@ -26,10 +34,14 @@ public class NormalTower extends CommonTowerComponent implements TowerSPI {
 
     @Override
     public Image getImage(){
-        InputStream is = NormalTower.class.getResourceAsStream("/assets/tower.png");
+        InputStream is = NormalTower.class.getResourceAsStream("/tower.png");
         if (is != null) {
             return new Image(is);
         }
         return null;
+    }
+    @Override
+    public String getName() {
+        return "Normal Tower";
     }
 }

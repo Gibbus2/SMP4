@@ -16,9 +16,7 @@ import common.data.EntityType;
 import enemy.CommonEnemyComponent;
 import health.HealthComponent;
 import javafx.geometry.Point2D;
-import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import objectPool.IObjectPool;
@@ -44,11 +42,7 @@ public class CommonTowerComponent extends Component  {
         return name;
     }
 
-    public Image getImage() {
-        return null;
-    }
-
-    protected IObjectPool objectPool;
+     protected IObjectPool objectPool;
 
     private TowerState targetting;
 

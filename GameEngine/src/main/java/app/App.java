@@ -50,6 +50,7 @@ public class App extends GameApplication {
     private IObjectPool objectPool = new ObjectPool();
     private WaveManager waveManager = new WaveManager(objectPool, gameData);
 
+    private TowerSelection towerSelection = new TowerSelection();
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setWidth(gameData.getDisplayWidth());
@@ -216,10 +217,12 @@ public class App extends GameApplication {
         FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.BUILD, EntityType.NO_BUILD_ZONE) {
 
             @Override
-            protected void onCollisionBegin(Entity a, Entity b) {
+            protected void onCollisionBegin(Entity Build, Entity no_build_zone) {
                 // Handle collision here
                 // Disable building on to build Entity. Sets canBuild flag to false
                 System.out.println("Collision detected between imageEntity and NO_BUILD_ZONE");
+                towerSelection.setCanBuild(false);
+
 
             }
 
@@ -228,6 +231,7 @@ public class App extends GameApplication {
                 // Handle collision here
                 // Enable  building on to build Entity. Sets canBuild flag to true
                 System.out.println("Collision ended between imageEntity and NO_BUILD_ZONE");
+                towerSelection.setCanBuild(true);
             }
         });
     }
@@ -236,7 +240,7 @@ public class App extends GameApplication {
     protected void initUI() {
         // TODO: Use Map module to load scene "Main Menu".
 
-        TowerSelection towerSelection = new TowerSelection();
+
         HBox hbox = towerSelection.createTowerSelection();
         FXGL.getGameScene().addUINode(hbox);
 

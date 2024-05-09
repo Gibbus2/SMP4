@@ -12,7 +12,7 @@ public class NormalEnemy implements EnemySPI {
 
     @Override
     public CommonEnemyComponent createEnemyComponent(List<Point2D> wayPoints) {
-        return new NormalCommonEnemyComponentComponent(wayPoints);
+        return new NormalEnemyComponent(wayPoints);
     }
 
     @Override
