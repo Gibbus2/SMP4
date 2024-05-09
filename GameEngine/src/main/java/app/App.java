@@ -110,24 +110,6 @@ public class App extends GameApplication {
                         .buildAndAttach()
         );
 
-        Entity tower = FXGL.entityBuilder()
-                        .type(EntityType.TOWER)
-                        .at(600,600)
-                        .viewWithBBox(new Rectangle(48, 48, Color.BLUE))
-                        .with(new CollidableComponent(true))
-                        .with(new CommonTowerComponent(objectPool))
-                        .buildAndAttach();
-
-        Entity enemy = FXGL.entityBuilder()
-                        .type(EntityType.ENEMY)
-                        .at(700, 700)
-                        .viewWithBBox(new Rectangle(48, 48, Color.GREEN))
-                        .with(new CollidableComponent(true))
-                        .buildAndAttach();
-
-
-        System.out.println(player.getWidth());
-
         // init wave manager
         waveManager.init();
 
