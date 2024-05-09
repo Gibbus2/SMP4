@@ -11,6 +11,7 @@ import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.physics.CollisionHandler;
 import common.bullet.CommonBullet;
 import common.player.PlayerSPI;
+import common.tower.CommonTowerCollider;
 import common.tower.CommonTowerComponent;
 import common.tower.TowerSPI;
 import enemy.Enemy;
@@ -85,7 +86,6 @@ public class App extends GameApplication {
     }
 
     Entity player;
-    Entity enemy;
     @Override
     protected void initGame() {
 
@@ -99,6 +99,7 @@ public class App extends GameApplication {
 
 
         Point2D end = Waypoint.fromPolyline().getWaypoints().getLast().subtract(24,24);
+
         getPlayerSPIs().stream().findFirst().ifPresent(
                 spi -> player = FXGL.entityBuilder()
                         .type(EntityType.PLAYER)
@@ -110,7 +111,7 @@ public class App extends GameApplication {
         );
 
         Entity tower = FXGL.entityBuilder()
-                        .type(EntityType.TOWER)
+                        .type(EntityType.NO_BUILD_ZONE)
                         .at(600,600)
                         .viewWithBBox(new Rectangle(48, 48, Color.BLUE))
                         .with(new CollidableComponent(true))
@@ -140,9 +141,10 @@ public class App extends GameApplication {
         FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.ENEMY, EntityType.PLAYER) {
             @Override
             protected void onCollisionBegin(Entity enemy, Entity player) {
+                System.out.println("Enemy colliding with player");
                 for(Component component : enemy.getComponents()){
                     if(component instanceof Enemy){
-                        ((Enemy) component).damage(1000000000, true);
+                        ((Enemy) component).damage(((Enemy) component).getHealth(), true);
                     }
                 }
 
@@ -157,18 +159,24 @@ public class App extends GameApplication {
         FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.ENEMY, EntityType.TOWER) {
             @Override
             protected void onCollisionBegin(Entity a, Entity b) {
+                System.out.println("Enemy colliding with tower");
                 for(Component component : b.getComponents()){
-                    if(component instanceof CommonTowerComponent){
-                        ((CommonTowerComponent) component).addEnemy(a);
+                    System.out.println("Looking for tower collider component");
+                    if(component instanceof CommonTowerCollider){
+                        System.out.println("Found tower collider component");
+                        ((CommonTowerCollider) component).addEnemy(a);
                     }
                 }
             }
 
             @Override
             protected void onCollisionEnd(Entity a, Entity b) {
+                System.out.println("Enemy colliding with tower ended");
                 for(Component component : b.getComponents()){
-                    if(component instanceof CommonTowerComponent){
-                        ((CommonTowerComponent) component).removeEnemy(a);
+                    System.out.println("Looking for tower collider component");
+                    if(component instanceof CommonTowerCollider){
+                        System.out.println("Found tower collider component");
+                        ((CommonTowerCollider) component).removeEnemy(a);
                     }
                 }
             }
@@ -179,12 +187,17 @@ public class App extends GameApplication {
         FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.BULLET, EntityType.ENEMY) {
             @Override
             protected void onCollisionBegin(Entity bullet, Entity enemy) {
+
                 int damage = 0;
 
-                for(Component component : enemy.getComponents()){
-                    if(component instanceof CommonBullet){
+                for(Component component : enemy.getComponents()) {
+                    if (component instanceof CommonBullet) {
                         damage = ((CommonBullet) component).getDamage();
                     }
+                }
+
+                if (damage == 0) {
+                    System.out.println("No damage set on bullet. Is it missing a component or is wrong type set?");
                 }
 
                 for(Component component : enemy.getComponents()){
@@ -200,7 +213,7 @@ public class App extends GameApplication {
         });
 
         // Tower and NoBuildZone collision.
-        FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.BUILD, EntityType.NO_BUILD_ZONE) {
+        FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.BUILD, EntityType.TOWER) {
 
             @Override
             protected void onCollisionBegin(Entity a, Entity b) {
@@ -282,10 +295,10 @@ public class App extends GameApplication {
 
 
 
-    private Collection<? extends TowerSPI> getTowerSPIs() {
-        System.out.println("Loading TowerSPIs.");
-        return ServiceLoader.load(TowerSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
-    }
+//    private Collection<? extends TowerSPI> getTowerSPIs() {
+//        System.out.println("Loading TowerSPIs.");
+//        return ServiceLoader.load(TowerSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
+//    }
 
 
 }

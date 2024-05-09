@@ -4,6 +4,7 @@ import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.BoundingBoxComponent;
+import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.entity.components.ViewComponent;
 import com.almasb.fxgl.entity.state.EntityState;
 import com.almasb.fxgl.entity.state.StateComponent;
@@ -18,6 +19,7 @@ import health.HealthComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import objectPool.IObjectPool;
 
@@ -25,12 +27,11 @@ import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 
-public class CommonTowerComponent extends Component implements TowerSPI {
+public class CommonTowerComponent extends Component  {
     protected int damage;
     public int getDamage(){ return damage; }
 
     protected int cost;
-    @Override
     public int getCost(){ return cost; }
 
     protected double firerate; // in seconds
@@ -39,9 +40,9 @@ public class CommonTowerComponent extends Component implements TowerSPI {
     protected int range;
     public int getRange(){ return range; }
 
-    @Override
+    protected String name;
     public String getName() {
-        return "";
+        return name;
     }
 
     protected IObjectPool objectPool;
@@ -66,7 +67,7 @@ public class CommonTowerComponent extends Component implements TowerSPI {
         this.damage = 1;
         this.cost = 10;
         this.firerate = 0.5;
-        this.range = 15;
+        this.range = 150;
         this.targetting = TowerState.FIRST;
         enemiesInRange = new ArrayList<>();
         this.objectPool = objectPool;
@@ -81,14 +82,25 @@ public class CommonTowerComponent extends Component implements TowerSPI {
         entity.addComponent(new StateComponent());
         state = entity.getComponent(StateComponent.class);
 
-        getEntity().getComponent(BoundingBoxComponent.class).addHitBox(new HitBox(BoundingShape.circle(range)));
-        getEntity().getComponent(ViewComponent.class).addChild(new Circle(range, Color.BLUE));
+//        getEntity().getComponent(BoundingBoxComponent.class).addHitBox(new HitBox(BoundingShape.circle(range)));
+//        getEntity().getComponent(ViewComponent.class).addChild(new Circle(range, Color.BLUE));
+
+        System.out.println("Creating Tower Collider.");
+        FXGL.entityBuilder()
+                .type(EntityType.TOWER)
+                .at(new Point2D(
+                        (entity.getPosition().getX() + entity.getComponent(BoundingBoxComponent.class).getWidth() / 2 - (double) range / 2),
+                        (entity.getPosition().getY() + entity.getComponent(BoundingBoxComponent.class).getHeight() / 2) - (double) range / 2))
+                .viewWithBBox(new Rectangle(range, range, new Color(1,1,1,0.2)))
+                .with(new CollidableComponent(true))
+                .with(new CommonTowerCollider(this))
+                .buildAndAttach();
 
         shootTimer = FXGL.newLocalTimer();
         shootTimer.capture();
 
         enemiesInRange = new ArrayList<>();
-        targetting = TowerState.FIRST; // Changed outside of this class.
+        targetting = TowerState.FIRST;
 
         IDLE_STATE = new EntityState(TowerState.IDLE.toString()) {
             @Override
