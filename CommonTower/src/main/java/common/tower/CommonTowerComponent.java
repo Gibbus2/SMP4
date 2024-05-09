@@ -15,6 +15,7 @@ import common.bullet.BulletSPI;
 import common.data.EntityType;
 import enemy.CommonEnemyComponent;
 import health.HealthComponent;
+import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
