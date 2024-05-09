@@ -8,7 +8,7 @@ import objectPool.PooledObjectComponent;
 
 import java.util.List;
 
-public class Enemy extends Component {
+public class CommonEnemyComponent extends Component {
 
     protected double speed;
     protected int maxHealth;
@@ -17,7 +17,7 @@ public class Enemy extends Component {
     private int distanceTravelled;
     private Runnable onRemove;
 
-    public Enemy(List<Point2D> wayPoints){
+    public CommonEnemyComponent(List<Point2D> wayPoints){
         this.wayPoints = wayPoints;
         this.speed = 10;
         this.distanceTravelled = 0;

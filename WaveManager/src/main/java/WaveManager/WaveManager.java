@@ -8,8 +8,8 @@ import com.almasb.fxgl.entity.state.StateComponent;
 import com.almasb.fxgl.texture.Texture;
 import common.data.EntityType;
 import common.data.GameData;
-import enemy.Enemy;
-import enemy.EnemyComponentSPI;
+import enemy.CommonEnemyComponent;
+import enemy.EnemySPI;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
@@ -43,12 +43,12 @@ public class WaveManager {
         this.wayPoints = map.Waypoint.fromPolyline().getWaypoints();
 
         //get config for enemies and add them to object pool
-        List<EnemyComponentSPI> enemies = ServiceLoader.load(EnemyComponentSPI.class).stream().map(ServiceLoader.Provider::get).toList();
+        List<EnemySPI> enemies = ServiceLoader.load(EnemySPI.class).stream().map(ServiceLoader.Provider::get).toList();
         for (int i = 0; i < enemies.size(); i++) {
 
             String id = "WaveManager_enemy_" + i;
             Texture texture = new Texture(enemies.get(i).getImage());
-            EnemyComponentSPI componentSPI = enemies.get(i);
+            EnemySPI componentSPI = enemies.get(i);
 
             this.objectPool.createPool((id),
                     () -> FXGL.entityBuilder()
@@ -83,13 +83,13 @@ public class WaveManager {
                     Entity e = objectPool.getEntityFromPool(key);
                     //reset enemy component
                     for (Component component : e.getComponents()) {
-                        if (component instanceof Enemy) {
-                            Enemy enemy = (Enemy) component;
-                            enemy.setOnRemove(() -> {
-                                genome.entityRemoved(enemy.getDistanceTravelled());
+                        if (component instanceof CommonEnemyComponent) {
+                            CommonEnemyComponent commonEnemyComponent = (CommonEnemyComponent) component;
+                            commonEnemyComponent.setOnRemove(() -> {
+                                genome.entityRemoved(commonEnemyComponent.getDistanceTravelled());
                                 generateNextWave();
                             });
-                            enemy.reset();
+                            commonEnemyComponent.reset();
                         }
                     }
                 }, Duration.millis(delay));

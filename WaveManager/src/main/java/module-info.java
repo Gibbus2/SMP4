@@ -1,7 +1,7 @@
-import enemy.EnemyComponentSPI;
+import enemy.EnemySPI;
 
 module WaveManager {
-    uses EnemyComponentSPI;
+    uses EnemySPI;
     requires com.almasb.fxgl.all;
     requires CommonEnemy;
     requires Common;

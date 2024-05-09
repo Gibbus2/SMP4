@@ -13,7 +13,7 @@ import common.bullet.CommonBullet;
 import common.player.PlayerSPI;
 import common.tower.CommonTowerComponent;
 import common.tower.TowerSPI;
-import enemy.Enemy;
+import enemy.CommonEnemyComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -141,8 +141,8 @@ public class App extends GameApplication {
             @Override
             protected void onCollisionBegin(Entity enemy, Entity player) {
                 for(Component component : enemy.getComponents()){
-                    if(component instanceof Enemy){
-                        ((Enemy) component).damage(1000000000, true);
+                    if(component instanceof CommonEnemyComponent){
+                        ((CommonEnemyComponent) component).damage(1000000000, true);
                     }
                 }
 
@@ -188,8 +188,8 @@ public class App extends GameApplication {
                 }
 
                 for(Component component : enemy.getComponents()){
-                    if(component instanceof Enemy){
-                        ((Enemy) component).damage(damage, false);
+                    if(component instanceof CommonEnemyComponent){
+                        ((CommonEnemyComponent) component).damage(damage, false);
                     }
                 }
 
