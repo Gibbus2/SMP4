@@ -10,7 +10,5 @@ public interface PlayerSPI {
     int getHealth();
     void setMoney(int amount);
     int getMoney();
-    void addPropertyChangeListener(PropertyChangeListener listener);
-    void removePropertyChangeListener(PropertyChangeListener listener);
     Entity getPlayerEntity();
 }

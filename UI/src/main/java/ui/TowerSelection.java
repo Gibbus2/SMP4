@@ -3,7 +3,9 @@ package ui;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
+import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.texture.Texture;
+import common.data.EntityType;
 import common.player.PlayerSPI;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
@@ -25,6 +27,8 @@ import static java.util.stream.Collectors.toList;
 public class TowerSelection {
     private Entity imageEntity;
     private int Moneh;
+    private boolean canBuild;
+
 
     private Collection<? extends PlayerSPI> getPlayerSPIs() {
         return ServiceLoader.load(PlayerSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
@@ -57,10 +61,7 @@ public class TowerSelection {
 
         });
 
-
-
         hbox.getChildren().add(setMoneyButton);
-
 
         for (String path : list) {
             InputStream is = TowerSelection.class.getResourceAsStream(path);
@@ -75,14 +76,17 @@ public class TowerSelection {
                 getPlayerSPIs().stream().findFirst().ifPresent(
                         spi -> {
                             if (cost <= spi.getMoney() && !isImageFollowingCursor.get()) {
-                                    imageEntity = FXGL.entityBuilder()
-                                            .viewWithBBox(new Rectangle(texture.getWidth(), texture.getHeight(), Color.GREEN))
-                                            .with(new CollidableComponent(true))
-                                            .view(texture.copy())
-                                            .buildAndAttach();
-                                    isImageFollowingCursor.set(true);
-                                    imageEntity.setPosition(e.getSceneX() - imageEntity.getHeight() / 2, e.getSceneY() - imageEntity.getWidth() / 2 );
-                                }
+                                imageEntity = FXGL.entityBuilder()
+                                        .type(EntityType.BUILD)
+                                        .viewWithBBox(new Rectangle(texture.getWidth() - 2, texture.getHeight() - 2, Color.GREEN))
+                                        .with(new CollidableComponent(true))
+                                        .view(texture.copy())
+                                        .buildAndAttach();
+                                isImageFollowingCursor.set(true);
+                                imageEntity.setPosition(e.getSceneX() - imageEntity.getHeight() / 2, e.getSceneY() - imageEntity.getWidth() / 2 );
+
+
+                            }
                             else {
                                 System.out.println("Not enough money");
                             }
@@ -102,18 +106,6 @@ public class TowerSelection {
                     imageEntity.setPosition(e.getSceneX() - imageEntity.getHeight() / 2, e.getSceneY() - imageEntity.getWidth() / 2 );
                 }
             });
-
-
-/* grayscale shit for money
-
-if ("money".equals(evt.getPropertyName())) {
-                int newMoney = (int) evt.getNewValue();
-                if (newMoney < cost) {
-                    texture.setEffect(new javafx.scene.effect.ColorAdjust(0, -1, 0, 0)); // grayscale
-                } else {
-                    texture.setEffect(null); // original color
-                }
-            }*/
 
         }
         return hbox;

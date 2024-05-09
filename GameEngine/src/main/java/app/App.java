@@ -198,6 +198,25 @@ public class App extends GameApplication {
                 }
             }
         });
+
+        // Tower and NoBuildZone collision.
+        FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.BUILD, EntityType.NO_BUILD_ZONE) {
+
+            @Override
+            protected void onCollisionBegin(Entity a, Entity b) {
+                // Handle collision here
+                // Disable building on to build Entity. Sets canBuild flag to false
+                System.out.println("Collision detected between imageEntity and NO_BUILD_ZONE");
+
+            }
+
+            @Override
+            protected void onCollisionEnd(Entity build, Entity no_build_zone) {
+                // Handle collision here
+                // Enable  building on to build Entity. Sets canBuild flag to true
+                System.out.println("Collision ended between imageEntity and NO_BUILD_ZONE");
+            }
+        });
     }
 
     @Override
