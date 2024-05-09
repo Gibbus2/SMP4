@@ -11,13 +11,9 @@ import java.io.InputStream;
 public class NormalTower extends CommonTowerComponent implements TowerSPI {
 
     public NormalTower() {
-        super(null);
-        this.damage = 1;
-        this.cost = 10;
-        this.firerate = 1;
-        this.range = 15;
-
+        this(null);
     }
+
     public NormalTower(IObjectPool objectPool) {
         super(objectPool);
         this.damage = 1;

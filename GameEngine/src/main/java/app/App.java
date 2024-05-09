@@ -221,7 +221,7 @@ public class App extends GameApplication {
                 // Handle collision here
                 // Disable building on to build Entity. Sets canBuild flag to false
                 System.out.println("Collision detected between imageEntity and NO_BUILD_ZONE");
-                towerSelection.setCanBuild(false);
+                towerSelection.setBuildableArea(false);
 
 
             }
@@ -231,7 +231,7 @@ public class App extends GameApplication {
                 // Handle collision here
                 // Enable  building on to build Entity. Sets canBuild flag to true
                 System.out.println("Collision ended between imageEntity and NO_BUILD_ZONE");
-                towerSelection.setCanBuild(true);
+                towerSelection.setBuildableArea(true);
             }
         });
     }
