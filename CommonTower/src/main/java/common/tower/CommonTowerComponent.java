@@ -64,7 +64,7 @@ public class CommonTowerComponent extends Component  {
         this.damage = 1;
         this.cost = 10;
         this.firerate = 0.5;
-        this.range = 150;
+        this.range = 200;
         this.targetting = TowerState.FIRST;
         enemiesInRange = new ArrayList<>();
         this.objectPool = objectPool;
@@ -79,6 +79,7 @@ public class CommonTowerComponent extends Component  {
     public void onAdded() {
         entity.addComponent(new StateComponent());
         state = entity.getComponent(StateComponent.class);
+        entity.getComponent(ViewComponent.class).addChild(new Rectangle(5, 48, Color.RED));
 
 //        getEntity().getComponent(BoundingBoxComponent.class).addHitBox(new HitBox(BoundingShape.circle(range)));
 //        getEntity().getComponent(ViewComponent.class).addChild(new Circle(range, Color.BLUE));
@@ -239,30 +240,34 @@ public class CommonTowerComponent extends Component  {
         };
 
         state.changeState(IDLE_STATE);
+
+        entity.getComponent(ViewComponent.class).addOnClickHandler(mouseEvent -> {
+            List<TowerState> states = Arrays.asList(TowerState.values());
+
+            int index = states.indexOf(targetting);
+
+            // Decrement the index, and reset to the last state if it's less than 0
+            index = (index - 1 < 0) ? states.size() - 2 : index - 1;
+
+            targetting = states.get(index);
+            System.out.println("Targetting: " + targetting.toString());
+        });
     }
 
     private void shoot(Entity enemy) {
+//        System.out.println("Trying to shoot");
+        if (objectPool != null) {
+            getBulletSPIs().stream().findFirst().ifPresent(SPI -> {
+                objectPool.createPool(EntityType.BULLET.toString(), () -> FXGL.entityBuilder()
+                        .type(EntityType.BULLET)
+                        .at(entity.getPosition())
+                        .with(SPI.createComponent(enemy))
+                        .build()
+                );
 
-        getBulletSPIs().stream().findFirst().ifPresent(SPI -> {
-            objectPool.createPool(EntityType.BULLET.toString(), () -> FXGL.entityBuilder()
-                    .type(EntityType.BULLET)
-                    .at(entity.getPosition())
-                    .with(SPI.createComponent(enemy))
-                    .build()
-            );
-
-            objectPool.getEntityFromPool(EntityType.BULLET.toString());
-        });
-
-        // TODO: ObjectPool this.
-//        Entity bullet = FXGL.entityBuilder()
-//                .type(EntityType.BULLET)
-//                .at(entity.getPosition())
-//                .with(new Bullet())
-//                .buildAndAttach();
-
-//        Bullet Bullet = bullet.getComponent(Bullet.class);
-//        Bullet.setDirection(direction);
+                objectPool.getEntityFromPool(EntityType.BULLET.toString());
+            });
+        }
     }
 
     private void rotateToTarget(Entity target) {

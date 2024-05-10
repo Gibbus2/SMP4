@@ -34,23 +34,25 @@ public class CommonEnemyComponent extends Component {
 
     @Override
     public void onUpdate(double tpf) {
-        //move in rotation heading
-        double radians = Math.toRadians(getEntity().getRotation());
-        double y = speed * Math.sin(radians) * tpf;
-        double x = speed * Math.cos(radians) * tpf;
+        if (wayPoints != null) {
+            //move in rotation heading
+            double radians = Math.toRadians(getEntity().getRotation());
+            double y = speed * Math.sin(radians) * tpf;
+            double x = speed * Math.cos(radians) * tpf;
 
-        setPos(getPos().add(x,y));
+            setPos(getPos().add(x,y));
 
-        this.distanceTravelled += (int) (x + y);
+            this.distanceTravelled += (int) (x + y);
 
-        //check if we have passed the waypoint
-        double distMoved = getPos().distance(wayPoints.get(targetWaypoint - 1));
-        double maxDist = wayPoints.get(targetWaypoint - 1).distance(wayPoints.get(targetWaypoint));
-        if (distMoved >= maxDist && targetWaypoint < wayPoints.size() - 1){
-            //rotate to next waypoint and reset position to the current waypoint
-            rotate(targetWaypoint);
-            setPos(wayPoints.get(targetWaypoint));
-            targetWaypoint++;
+            //check if we have passed the waypoint
+            double distMoved = getPos().distance(wayPoints.get(targetWaypoint - 1));
+            double maxDist = wayPoints.get(targetWaypoint - 1).distance(wayPoints.get(targetWaypoint));
+            if (distMoved >= maxDist && targetWaypoint < wayPoints.size() - 1){
+                //rotate to next waypoint and reset position to the current waypoint
+                rotate(targetWaypoint);
+                setPos(wayPoints.get(targetWaypoint));
+                targetWaypoint++;
+            }
         }
     }
 
