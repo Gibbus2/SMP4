@@ -24,7 +24,7 @@ import static java.util.stream.Collectors.toList;
 
 public class TowerSelection {
     private Entity imageEntity;
-    private boolean buildableArea;
+    private boolean buildableArea = true;
     private AtomicBoolean isInsideShop = new AtomicBoolean(false);
     private String towerName;
     private AtomicBoolean isImageFollowingCursor = new AtomicBoolean(false);
@@ -33,6 +33,13 @@ public class TowerSelection {
     }
     private Collection<? extends TowerSPI> towers() {
         return ServiceLoader.load(TowerSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
+    }
+
+    private void towerSelectedOnRightClick () {
+    }
+
+    private void towerSelectionOnLeftClick(){
+
     }
 
     public HBox getTowers() {
@@ -63,11 +70,12 @@ public class TowerSelection {
             });
 
             FXGL.getGameScene().getContentRoot().setOnMouseClicked(event -> {
-                if (event.getButton() == MouseButton.PRIMARY && buildableArea && !isInsideShop.get() && isImageFollowingCursor.get()) {
+                if (event.getButton() == MouseButton.PRIMARY && canBuild()) {
                     player().stream().findFirst().ifPresent(spi -> {spi.setMoney(- tower.getCost());});
                     System.out.println("Building tower : " + tower.getName());
 
-                    /*FXGL.getGameWorld().removeEntity(imageEntity);*/
+                    FXGL.getGameWorld().removeEntity(imageEntity);
+                    isImageFollowingCursor.set(false);
                     //TODO: Add tower to the game world
                 }
                 if (event.getButton() == MouseButton.SECONDARY && isImageFollowingCursor.get()) {
@@ -92,8 +100,10 @@ public class TowerSelection {
         return towerBox;
     }
 
-    private void clickBuilder(){
-
+    private boolean canBuild(){
+        boolean canBuild;
+        canBuild = buildableArea && !isInsideShop.get() && isImageFollowingCursor.get();
+        return canBuild;
     }
 
     public HBox createTowerSelection() {
