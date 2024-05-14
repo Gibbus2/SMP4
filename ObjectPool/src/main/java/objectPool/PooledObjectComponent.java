@@ -6,14 +6,28 @@ public class PooledObjectComponent extends Component {
 
     private final Pool pool;
 
+    private boolean isPooled;
+
     public PooledObjectComponent(Pool pool) {
         this.pool = pool;
     }
 
     public void returnToPool() {
-        // Moving it so far off-screen that it can't be seen.
-        getEntity().setPosition(-10000, -10000);
+        if (!isPooled) {
+            // Moving it so far off-screen that it can't be seen.
+            getEntity().setPosition(-10000, -10000);
 
-        pool.returnEntityToPool(getEntity());
+            isPooled = true;
+
+            pool.returnEntityToPool(getEntity());
+        }
+    }
+
+    public boolean isPooled() {
+        return isPooled;
+    }
+
+    public void setIsPooled(boolean b) {
+        isPooled = b;
     }
 }

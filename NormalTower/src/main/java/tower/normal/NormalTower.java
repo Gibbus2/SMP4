@@ -20,7 +20,6 @@ public class NormalTower extends CommonTowerComponent implements TowerSPI {
         this.cost = 10;
         this.firerate = 1;
         this.range = 15;
-
     }
 
     @Override
@@ -29,7 +28,7 @@ public class NormalTower extends CommonTowerComponent implements TowerSPI {
     }
 
     @Override
-    public Image getImage(){
+    public Image getImage() {
         InputStream is = NormalTower.class.getResourceAsStream("/tower.png");
         if (is != null) {
             return new Image(is);

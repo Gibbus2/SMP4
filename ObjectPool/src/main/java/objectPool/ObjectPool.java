@@ -28,6 +28,8 @@ public class ObjectPool implements IObjectPool {
 
     @Override
     public Entity getEntityFromPool(String poolName) {
+        Entity entity = pools.get(poolName).getEntityFromPool();
+        entity.getComponent(PooledObjectComponent.class).setIsPooled(false);
         return pools.get(poolName).getEntityFromPool();
     }
 

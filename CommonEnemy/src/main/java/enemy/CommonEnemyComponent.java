@@ -19,9 +19,10 @@ public class CommonEnemyComponent extends Component {
 
     public CommonEnemyComponent(List<Point2D> wayPoints){
         this.wayPoints = wayPoints;
-        this.speed = 10;
+        this.speed = 100;
         this.distanceTravelled = 0;
-        this.maxHealth = 100;
+        this.maxHealth = 5;
+        this.targetWaypoint = 1;
     }
 
     public int getDistanceTravelled() {
@@ -45,6 +46,7 @@ public class CommonEnemyComponent extends Component {
             this.distanceTravelled += (int) (x + y);
 
             //check if we have passed the waypoint
+            System.out.println("Target Waypoint before moving: " + targetWaypoint);
             double distMoved = getPos().distance(wayPoints.get(targetWaypoint - 1));
             double maxDist = wayPoints.get(targetWaypoint - 1).distance(wayPoints.get(targetWaypoint));
             if (distMoved >= maxDist && targetWaypoint < wayPoints.size() - 1){
@@ -63,11 +65,14 @@ public class CommonEnemyComponent extends Component {
     }
 
     public void reset(){
+        System.out.println("Calling reset on Enemy.");
         rotate(0);
         setPos(wayPoints.getFirst());
         this.targetWaypoint = 1;
+        System.out.println("Target Waypoint: " + targetWaypoint);
         setDistanceTravelled(0);
         getEntity().getComponent(HealthComponent.class).setHealth(this.maxHealth);
+        System.out.println("Target Waypoint: " + targetWaypoint);
     }
 
     public void setDistanceTravelled(int i) {
@@ -83,7 +88,10 @@ public class CommonEnemyComponent extends Component {
             } else {
                 getEntity().removeFromWorld();
             }
-            this.onRemove.run();
+
+            if (onRemove != null) {
+                this.onRemove.run();
+            }
         }
         if (!isPlayer) {
             // TODO: Give player x Money.

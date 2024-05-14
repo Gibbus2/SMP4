@@ -1,5 +1,6 @@
 package common.tower;
 
+import bullet.BulletComponent;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
@@ -8,16 +9,18 @@ import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.entity.components.ViewComponent;
 import com.almasb.fxgl.entity.state.EntityState;
 import com.almasb.fxgl.entity.state.StateComponent;
-import com.almasb.fxgl.physics.BoundingShape;
-import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.time.LocalTimer;
 import common.bullet.BulletSPI;
+import common.bullet.CommonBullet;
 import common.data.EntityType;
 import enemy.CommonEnemyComponent;
 import health.HealthComponent;
 import javafx.geometry.Point2D;
+import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 import objectPool.IObjectPool;
 
@@ -42,9 +45,13 @@ public class CommonTowerComponent extends Component  {
         return name;
     }
 
-     protected IObjectPool objectPool;
+    public Image getImage() {
+        return null;
+    }
 
-    private TowerState targetting;
+    protected IObjectPool objectPool;
+
+    private TowerState targeting;
 
     protected List<Entity> enemiesInRange;
     public void addEnemy(Entity enemy) { enemiesInRange.add(enemy); }
@@ -60,12 +67,15 @@ public class CommonTowerComponent extends Component  {
     private EntityState STRONGEST_STATE;
     private EntityState WEAKEST_STATE;
 
+    // Some UI stuff trying to show the targeting state of the tower.
+//    private InfoBox infoBox;
+
     public CommonTowerComponent(IObjectPool objectPool) {
         this.damage = 1;
         this.cost = 10;
-        this.firerate = 0.5;
-        this.range = 200;
-        this.targetting = TowerState.FIRST;
+        this.firerate = 5;
+        this.range = 300;
+        this.targeting = TowerState.FIRST;
         enemiesInRange = new ArrayList<>();
         this.objectPool = objectPool;
 
@@ -99,13 +109,13 @@ public class CommonTowerComponent extends Component  {
         shootTimer.capture();
 
         enemiesInRange = new ArrayList<>();
-        targetting = TowerState.FIRST;
+        targeting = TowerState.FIRST;
 
         IDLE_STATE = new EntityState(TowerState.IDLE.toString()) {
             @Override
             protected void onUpdate(double tpf) {
                 if (enemiesInRange != null && !enemiesInRange.isEmpty()) {
-                    switch (targetting) {
+                    switch (targeting) {
                         case FIRST:
                             state.changeState(FIRST_STATE);
                             break;
@@ -125,27 +135,27 @@ public class CommonTowerComponent extends Component  {
         FIRST_STATE = new EntityState(TowerState.FIRST.toString()) {
             @Override
             protected void onUpdate(double tpf) {
-                if (enemiesInRange == null || !enemiesInRange.isEmpty()) {
-                    state.changeState(IDLE_STATE);
+                    if (shootTimer.elapsed(Duration.seconds(5))) {
+                        if (enemiesInRange == null || !enemiesInRange.isEmpty()) {
+                        state.changeState(IDLE_STATE);
 
-                    if (targetting != TowerState.FIRST) {
-                        switch (targetting) {
-                            case LAST:
-                                state.changeState(LAST_STATE);
-                                break;
-                            case STRONGEST:
-                                state.changeState(STRONGEST_STATE);
-                                break;
-                            case WEAKEST:
-                                state.changeState(WEAKEST_STATE);
-                                break;
+                        if (targeting != TowerState.FIRST) {
+                            switch (targeting) {
+                                case LAST:
+                                    state.changeState(LAST_STATE);
+                                    break;
+                                case STRONGEST:
+                                    state.changeState(STRONGEST_STATE);
+                                    break;
+                                case WEAKEST:
+                                    state.changeState(WEAKEST_STATE);
+                                    break;
+                            }
                         }
-                    }
 
-                    Entity target = sortByDistanceTraveled(enemiesInRange).getLast();
-                    rotateToTarget(target);
+                        Entity target = sortByDistanceTraveled(enemiesInRange).getLast();
+                        rotateToTarget(target);
 
-                    if (shootTimer.elapsed(Duration.seconds(firerate))) {
                         shoot(target);
                     }
                 }
@@ -154,27 +164,27 @@ public class CommonTowerComponent extends Component  {
         LAST_STATE = new EntityState(TowerState.LAST.toString()) {
             @Override
             protected void onUpdate(double tpf) {
-                if (enemiesInRange == null || !enemiesInRange.isEmpty()) {
-                    state.changeState(IDLE_STATE);
+                if (shootTimer.elapsed(Duration.seconds(5))) {
+                    if (enemiesInRange == null || !enemiesInRange.isEmpty()) {
+                        state.changeState(IDLE_STATE);
 
-                    if (targetting != TowerState.LAST) {
-                        switch (targetting) {
-                            case FIRST:
-                                state.changeState(FIRST_STATE);
-                                break;
-                            case STRONGEST:
-                                state.changeState(STRONGEST_STATE);
-                                break;
-                            case WEAKEST:
-                                state.changeState(WEAKEST_STATE);
-                                break;
+                        if (targeting != TowerState.LAST) {
+                            switch (targeting) {
+                                case FIRST:
+                                    state.changeState(FIRST_STATE);
+                                    break;
+                                case STRONGEST:
+                                    state.changeState(STRONGEST_STATE);
+                                    break;
+                                case WEAKEST:
+                                    state.changeState(WEAKEST_STATE);
+                                    break;
+                            }
                         }
-                    }
 
-                    Entity target = sortByDistanceTraveled(enemiesInRange).getFirst();
-                    rotateToTarget(target);
+                        Entity target = sortByDistanceTraveled(enemiesInRange).getFirst();
+                        rotateToTarget(target);
 
-                    if (shootTimer.elapsed(Duration.seconds(firerate))) {
                         shoot(target);
                     }
                 }
@@ -183,27 +193,27 @@ public class CommonTowerComponent extends Component  {
         STRONGEST_STATE = new EntityState(TowerState.STRONGEST.toString()) {
             @Override
             protected void onUpdate(double tpf) {
-                if (enemiesInRange == null || !enemiesInRange.isEmpty()) {
-                    state.changeState(IDLE_STATE);
+                if (shootTimer.elapsed(Duration.seconds(5))) {
+                    if (enemiesInRange == null || !enemiesInRange.isEmpty()) {
+                        state.changeState(IDLE_STATE);
 
-                    if (targetting != TowerState.STRONGEST) {
-                        switch (targetting) {
-                            case FIRST:
-                                state.changeState(FIRST_STATE);
-                                break;
-                            case LAST:
-                                state.changeState(LAST_STATE);
-                                break;
-                            case WEAKEST:
-                                state.changeState(WEAKEST_STATE);
-                                break;
+                        if (targeting != TowerState.STRONGEST) {
+                            switch (targeting) {
+                                case FIRST:
+                                    state.changeState(FIRST_STATE);
+                                    break;
+                                case LAST:
+                                    state.changeState(LAST_STATE);
+                                    break;
+                                case WEAKEST:
+                                    state.changeState(WEAKEST_STATE);
+                                    break;
+                            }
                         }
-                    }
 
-                    Entity target = sortByHealth(enemiesInRange).getLast();
-                    rotateToTarget(target);
+                        Entity target = sortByHealth(enemiesInRange).getLast();
+                        rotateToTarget(target);
 
-                    if (shootTimer.elapsed(Duration.seconds(firerate))) {
                         shoot(target);
                     }
                 }
@@ -212,27 +222,27 @@ public class CommonTowerComponent extends Component  {
         WEAKEST_STATE = new EntityState(TowerState.WEAKEST.toString()) {
             @Override
             protected void onUpdate(double tpf) {
-                if (enemiesInRange == null || !enemiesInRange.isEmpty()) {
-                    state.changeState(IDLE_STATE);
+                if (shootTimer.elapsed(Duration.seconds(5))) {
+                    if (enemiesInRange == null || !enemiesInRange.isEmpty()) {
+                        state.changeState(IDLE_STATE);
 
-                    if (targetting != TowerState.WEAKEST) {
-                        switch (targetting) {
-                            case FIRST:
-                                state.changeState(FIRST_STATE);
-                                break;
-                            case LAST:
-                                state.changeState(LAST_STATE);
-                                break;
-                            case STRONGEST:
-                                state.changeState(STRONGEST_STATE);
-                                break;
+                        if (targeting != TowerState.WEAKEST) {
+                            switch (targeting) {
+                                case FIRST:
+                                    state.changeState(FIRST_STATE);
+                                    break;
+                                case LAST:
+                                    state.changeState(LAST_STATE);
+                                    break;
+                                case STRONGEST:
+                                    state.changeState(STRONGEST_STATE);
+                                    break;
+                            }
                         }
-                    }
 
-                    Entity target = sortByHealth(enemiesInRange).getFirst();
-                    rotateToTarget(target);
+                        Entity target = sortByHealth(enemiesInRange).getFirst();
+                        rotateToTarget(target);
 
-                    if (shootTimer.elapsed(Duration.seconds(firerate))) {
                         shoot(target);
                     }
                 }
@@ -244,28 +254,44 @@ public class CommonTowerComponent extends Component  {
         entity.getComponent(ViewComponent.class).addOnClickHandler(mouseEvent -> {
             List<TowerState> states = Arrays.asList(TowerState.values());
 
-            int index = states.indexOf(targetting);
+            int index = states.indexOf(targeting);
 
             // Decrement the index, and reset to the last state if it's less than 0
             index = (index - 1 < 0) ? states.size() - 2 : index - 1;
 
-            targetting = states.get(index);
-            System.out.println("Targetting: " + targetting.toString());
+            targeting = states.get(index);
+            System.out.println("Targetting: " + targeting.toString());
         });
+
+        // Some UI stuff trying to show the targeting state of the tower.
+//        entity.getComponent(ViewComponent.class).addEventHandler(MouseEvent.MOUSE_ENTERED, event -> {
+//            infoBox = new InfoBox(targeting);
+//        });
+//        entity.getComponent(ViewComponent.class).addEventHandler(MouseEvent.MOUSE_EXITED, event -> {
+//            infoBox = null;
+//        });
     }
 
     private void shoot(Entity enemy) {
-//        System.out.println("Trying to shoot");
+        System.out.println("Trying to shoot");
         if (objectPool != null) {
             getBulletSPIs().stream().findFirst().ifPresent(SPI -> {
                 objectPool.createPool(EntityType.BULLET.toString(), () -> FXGL.entityBuilder()
                         .type(EntityType.BULLET)
-                        .at(entity.getPosition())
-                        .with(SPI.createComponent(enemy))
-                        .build()
-                );
+                        .viewWithBBox(new Rectangle(16, 16, Color.GREEN))
+                        .with(new CollidableComponent(true))
+                        .with(SPI.createComponent(null))
+                        .buildAndAttach());
 
-                objectPool.getEntityFromPool(EntityType.BULLET.toString());
+                System.out.println("Getting bullet from pool");
+                Entity bullet = objectPool.getEntityFromPool(EntityType.BULLET.toString());
+                for (Component comp : bullet.getComponents()) {
+                    if (comp instanceof CommonBullet) {
+                        ((CommonBullet) comp).setTarget(enemy);
+                        bullet.setPosition(getEntity().getPosition());
+                    }
+                }
+                System.out.println(bullet);
             });
         }
     }
@@ -304,4 +330,19 @@ public class CommonTowerComponent extends Component  {
         return ServiceLoader.load(BulletSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
     }
 
+// Some UI stuff trying to show the targeting state of the tower.
+
+//    private class InfoBox {
+//        private TowerState targeting;
+//
+//        public InfoBox(TowerState targeting) {
+//            this.targeting = targeting;
+//            FXGL.addUINode(new Rectangle(200, 100, Color.WHITE).setOnMouseMoved(event -> {
+//                FXGL.getGameScene().removeUINode(event.getSource());
+//            }), 100, 100);
+//            FXGL.removeUINode();
+//            getEntity().getViewComponent().addChild(new Rectangle(20, 10, Color.WHITE));
+//            getEntity().getViewComponent().addChild(new Text("Targeting state: " + targeting.toString()));
+//        }
+//    }
 }
