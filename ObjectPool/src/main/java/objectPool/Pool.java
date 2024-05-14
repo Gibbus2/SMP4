@@ -28,7 +28,7 @@ public class Pool {
                 component.resume();
             }
 
-            if (!entity.hasComponent(CollidableComponent.class)) {
+            if (entity.hasComponent(CollidableComponent.class)) {
                 entity.getComponent(CollidableComponent.class).setValue(true);
             }
 
@@ -55,7 +55,7 @@ public class Pool {
             component.pause();
         }
 
-        if (!entity.hasComponent(CollidableComponent.class)) {
+        if (entity.hasComponent(CollidableComponent.class)) {
             entity.getComponent(CollidableComponent.class).setValue(false);
         }
 
