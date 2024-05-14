@@ -83,8 +83,7 @@ public class WaveManager {
                     Entity e = objectPool.getEntityFromPool(key);
                     //reset enemy component
                     for (Component component : e.getComponents()) {
-                        if (component instanceof CommonEnemyComponent) {
-                            CommonEnemyComponent commonEnemyComponent = (CommonEnemyComponent) component;
+                        if (component instanceof CommonEnemyComponent commonEnemyComponent) {
                             commonEnemyComponent.setOnRemove(() -> {
                                 genome.entityRemoved(commonEnemyComponent.getDistanceTravelled());
                                 generateNextWave();
@@ -93,7 +92,7 @@ public class WaveManager {
                         }
                     }
                 }, Duration.millis(delay));
-                delay += 500;
+                delay += 1000;
             }
 
         }
