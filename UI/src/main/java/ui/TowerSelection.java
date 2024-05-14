@@ -7,6 +7,7 @@ import com.almasb.fxgl.texture.Texture;
 
 import common.data.EntityType;
 import common.player.PlayerSPI;
+import common.tower.CommonTowerComponent;
 import common.tower.TowerSPI;
 
 import javafx.scene.control.Button;
@@ -78,11 +79,11 @@ public class TowerSelection {
         for (TowerSPI tower : towers())
             if (tower.getName().equals(towerName)) {
                 towerEntity = FXGL.entityBuilder()
-                        .type(EntityType.TOWER)
+                        .type(EntityType.NO_BUILD_ZONE)
                         .at(x, y)
                         .viewWithBBox(new Rectangle(image.getWidth(), image.getHeight(), Color.GREEN))
                         .view(new ImageView(image))
-                        .with(tower.createComponent(objectPool))
+                        .with(new CommonTowerComponent(objectPool))
                         .with(new CollidableComponent(true))
                         .buildAndAttach();
             }
