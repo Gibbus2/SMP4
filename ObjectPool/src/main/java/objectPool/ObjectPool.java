@@ -15,6 +15,9 @@ public class ObjectPool implements IObjectPool {
 
     @Override
     public void createPool(String poolName, ICreateEntityPool iCreateEntityPool) {
+        if (poolExists(poolName)) {
+            return;
+        }
         pools.put(poolName, new Pool(iCreateEntityPool));
     }
 
@@ -25,6 +28,12 @@ public class ObjectPool implements IObjectPool {
 
     @Override
     public Entity getEntityFromPool(String poolName) {
-        return pools.get(poolName).getEntityFromPool();
+        Entity entity = pools.get(poolName).getEntityFromPool();
+        entity.getComponent(PooledObjectComponent.class).setIsPooled(false);
+        return entity;
+    }
+
+    private boolean poolExists(String poolName) {
+        return pools.containsKey(poolName);
     }
 }

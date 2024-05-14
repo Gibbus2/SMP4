@@ -2,7 +2,6 @@ package player;
 
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.component.Component;
 import health.HealthComponent;
 import org.junit.jupiter.api.Test;
 
@@ -50,8 +49,8 @@ public class PlayerTest {
                 .with(new PlayerComponent())
                 .build();
 
-        entity.getComponent(PlayerComponent.class).changeLedger(10);
+        entity.getComponent(PlayerComponent.class).setMoney(10);
 
-        assertEquals(10, entity.getComponent(PlayerComponent.class).getLedger());
+        assertEquals(10, entity.getComponent(PlayerComponent.class).getMoney());
     }
 }

@@ -2,6 +2,7 @@ package objectPool;
 
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
+import com.almasb.fxgl.entity.components.CollidableComponent;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -27,6 +28,10 @@ public class Pool {
                 component.resume();
             }
 
+            if (entity.hasComponent(CollidableComponent.class)) {
+                entity.getComponent(CollidableComponent.class).setValue(true);
+            }
+
             return entity;
         } else {
             Entity entity = createEntityPool.createEntity();
@@ -37,6 +42,10 @@ public class Pool {
                 entity.addComponent(new PooledObjectComponent(this));
             }
 
+            if (!entity.hasComponent(CollidableComponent.class)) {
+                entity.getComponent(CollidableComponent.class).setValue(true);
+            }
+
             return entity;
         }
     }
@@ -44,6 +53,10 @@ public class Pool {
     public void returnEntityToPool(Entity entity) {
         for (Component component : entity.getComponents()) {
             component.pause();
+        }
+
+        if (entity.hasComponent(CollidableComponent.class)) {
+            entity.getComponent(CollidableComponent.class).setValue(false);
         }
 
         entity.setPosition(-10000, -10000);

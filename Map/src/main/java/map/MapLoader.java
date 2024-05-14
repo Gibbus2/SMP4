@@ -35,5 +35,10 @@ public class MapLoader {
         System.out.println(file.toURI().toURL());
         var level = new TMXLevelLoader(true).load(file.toURI().toURL(), FXGL.getGameWorld());
         FXGL.getGameWorld().setLevel(level);
+
+        NoBuildZone noBuildZone = new NoBuildZone();
+        noBuildZone.noBuildZone();
     }
+
+
 }

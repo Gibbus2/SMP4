@@ -1,13 +1,9 @@
 package player;
 
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
-import com.almasb.fxgl.input.Input;
-import com.almasb.fxgl.input.UserAction;
 import common.player.PlayerSPI;
 import health.HealthComponent;
-import javafx.scene.input.KeyCode;
 
 public class PlayerComponent extends Component implements PlayerSPI {
     private static Entity player;
@@ -36,7 +32,7 @@ public class PlayerComponent extends Component implements PlayerSPI {
     @Override
     public void changeHealth(int amount) {
         System.out.print("Player health change: " + getPlayerEntity().getComponent(HealthComponent.class).getHealth() + "->");
-        getPlayerEntity().getComponent(HealthComponent.class).setHealth(amount);
+        getPlayerEntity().getComponent(HealthComponent.class).changeHealth(amount);
         System.out.println((getPlayerEntity().getComponent(HealthComponent.class).getHealth()));
 
         if (getPlayerEntity().getComponent(HealthComponent.class).isDead()) {
@@ -53,14 +49,14 @@ public class PlayerComponent extends Component implements PlayerSPI {
     }
 
     @Override
-    public void changeLedger(int amount) {
-        System.out.print("Player ledger change: " + getLedger() + "->");
+    public void setMoney(int amount) {
+        System.out.print("Player ledger change: " + getMoney() + "->");
         this.ledger += amount;
-        System.out.println(getLedger());
+        System.out.println(getMoney());
     }
 
     @Override
-    public int getLedger() {
+    public int getMoney() {
         return ledger;
     }
 }

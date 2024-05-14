@@ -15,15 +15,6 @@ public class GameMenu extends FXGLMenu {
         btnPause.getStyleClass().add("play_button");
         btnPause.setOnAction(e -> fireResume());
 
-        //Make logic to check if level is cleared.
-/*        if(true == true){
-        var btnSelectLevel = new Button("Select Level");
-        btnSelectLevel.getStyleClass().add("play_button");
-
-
-        }*/
-
-
         var btnExit = new Button("Main Menu");
         btnExit.getStyleClass().add("play_button");
         btnExit.setOnAction(e -> fireExitToMainMenu());
