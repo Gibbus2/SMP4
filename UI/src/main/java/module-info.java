@@ -5,6 +5,7 @@ open module UI {
     requires CommonPlayer;
     requires Common;
     requires CommonTower;
+    requires ObjectPool;
 
     uses PlayerSPI;
     uses common.tower.TowerSPI;

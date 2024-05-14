@@ -241,7 +241,7 @@ public class App extends GameApplication {
         // TODO: Use Map module to load scene "Main Menu".
 
 
-        HBox hbox = towerSelection.createTowerSelection();
+        HBox hbox = towerSelection.createTowerSelection(objectPool);
         FXGL.getGameScene().addUINode(hbox);
 
         var brickTexture = FXGL.getAssetLoader().loadTexture("brick.png");
