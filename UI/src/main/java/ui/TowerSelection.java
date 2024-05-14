@@ -160,6 +160,7 @@ public class TowerSelection {
     }
 
     //TODO add method to fix the long ifstatment in build
+    //TODO add colission counter to check if tower is in buildable area instead of singular boolean
 
 
 }
