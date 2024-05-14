@@ -68,17 +68,16 @@ public class CommonTowerComponent extends Component  {
     private EntityState WEAKEST_STATE;
 
     // Some UI stuff trying to show the targeting state of the tower.
-//    private InfoBox infoBox;
+    // private InfoBox infoBox;
 
     public CommonTowerComponent(IObjectPool objectPool) {
         this.damage = 1;
         this.cost = 10;
-        this.firerate = 5;
+        this.firerate = 0.5;
         this.range = 300;
         this.targeting = TowerState.FIRST;
         enemiesInRange = new ArrayList<>();
         this.objectPool = objectPool;
-
     }
 
     public Component createComponent(IObjectPool objectPool) {
@@ -135,7 +134,7 @@ public class CommonTowerComponent extends Component  {
         FIRST_STATE = new EntityState(TowerState.FIRST.toString()) {
             @Override
             protected void onUpdate(double tpf) {
-                    if (shootTimer.elapsed(Duration.seconds(5))) {
+                    if (shootTimer.elapsed(Duration.seconds(firerate))) {
                         if (enemiesInRange == null || !enemiesInRange.isEmpty()) {
                         state.changeState(IDLE_STATE);
 
@@ -164,7 +163,7 @@ public class CommonTowerComponent extends Component  {
         LAST_STATE = new EntityState(TowerState.LAST.toString()) {
             @Override
             protected void onUpdate(double tpf) {
-                if (shootTimer.elapsed(Duration.seconds(5))) {
+                if (shootTimer.elapsed(Duration.seconds(firerate))) {
                     if (enemiesInRange == null || !enemiesInRange.isEmpty()) {
                         state.changeState(IDLE_STATE);
 
@@ -193,7 +192,7 @@ public class CommonTowerComponent extends Component  {
         STRONGEST_STATE = new EntityState(TowerState.STRONGEST.toString()) {
             @Override
             protected void onUpdate(double tpf) {
-                if (shootTimer.elapsed(Duration.seconds(5))) {
+                if (shootTimer.elapsed(Duration.seconds(firerate))) {
                     if (enemiesInRange == null || !enemiesInRange.isEmpty()) {
                         state.changeState(IDLE_STATE);
 
@@ -222,7 +221,7 @@ public class CommonTowerComponent extends Component  {
         WEAKEST_STATE = new EntityState(TowerState.WEAKEST.toString()) {
             @Override
             protected void onUpdate(double tpf) {
-                if (shootTimer.elapsed(Duration.seconds(5))) {
+                if (shootTimer.elapsed(Duration.seconds(firerate))) {
                     if (enemiesInRange == null || !enemiesInRange.isEmpty()) {
                         state.changeState(IDLE_STATE);
 
@@ -251,6 +250,7 @@ public class CommonTowerComponent extends Component  {
 
         state.changeState(IDLE_STATE);
 
+        // Make tower states cycleable by clicking on the tower
         entity.getComponent(ViewComponent.class).addOnClickHandler(mouseEvent -> {
             List<TowerState> states = Arrays.asList(TowerState.values());
 
@@ -273,7 +273,6 @@ public class CommonTowerComponent extends Component  {
     }
 
     private void shoot(Entity enemy) {
-        System.out.println("Trying to shoot");
         if (objectPool != null) {
             getBulletSPIs().stream().findFirst().ifPresent(SPI -> {
                 objectPool.createPool(EntityType.BULLET.toString(), () -> FXGL.entityBuilder()
@@ -283,7 +282,6 @@ public class CommonTowerComponent extends Component  {
                         .with(SPI.createComponent(null))
                         .buildAndAttach());
 
-                System.out.println("Getting bullet from pool");
                 Entity bullet = objectPool.getEntityFromPool(EntityType.BULLET.toString());
                 for (Component comp : bullet.getComponents()) {
                     if (comp instanceof CommonBullet) {
@@ -291,9 +289,10 @@ public class CommonTowerComponent extends Component  {
                         bullet.setPosition(getEntity().getPosition());
                     }
                 }
-                System.out.println(bullet);
             });
         }
+
+        shootTimer.capture();
     }
 
     private void rotateToTarget(Entity target) {

@@ -184,7 +184,7 @@ public class App extends GameApplication {
         FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.BULLET, EntityType.ENEMY) {
             @Override
             protected void onCollisionBegin(Entity bullet, Entity enemy) {
-                System.out.println("Bullet colliding with enemy.");
+//                System.out.println("Bullet colliding with enemy.");
 
                 int damage = 0;
 
