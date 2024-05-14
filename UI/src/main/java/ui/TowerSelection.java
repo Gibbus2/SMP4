@@ -10,8 +10,10 @@ import common.player.PlayerSPI;
 import common.tower.TowerSPI;
 
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -20,13 +22,16 @@ import java.util.Collection;
 import java.util.ServiceLoader;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import objectPool.IObjectPool;
 import static java.util.stream.Collectors.toList;
 
 public class TowerSelection {
     private Entity imageEntity;
+
+    private IObjectPool objectPool;
+    private String towerName;
     private boolean buildableArea = true;
     private AtomicBoolean isInsideShop = new AtomicBoolean(false);
-    private String towerName;
     private AtomicBoolean isImageFollowingCursor = new AtomicBoolean(false);
     private Collection<? extends PlayerSPI> player() {
         return ServiceLoader.load(PlayerSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
@@ -34,14 +39,55 @@ public class TowerSelection {
     private Collection<? extends TowerSPI> towers() {
         return ServiceLoader.load(TowerSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
     }
-
-    private void towerSelectedOnRightClick () {
+    public void setBuildableArea(boolean buildableArea) {
+        this.buildableArea = buildableArea;
     }
-
-    private void towerSelectionOnLeftClick(){
-
+    private boolean canBuild(){
+        boolean canBuild;
+        canBuild = buildableArea && !isInsideShop.get() && isImageFollowingCursor.get();
+        return canBuild;
     }
-
+    private void removeImageFromMouse(MouseEvent event) {
+        if (event.getButton() == MouseButton.SECONDARY && isImageFollowingCursor.get()) {
+            isImageFollowingCursor.set(false);
+            FXGL.getGameWorld().removeEntity(imageEntity);
+        }
+    }
+    private void moveImageWithCursor(MouseEvent e) {
+        if (isImageFollowingCursor.get()) {
+            imageEntity.setPosition(e.getSceneX() - imageEntity.getHeight() / 2, e.getSceneY() - imageEntity.getWidth() / 2);
+        }
+    }
+    private void mouseClickHandler(MouseEvent event){
+        removeImageFromMouse(event);
+        if (event.getButton() == MouseButton.PRIMARY && canBuild()) {
+            Entity towerEntity = buildTowerAndAttach(
+                    towers().stream().filter(tower -> tower.getName().equals(towerName)).findFirst().get().getImage(),
+                    event.getSceneX() - towers().stream().filter(tower -> tower.getName().equals(towerName)).findFirst().get().getImage().getHeight() / 2,
+                    event.getSceneY() - towers().stream().filter(tower -> tower.getName().equals(towerName)).findFirst().get().getImage().getWidth() / 2
+            );
+            if (towerEntity != null) {
+                FXGL.getGameWorld().addEntity(towerEntity);
+                FXGL.getGameWorld().removeEntity(imageEntity);
+                isImageFollowingCursor.set(false);
+            }
+        }
+    }
+    private Entity buildTowerAndAttach(Image image, double x, double y) {
+        Entity towerEntity = null;
+        for (TowerSPI tower : towers())
+            if (tower.getName().equals(towerName)) {
+                towerEntity = FXGL.entityBuilder()
+                        .type(EntityType.TOWER)
+                        .at(x, y)
+                        .viewWithBBox(new Rectangle(image.getWidth(), image.getHeight(), Color.GREEN))
+                        .view(new ImageView(image))
+                        .with(tower.createComponent(objectPool))
+                        .with(new CollidableComponent(true))
+                        .buildAndAttach();
+            }
+        return towerEntity;
+    }
     public HBox getTowers() {
         HBox towerBox = new HBox();
         for (TowerSPI tower : towers()) {
@@ -68,49 +114,19 @@ public class TowerSelection {
                         }
                 );
             });
-
-            FXGL.getGameScene().getContentRoot().setOnMouseClicked(event -> {
-                if (event.getButton() == MouseButton.PRIMARY && canBuild()) {
-                    player().stream().findFirst().ifPresent(spi -> {spi.setMoney(- tower.getCost());});
-                    System.out.println("Building tower : " + tower.getName());
-
-                    FXGL.getGameWorld().removeEntity(imageEntity);
-                    isImageFollowingCursor.set(false);
-                    //TODO: Add tower to the game world
-                }
-                if (event.getButton() == MouseButton.SECONDARY && isImageFollowingCursor.get()) {
-                    isImageFollowingCursor.set(false);
-                    FXGL.getGameWorld().removeEntity(imageEntity);
-                }
-            });
-/*            FXGL.getGameScene().getContentRoot().setOnMouseClicked(e -> {
-                if (e.getButton() == MouseButton.SECONDARY && isImageFollowingCursor.get()) {
-                    isImageFollowingCursor.set(false);
-                    FXGL.getGameWorld().removeEntity(imageEntity);
-                }
-            });*/
-
-            FXGL.getGameScene().getContentRoot().setOnMouseMoved(e -> {
-                if (isImageFollowingCursor.get()) {
-                    ;
-                    imageEntity.setPosition(e.getSceneX() - imageEntity.getHeight() / 2, e.getSceneY() - imageEntity.getWidth() / 2);
-                }
-            });
+            FXGL.getGameScene().getContentRoot().setOnMouseClicked(this::mouseClickHandler);
+            FXGL.getGameScene().getContentRoot().setOnMouseMoved(this::moveImageWithCursor);
         }
         return towerBox;
     }
 
-    private boolean canBuild(){
-        boolean canBuild;
-        canBuild = buildableArea && !isInsideShop.get() && isImageFollowingCursor.get();
-        return canBuild;
-    }
-
-    public HBox createTowerSelection() {
+    public HBox createTowerSelection(IObjectPool objectPool) {
         HBox hbox = new HBox();
         hbox.setLayoutX(0);
         hbox.setLayoutY(720);
         hbox.setPrefSize(1440, 88);
+
+        this.objectPool = objectPool;
 
         ImageView imageView = new ImageView();
         imageView.setMouseTransparent(true);
@@ -144,7 +160,5 @@ public class TowerSelection {
 
     //TODO add method to fix the long ifstatment in build
 
-    public void setBuildableArea(boolean buildableArea) {
-        this.buildableArea = buildableArea;
-    }
+
 }
