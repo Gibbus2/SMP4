@@ -36,14 +36,16 @@ public class CommonTowerTest {
                         .build()
         );
 
+        int startHealth = enemies.get(0).getComponent(CommonEnemyComponent.class).getHealth();
+
         enemies.get(1).getComponent(CommonEnemyComponent.class).damage(10, false);
 
         CommonTowerComponent component = new CommonTowerComponent(null);
 
         List<Entity> sortedList = component.sortByHealth(enemies);
 
-        Assertions.assertEquals(sortedList.getFirst().getComponent(CommonEnemyComponent.class).getHealth(), 90);
-        Assertions.assertEquals(sortedList.getLast().getComponent(CommonEnemyComponent.class).getHealth(), 100);
+        Assertions.assertEquals(startHealth - 10, sortedList.getFirst().getComponent(CommonEnemyComponent.class).getHealth());
+        Assertions.assertEquals(startHealth, sortedList.getLast().getComponent(CommonEnemyComponent.class).getHealth());
     }
 
     @Test

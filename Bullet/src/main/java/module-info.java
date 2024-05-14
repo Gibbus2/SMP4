@@ -4,4 +4,5 @@ module Bullet {
     requires ObjectPool;
     requires com.almasb.fxgl.all;
     exports bullet;
+    provides common.bullet.BulletSPI with bullet.BulletComponent;
 }

@@ -19,9 +19,10 @@ public class CommonEnemyComponent extends Component {
 
     public CommonEnemyComponent(List<Point2D> wayPoints){
         this.wayPoints = wayPoints;
-        this.speed = 10;
+        this.speed = 100;
         this.distanceTravelled = 0;
-        this.maxHealth = 100;
+        this.maxHealth = 5;
+        this.targetWaypoint = 1;
     }
 
     public int getDistanceTravelled() {
@@ -83,7 +84,10 @@ public class CommonEnemyComponent extends Component {
             } else {
                 getEntity().removeFromWorld();
             }
-            this.onRemove.run();
+
+            if (onRemove != null) {
+                this.onRemove.run();
+            }
         }
         if (!isPlayer) {
             // TODO: Give player x Money.
