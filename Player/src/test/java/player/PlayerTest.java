@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PlayerTest {
-    private PlayerComponent component;
     private Entity entity;
 
     @Test
@@ -24,8 +23,8 @@ public class PlayerTest {
 
     @Test
     public void testCreateComponent() {
-        this.component = new PlayerComponent();
-        assertNotNull(this.component.createComponent());
+        PlayerComponent component = new PlayerComponent();
+        assertNotNull(component.createComponent());
     }
 
     @Test
@@ -49,8 +48,10 @@ public class PlayerTest {
                 .with(new PlayerComponent())
                 .build();
 
-        entity.getComponent(PlayerComponent.class).setMoney(10);
+        int startMoney = entity.getComponent(PlayerComponent.class).getMoney();
 
-        assertEquals(10, entity.getComponent(PlayerComponent.class).getMoney());
+        entity.getComponent(PlayerComponent.class).changeMoney(10);
+
+        assertEquals(startMoney + 10, entity.getComponent(PlayerComponent.class).getMoney());
     }
 }

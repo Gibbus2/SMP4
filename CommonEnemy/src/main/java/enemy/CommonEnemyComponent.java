@@ -1,12 +1,17 @@
 package enemy;
 
 import com.almasb.fxgl.entity.component.Component;
+import common.player.PlayerSPI;
 import javafx.geometry.Point2D;
 import health.HealthComponent;
 import objectPool.PooledObjectComponent;
 
 
+import java.util.Collection;
 import java.util.List;
+import java.util.ServiceLoader;
+
+import static java.util.stream.Collectors.toList;
 
 public class CommonEnemyComponent extends Component {
 
@@ -88,9 +93,10 @@ public class CommonEnemyComponent extends Component {
             if (onRemove != null) {
                 this.onRemove.run();
             }
-        }
-        if (!isPlayer) {
-            // TODO: Give player x Money.
+
+            if (!isPlayer) {
+                getPlayerSPIs().stream().findFirst().ifPresent((playerSPI -> playerSPI.changeMoney(this.maxHealth)));
+            }
         }
     }
 
@@ -131,5 +137,10 @@ public class CommonEnemyComponent extends Component {
 
     public int getHealth() {
         return getEntity().getComponent(HealthComponent.class).getHealth();
+    }
+
+    private Collection<? extends PlayerSPI> getPlayerSPIs() {
+        System.out.println("Loading PlayerSPI.");
+        return ServiceLoader.load(PlayerSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
     }
 }
