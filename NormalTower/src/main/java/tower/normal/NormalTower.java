@@ -1,6 +1,7 @@
 package tower.normal;
 
 import com.almasb.fxgl.entity.component.Component;
+import common.data.GameData;
 import common.tower.CommonTowerComponent;
 import common.tower.TowerSPI;
 import javafx.scene.image.Image;
@@ -11,11 +12,11 @@ import java.io.InputStream;
 public class NormalTower extends CommonTowerComponent implements TowerSPI {
 
     public NormalTower() {
-        this(null);
+        this(null, null);
     }
 
-    public NormalTower(IObjectPool objectPool) {
-        super(objectPool);
+    public NormalTower(IObjectPool objectPool, GameData gameData) {
+        super(objectPool, gameData);
         this.damage = 1;
         this.cost = 10;
         this.firerate = 1;
@@ -23,8 +24,8 @@ public class NormalTower extends CommonTowerComponent implements TowerSPI {
     }
 
     @Override
-    public Component createComponent(IObjectPool objectPool) {
-        return new NormalTower(objectPool);
+    public Component createComponent(IObjectPool objectPool, GameData gameData) {
+        return new NormalTower(objectPool, gameData);
     }
 
     @Override

@@ -8,10 +8,12 @@ import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.entity.components.ViewComponent;
 import com.almasb.fxgl.entity.state.EntityState;
 import com.almasb.fxgl.entity.state.StateComponent;
+import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxgl.time.LocalTimer;
 import common.bullet.BulletSPI;
 import common.bullet.CommonBullet;
 import common.data.EntityType;
+import common.data.GameData;
 import enemy.CommonEnemyComponent;
 import health.HealthComponent;
 import javafx.geometry.Point2D;
@@ -26,6 +28,7 @@ import java.util.*;
 import static java.util.stream.Collectors.toList;
 
 public class CommonTowerComponent extends Component  {
+    private final GameData gameData;
     protected int damage;
     public int getDamage(){ return damage; }
     protected int cost;
@@ -67,7 +70,7 @@ public class CommonTowerComponent extends Component  {
     // Some UI stuff trying to show the targeting state of the tower.
     // private InfoBox infoBox;
 
-    public CommonTowerComponent(IObjectPool objectPool) {
+    public CommonTowerComponent(IObjectPool objectPool, GameData gameData) {
         this.damage = 1;
         this.cost = 10;
         this.firerate = 0.5;
@@ -75,10 +78,11 @@ public class CommonTowerComponent extends Component  {
         this.targeting = TowerState.FIRST;
         enemiesInRange = new ArrayList<>();
         this.objectPool = objectPool;
+        this.gameData = gameData;
     }
 
-    public Component createComponent(IObjectPool objectPool) {
-        return new CommonTowerComponent(objectPool);
+    public Component createComponent(IObjectPool objectPool, GameData gameData) {
+        return new CommonTowerComponent(objectPool, gameData);
     }
 
     @Override
@@ -272,11 +276,13 @@ public class CommonTowerComponent extends Component  {
     private void shoot(Entity enemy) {
         if (objectPool != null) {
             getBulletSPIs().stream().findFirst().ifPresent(SPI -> {
+                Texture texture = new Texture(SPI.getImage());
                 objectPool.createPool(EntityType.BULLET.toString(), () -> FXGL.entityBuilder()
                         .type(EntityType.BULLET)
-                        .viewWithBBox(new Rectangle(16, 16, Color.GREEN))
+                        .viewWithBBox(new Rectangle(texture.getWidth(), texture.getHeight(), (gameData.debug) ? Color.GREEN : new Color(0, 0, 0, 0)))
                         .with(new CollidableComponent(true))
                         .with(SPI.createComponent(null))
+                        .view(texture)
                         .buildAndAttach());
 
                 Entity bullet = objectPool.getEntityFromPool(EntityType.BULLET.toString());

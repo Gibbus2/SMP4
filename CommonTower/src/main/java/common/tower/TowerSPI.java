@@ -1,11 +1,12 @@
 package common.tower;
 
 import com.almasb.fxgl.entity.component.Component;
+import common.data.GameData;
 import javafx.scene.image.Image;
 import objectPool.IObjectPool;
 
 public interface TowerSPI {
-    Component createComponent(IObjectPool objectPool);
+    Component createComponent(IObjectPool objectPool, GameData gameData);
     int getCost();
     String getName();
 

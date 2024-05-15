@@ -31,7 +31,7 @@ public class BulletComponent extends CommonBullet implements BulletSPI {
 
     @Override
     public Image getImage() {
-        InputStream is = BulletComponent.class.getResourceAsStream("/Bullet.png");
+        InputStream is = BulletComponent.class.getResourceAsStream("/Bullet24.png");
         return new Image(is);
     }
 }

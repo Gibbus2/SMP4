@@ -12,8 +12,6 @@ import com.almasb.fxgl.physics.CollisionHandler;
 import common.bullet.CommonBullet;
 import common.player.PlayerSPI;
 import common.tower.CommonTowerCollider;
-import common.tower.CommonTowerComponent;
-import common.tower.TowerSPI;
 import enemy.CommonEnemyComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.HBox;
@@ -110,23 +108,7 @@ public class App extends GameApplication {
                         .buildAndAttach()
         );
 
-        Entity tower = FXGL.entityBuilder()
-                .type(EntityType.NO_BUILD_ZONE)
-                .at(600,600)
-                .viewWithBBox(new Rectangle(48, 48, Color.BLUE))
-                .with(new CollidableComponent(true))
-                .with(new CommonTowerComponent(objectPool))
-                .buildAndAttach();
-
         System.out.println(objectPool == null ? "True" : "False");
-
-//        Entity bullet = FXGL.entityBuilder()
-//                .type(EntityType.BULLET)
-//                .at(600,600)
-//                .viewWithBBox(new Rectangle(16, 16, Color.GRAY))
-//                .with(new CollidableComponent(true))
-//                .with(new CommonBullet(null))
-//                .buildAndAttach();
 
         // init wave manager
         waveManager.init();
@@ -236,32 +218,8 @@ public class App extends GameApplication {
     @Override
     protected void initUI() {
         // TODO: Use Map module to load scene "Main Menu".
-
-
         HBox hbox = towerSelection.createTowerSelection(objectPool);
         FXGL.getGameScene().addUINode(hbox);
-
-        var brickTexture = FXGL.getAssetLoader().loadTexture("brick.png");
-        brickTexture.setTranslateX(50);
-        brickTexture.setTranslateY(450);
-
-        brickTexture.setOnMouseClicked(e -> {
-            System.out.println("Clicked on textPixels");
-        });
-
-        brickTexture.setOnMouseEntered(e -> {
-            System.out.println("Mouse entered textPixels");
-            brickTexture.setScaleX(1.2);
-            brickTexture.setScaleY(1.2);
-        });
-
-        brickTexture.setOnMouseExited(e -> {
-            System.out.println("Mouse exited textPixels");
-            brickTexture.setScaleX(1.0);
-            brickTexture.setScaleY(1.0);
-        });
-
-        FXGL.getGameScene().addUINode(brickTexture);
 
         waveManager.startWaveUI();
 
@@ -288,18 +246,5 @@ public class App extends GameApplication {
         System.out.println("Loading PlayerSPI.");
         return ServiceLoader.load(PlayerSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
     }
-
-//    private Collection<? extends EnemySPI> getEnemySPIs() {
-//        System.out.println("Loading EnemySPIs.");
-//        return ServiceLoader.load(EnemySPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
-//    }
-
-
-
-//    private Collection<? extends TowerSPI> getTowerSPIs() {
-//        System.out.println("Loading TowerSPIs.");
-//        return ServiceLoader.load(TowerSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
-//    }
-
 
 }
