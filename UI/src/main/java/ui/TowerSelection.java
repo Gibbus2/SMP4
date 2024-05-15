@@ -103,8 +103,14 @@ public class TowerSelection {
     public HBox getTowers() {
         HBox towerBox = new HBox();
         for (TowerSPI tower : towers()) {
-            Texture texture = new Texture(tower.getImage());
-            towerBox.getChildren().add(texture);
+            Texture texture;
+            if (tower.getImage() != null) {
+                texture = new Texture(tower.getImage());
+                towerBox.getChildren().add(texture);
+            } else {
+                texture = null;
+            }
+            assert texture != null;
             texture.setOnMouseClicked(e -> {
                 player().stream().findFirst().ifPresent(
                         spi -> {
