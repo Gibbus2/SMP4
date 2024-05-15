@@ -29,8 +29,6 @@ import static java.util.stream.Collectors.toList;
 
 public class CommonTowerComponent extends Component  {
     private final GameData gameData;
-    protected int damage;
-    public int getDamage(){ return damage; }
     protected int cost;
     public int getCost(){ return cost; }
 
@@ -71,7 +69,6 @@ public class CommonTowerComponent extends Component  {
     // private InfoBox infoBox;
 
     public CommonTowerComponent(IObjectPool objectPool, GameData gameData) {
-        this.damage = 1;
         this.cost = 10;
         this.firerate = 0.5;
         this.range = 300;
@@ -277,7 +274,6 @@ public class CommonTowerComponent extends Component  {
         if (objectPool != null) {
             getBulletSPIs().stream().findFirst().ifPresent(SPI -> {
                 Texture texture = new Texture(SPI.getImage());
-                texture.setRotate(90);
                 objectPool.createPool(EntityType.BULLET.toString(), () -> FXGL.entityBuilder()
                         .type(EntityType.BULLET)
                         .viewWithBBox(new Rectangle(texture.getWidth(), texture.getHeight(), (gameData.debug) ? Color.GREEN : new Color(0, 0, 0, 0)))

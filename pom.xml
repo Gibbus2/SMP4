@@ -25,6 +25,7 @@
     <module>NormalTower</module>
     <module>FastEnemy</module>
     <module>HeavyEnemy</module>
+      <module>FastTower</module>
   </modules>
   <properties>
     <java>java</java>
