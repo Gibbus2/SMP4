@@ -286,7 +286,12 @@ public class CommonTowerComponent extends Component  {
                 for (Component comp : bullet.getComponents()) {
                     if (comp instanceof CommonBullet) {
                         ((CommonBullet) comp).setTarget(enemy);
-                        bullet.setPosition(getEntity().getPosition());
+                        bullet.setPosition(getEntity().getPosition().add(
+                            new Point2D(
+                                    Math.cos(Math.toRadians(getEntity().getRotation()) * getEntity().getWidth()) + getEntity().getWidth()/2,
+                                    Math.sin(Math.toRadians(getEntity().getRotation()) * getEntity().getHeight()) + getEntity().getHeight()/2
+                            )
+                        ));
                     }
                 }
             });
