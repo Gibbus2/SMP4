@@ -279,7 +279,7 @@ public class CommonTowerComponent extends Component  {
                         .viewWithBBox(new Rectangle(texture.getWidth(), texture.getHeight(), (gameData.debug) ? Color.GREEN : new Color(0, 0, 0, 0)))
                         .with(new CollidableComponent(true))
                         .with(SPI.createComponent(null))
-                        .view(texture)
+                        .view(texture.copy())
                         .buildAndAttach());
 
                 Entity bullet = objectPool.getEntityFromPool(EntityType.BULLET.toString());
