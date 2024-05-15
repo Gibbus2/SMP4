@@ -6,11 +6,11 @@ import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.texture.Texture;
 
 import common.data.EntityType;
+import common.data.GameData;
 import common.player.PlayerSPI;
 import common.tower.CommonTowerComponent;
 import common.tower.TowerSPI;
 
-import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -30,6 +30,7 @@ public class TowerSelection {
     private Entity imageEntity;
 
     private IObjectPool objectPool;
+    private GameData gameData;
     private String towerName;
 
     private AtomicBoolean isInsideShop = new AtomicBoolean(false);
@@ -70,16 +71,18 @@ public class TowerSelection {
     private void mouseClickHandler(MouseEvent event){
         removeImageFromMouse(event);
         if (event.getButton() == MouseButton.PRIMARY && canBuild()) {
-            Entity towerEntity = buildTowerAndAttach(
-                    towers().stream().filter(tower -> tower.getName().equals(towerName)).findFirst().get().getImage(),
-                    event.getSceneX() - towers().stream().filter(tower -> tower.getName().equals(towerName)).findFirst().get().getImage().getHeight() / 2,
-                    event.getSceneY() - towers().stream().filter(tower -> tower.getName().equals(towerName)).findFirst().get().getImage().getWidth() / 2
-            );
-            if (towerEntity != null) {
-                FXGL.getGameWorld().addEntity(towerEntity);
-                FXGL.getGameWorld().removeEntity(imageEntity);
-                isImageFollowingCursor.set(false);
-            }
+            towers().stream().filter(tower -> tower.getName().equals(towerName)).findFirst().ifPresent(tower -> {
+                Entity towerEntity = buildTowerAndAttach(
+                        tower.getImage(),
+                        event.getSceneX() - tower.getImage().getHeight() / 2,
+                        event.getSceneY() - tower.getImage().getWidth() / 2
+                );
+                if (towerEntity != null) {
+                    FXGL.getGameWorld().addEntity(towerEntity);
+                    FXGL.getGameWorld().removeEntity(imageEntity);
+                    isImageFollowingCursor.set(false);
+                }
+            });
         }
     }
     private Entity buildTowerAndAttach(Image image, double x, double y) {
@@ -89,9 +92,9 @@ public class TowerSelection {
                 towerEntity = FXGL.entityBuilder()
                         .type(EntityType.NO_BUILD_ZONE)
                         .at(x, y)
-                        .viewWithBBox(new Rectangle(image.getWidth(), image.getHeight(), Color.GREEN))
+                        .viewWithBBox(new Rectangle(image.getWidth(), image.getHeight(), (gameData.debug) ? Color.GREEN : new Color(0, 0, 0, 0)))
                         .view(new ImageView(image))
-                        .with(new CommonTowerComponent(objectPool))
+                        .with(new CommonTowerComponent(objectPool, gameData))
                         .with(new CollidableComponent(true))
                         .buildAndAttach();
             }
@@ -108,17 +111,19 @@ public class TowerSelection {
                             if (tower.getCost() <= spi.getMoney() && !isImageFollowingCursor.get()) {
                                 imageEntity = FXGL.entityBuilder()
                                         .type(EntityType.BUILD)
-                                        .viewWithBBox(new Rectangle(texture.getWidth() - 2, texture.getHeight() - 2, Color.GREEN))
+                                        .viewWithBBox(new Rectangle(texture.getWidth() - 2, texture.getHeight() - 2, (gameData.debug) ? Color.GREEN : new Color(0, 0, 0, 0)))
                                         .with(new CollidableComponent(true))
                                         .view(texture.copy())
                                         .buildAndAttach();
                                 isImageFollowingCursor.set(true);
                                 imageEntity.setPosition(e.getSceneX() - imageEntity.getHeight() / 2, e.getSceneY() - imageEntity.getWidth() / 2);
                                 towerName = tower.getName();
-
-                                System.out.println("TEST " + isImageFollowingCursor.get());
                             } else {
+
+                                //TODO add a message to the screen that says not enough money
+                                if ((gameData.debug)){
                                 System.out.println("Not enough money");
+                            }
                             }
                         }
                 );
@@ -129,41 +134,21 @@ public class TowerSelection {
         return towerBox;
     }
 
-    public HBox createTowerSelection(IObjectPool objectPool) {
+    public HBox createTowerSelection(IObjectPool objectPool, GameData gameData){
         HBox hbox = new HBox();
         hbox.setLayoutX(0);
         hbox.setLayoutY(720);
         hbox.setPrefSize(1440, 88);
 
         this.objectPool = objectPool;
+        this.gameData = gameData;
 
         ImageView imageView = new ImageView();
         imageView.setMouseTransparent(true);
 
-        hbox.setOnMouseEntered(e -> {
-            isInsideShop.set(true);
-            System.out.println("Mouse entered :" + isInsideShop);
-        });
-        hbox.setOnMouseExited(e -> {
-            isInsideShop.set(false);
-            System.out.println("Mouse exited :" + isInsideShop);
-        });
-
-        //Testing area start
-
-        Button setMoneyButton = new Button("Set Money to 200");
-        setMoneyButton.setOnAction(e -> {
-            player().stream().findFirst().ifPresent(
-                    spi -> spi.changeMoney(200)
-            );
-
-        });
+        hbox.setOnMouseEntered(e -> {isInsideShop.set(true);});
+        hbox.setOnMouseExited(e -> {isInsideShop.set(false);});
         hbox.getChildren().add(getTowers());
-        hbox.getChildren().add(setMoneyButton);
-
-        //Testing area end
-
-
         return hbox;
     }
 }

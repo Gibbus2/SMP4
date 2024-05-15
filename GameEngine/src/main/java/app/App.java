@@ -47,7 +47,6 @@ public class App extends GameApplication {
     GameData gameData = new GameData();
     private IObjectPool objectPool = new ObjectPool();
     private WaveManager waveManager = new WaveManager(objectPool, gameData);
-
     private TowerSelection towerSelection = new TowerSelection();
     @Override
     protected void initSettings(GameSettings settings) {
@@ -193,33 +192,43 @@ public class App extends GameApplication {
                 }
             }
         });
-
-        System.out.println(" - Build and No_Build_Zone collision.");
-        // Tower and NoBuildZone collision.
         FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.BUILD, EntityType.NO_BUILD_ZONE) {
-
             @Override
-            protected void onCollisionBegin(Entity Build, Entity no_build_zone) {
-                System.out.println("Collision detected between imageEntity and NO_BUILD_ZONE :" + towerSelection.getColissionCounter());
-                towerSelection.setColissionCounter(towerSelection.getColissionCounter() + 1);
-                System.out.println("Coll counter = " + towerSelection.getColissionCounter());
-
-            }
-
+            protected void onCollisionBegin(Entity Build, Entity no_build_zone) {towerSelection.setColissionCounter(towerSelection.getColissionCounter() + 1);}
             @Override
-            protected void onCollisionEnd(Entity build, Entity no_build_zone) {
-                System.out.println("Collision ended between imageEntity and NO_BUILD_ZONE :" + towerSelection.getColissionCounter());
-                towerSelection.setColissionCounter(towerSelection.getColissionCounter() - 1);
-                System.out.println("Coll counter = " + towerSelection.getColissionCounter());
-            }
+            protected void onCollisionEnd(Entity build, Entity no_build_zone) {towerSelection.setColissionCounter(towerSelection.getColissionCounter() - 1);}
         });
     }
 
     @Override
     protected void initUI() {
         // TODO: Use Map module to load scene "Main Menu".
-        HBox hbox = towerSelection.createTowerSelection(objectPool);
+
+
+        HBox hbox = towerSelection.createTowerSelection(objectPool, gameData);
         FXGL.getGameScene().addUINode(hbox);
+
+       /* var brickTexture = FXGL.getAssetLoader().loadTexture("brick.png");
+        brickTexture.setTranslateX(50);
+        brickTexture.setTranslateY(450);
+
+        brickTexture.setOnMouseClicked(e -> {
+            System.out.println("Clicked on textPixels");
+        });
+
+        brickTexture.setOnMouseEntered(e -> {
+            System.out.println("Mouse entered textPixels");
+            brickTexture.setScaleX(1.2);
+            brickTexture.setScaleY(1.2);
+        });
+
+        brickTexture.setOnMouseExited(e -> {
+            System.out.println("Mouse exited textPixels");
+            brickTexture.setScaleX(1.0);
+            brickTexture.setScaleY(1.0);
+        });
+
+        FXGL.getGameScene().addUINode(brickTexture);*/
 
         waveManager.startWaveUI();
 
@@ -246,5 +255,4 @@ public class App extends GameApplication {
         System.out.println("Loading PlayerSPI.");
         return ServiceLoader.load(PlayerSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
     }
-
 }

@@ -19,8 +19,12 @@ public class GameMenu extends FXGLMenu {
         btnExit.getStyleClass().add("play_button");
         btnExit.setOnAction(e -> fireExitToMainMenu());
 
+        var btnLevelSelect = new Button("Level Select");
+        btnLevelSelect.getStyleClass().add("play_button");
+        btnLevelSelect.setOnAction(e -> fireNewGame());
 
-        var box = new VBox(btnPause, btnExit);
+
+        var box = new VBox(btnPause, btnExit, btnLevelSelect);
         box.setAlignment(Pos.TOP_CENTER);
         box.setTranslateX(getAppWidth() / 2.0 - 100);
         box.setTranslateY(getAppHeight() / 2.0 - 100);
