@@ -20,7 +20,6 @@
     <module>WaveManager</module>
     <module>Bullet</module>
     <module>UI</module>
-    <module>Shop</module>
     <module>Health</module>
     <module>NormalEnemy</module>
     <module>NormalTower</module>
