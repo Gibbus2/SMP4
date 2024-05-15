@@ -24,14 +24,16 @@ public class Generations {
             dna.add(gene);
         }
 
-        //check for sum zero
-        int sum = 0;
-        for(Integer gene : dna){
-            sum += gene;
-        }
+        if(dnaLength > 0) {
+            //check for sum zero
+            int sum = 0;
+            for (Integer gene : dna) {
+                sum += gene;
+            }
 
-        if(sum == 0){
-            dna = randomDna();
+            if (sum == 0) {
+                dna = randomDna();
+            }
         }
 
         return dna;
