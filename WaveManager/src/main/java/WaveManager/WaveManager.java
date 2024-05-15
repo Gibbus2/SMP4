@@ -31,11 +31,14 @@ public class WaveManager {
     private final GameData gameData;
     private Generations generations;
 
+    private final int timeSpawnDelay;
+
     public WaveManager(IObjectPool objectPool, GameData gameData) {
         this.objectPool = objectPool;
         this.gameData = gameData;
         this.enemyKeys = new ArrayList<>();
         this.currentWave = 1;
+        this.timeSpawnDelay = 400;
     }
 
     public void init() {
@@ -92,7 +95,7 @@ public class WaveManager {
                         }
                     }
                 }, Duration.millis(delay));
-                delay += 1000;
+                delay += timeSpawnDelay;
             }
 
         }
