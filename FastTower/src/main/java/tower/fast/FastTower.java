@@ -37,6 +37,6 @@ public class FastTower extends CommonTowerComponent implements TowerSPI {
     }
     @Override
     public String getName() {
-        return "Normal Tower";
+        return "Fast Tower";
     }
 }
