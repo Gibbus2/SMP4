@@ -1,6 +1,5 @@
 package common.tower;
 
-import bullet.BulletComponent;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
@@ -17,10 +16,8 @@ import enemy.CommonEnemyComponent;
 import health.HealthComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
 import javafx.util.Duration;
 import objectPool.IObjectPool;
 
