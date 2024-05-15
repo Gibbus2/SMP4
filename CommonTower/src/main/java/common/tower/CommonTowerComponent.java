@@ -277,6 +277,7 @@ public class CommonTowerComponent extends Component  {
         if (objectPool != null) {
             getBulletSPIs().stream().findFirst().ifPresent(SPI -> {
                 Texture texture = new Texture(SPI.getImage());
+                texture.setRotate(90);
                 objectPool.createPool(EntityType.BULLET.toString(), () -> FXGL.entityBuilder()
                         .type(EntityType.BULLET)
                         .viewWithBBox(new Rectangle(texture.getWidth(), texture.getHeight(), (gameData.debug) ? Color.GREEN : new Color(0, 0, 0, 0)))
