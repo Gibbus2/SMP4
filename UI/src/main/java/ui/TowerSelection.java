@@ -31,7 +31,18 @@ public class TowerSelection {
 
     private IObjectPool objectPool;
     private String towerName;
-    private boolean buildableArea = true;
+
+    private AtomicBoolean isInsideShop = new AtomicBoolean(false);
+    private AtomicBoolean isImageFollowingCursor = new AtomicBoolean(false);
+
+    private int colissionCounter = 0;
+
+    private Collection<? extends PlayerSPI> player() {
+        return ServiceLoader.load(PlayerSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
+    }
+    private Collection<? extends TowerSPI> towers() {
+        return ServiceLoader.load(TowerSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
+    }
 
     public int getColissionCounter() {
         return colissionCounter;
@@ -40,22 +51,9 @@ public class TowerSelection {
     public void setColissionCounter(int colissionCounter) {
         this.colissionCounter = colissionCounter;
     }
-
-    private int colissionCounter = 0;
-    private AtomicBoolean isInsideShop = new AtomicBoolean(false);
-    private AtomicBoolean isImageFollowingCursor = new AtomicBoolean(false);
-    private Collection<? extends PlayerSPI> player() {
-        return ServiceLoader.load(PlayerSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
-    }
-    private Collection<? extends TowerSPI> towers() {
-        return ServiceLoader.load(TowerSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
-    }
-    public void setBuildableArea(boolean buildableArea) {
-        this.buildableArea = buildableArea;
-    }
     private boolean canBuild(){
         boolean canBuild;
-        canBuild = buildableArea && !isInsideShop.get() && isImageFollowingCursor.get();
+        canBuild = colissionCounter == 0 && !isInsideShop.get() && isImageFollowingCursor.get();
         return canBuild;
     }
     private void removeImageFromMouse(MouseEvent event) {
@@ -168,8 +166,4 @@ public class TowerSelection {
 
         return hbox;
     }
-
-    //TODO add colission counter to check if tower is in buildable area instead of singular boolean
-
-
 }
