@@ -70,13 +70,13 @@ public class WaveManager {
 
     public void launchNextWave() {
         FXGL.getWorldProperties().setValue("currentWave", currentWave); //TODO: move into UI
-        Genome genome = generations.getLatest();
+        Population population = generations.getLatest();
         int delay = 0;
         // for each gene (enemy) in the chromosome
-        for (int i = 0; i < genome.getChromosome().size(); i++) {
+        for (int i = 0; i < population.getDna().size(); i++) {
 
             //launch the amount of entities defined by the gene
-            int toLaunch = genome.getChromosome().get(i);
+            int toLaunch = population.getDna().get(i);
             for (int j = 0; j < toLaunch; j++) {
                 String key = this.enemyKeys.get(i);
                 FXGL.getGameTimer().runOnceAfter(() -> {
@@ -85,7 +85,7 @@ public class WaveManager {
                     for (Component component : e.getComponents()) {
                         if (component instanceof CommonEnemyComponent commonEnemyComponent) {
                             commonEnemyComponent.setOnRemove(() -> {
-                                genome.entityRemoved(commonEnemyComponent.getDistanceTravelled());
+                                population.entityRemoved(commonEnemyComponent.getDistanceTravelled());
                                 generateNextWave();
                             });
                             commonEnemyComponent.reset();

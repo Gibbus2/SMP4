@@ -1,7 +1,7 @@
 package waveManager;
 
 import WaveManager.Generations;
-import WaveManager.Genome;
+import WaveManager.Population;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -13,7 +13,7 @@ public class GenerationsTest {
     public void testInitialization(){
         Generations generations = new Generations(4, 11);
 
-        List<Integer> chromosome = generations.getLatest().getChromosome();
+        List<Integer> chromosome = generations.getLatest().getDna();
         assertEquals(4, chromosome.size());
 
         assertEquals(1, generations.generationsCount());
@@ -22,7 +22,7 @@ public class GenerationsTest {
     @Test
     public void testReproduce(){
         Generations generations = new Generations(4,11);
-        Genome initial = generations.getLatest();
+        Population initial = generations.getLatest();
 
         generations.reproduce();
 
