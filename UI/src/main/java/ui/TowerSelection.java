@@ -32,6 +32,16 @@ public class TowerSelection {
     private IObjectPool objectPool;
     private String towerName;
     private boolean buildableArea = true;
+
+    public int getColissionCounter() {
+        return colissionCounter;
+    }
+
+    public void setColissionCounter(int colissionCounter) {
+        this.colissionCounter = colissionCounter;
+    }
+
+    private int colissionCounter = 0;
     private AtomicBoolean isInsideShop = new AtomicBoolean(false);
     private AtomicBoolean isImageFollowingCursor = new AtomicBoolean(false);
     private Collection<? extends PlayerSPI> player() {
@@ -159,7 +169,6 @@ public class TowerSelection {
         return hbox;
     }
 
-    //TODO add method to fix the long ifstatment in build
     //TODO add colission counter to check if tower is in buildable area instead of singular boolean
 
 

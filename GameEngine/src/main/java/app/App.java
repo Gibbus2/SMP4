@@ -220,9 +220,10 @@ public class App extends GameApplication {
             protected void onCollisionBegin(Entity Build, Entity no_build_zone) {
                 // Handle collision here
                 // Disable building on to build Entity. Sets canBuild flag to false
-                System.out.println("Collision detected between imageEntity and NO_BUILD_ZONE");
-                towerSelection.setBuildableArea(false);
 
+                System.out.println("Collision detected between imageEntity and NO_BUILD_ZONE :" + towerSelection.getColissionCounter());
+                towerSelection.setColissionCounter(towerSelection.getColissionCounter() + 1);
+                System.out.println("Coll counter = " + towerSelection.getColissionCounter());
 
             }
 
@@ -230,8 +231,9 @@ public class App extends GameApplication {
             protected void onCollisionEnd(Entity build, Entity no_build_zone) {
                 // Handle collision here
                 // Enable  building on to build Entity. Sets canBuild flag to true
-                System.out.println("Collision ended between imageEntity and NO_BUILD_ZONE");
-                towerSelection.setBuildableArea(true);
+                System.out.println("Collision ended between imageEntity and NO_BUILD_ZONE :" + towerSelection.getColissionCounter());
+                towerSelection.setColissionCounter(towerSelection.getColissionCounter() - 1);
+                System.out.println("Coll counter = " + towerSelection.getColissionCounter());
             }
         });
     }
