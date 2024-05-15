@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PlayerTest {
-    private PlayerComponent component;
     private Entity entity;
 
     @Test
@@ -24,8 +23,8 @@ public class PlayerTest {
 
     @Test
     public void testCreateComponent() {
-        this.component = new PlayerComponent();
-        assertNotNull(this.component.createComponent());
+        PlayerComponent component = new PlayerComponent();
+        assertNotNull(component.createComponent());
     }
 
     @Test

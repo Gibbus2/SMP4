@@ -24,7 +24,6 @@ public class Generations {
             chromosome.add(gene);
         }
 
-        //TODO: Should we allow zero sum chromosomes??
         //check for sum zero
         int sum = 0;
         for(Integer gene : chromosome){
