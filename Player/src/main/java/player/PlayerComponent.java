@@ -49,7 +49,7 @@ public class PlayerComponent extends Component implements PlayerSPI {
     }
 
     @Override
-    public void setMoney(int amount) {
+    public void changeMoney(int amount) {
         System.out.print("Player ledger change: " + getMoney() + "->");
         this.ledger += amount;
         System.out.println(getMoney());

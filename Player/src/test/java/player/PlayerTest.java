@@ -49,7 +49,7 @@ public class PlayerTest {
                 .with(new PlayerComponent())
                 .build();
 
-        entity.getComponent(PlayerComponent.class).setMoney(10);
+        entity.getComponent(PlayerComponent.class).changeMoney(10);
 
         assertEquals(10, entity.getComponent(PlayerComponent.class).getMoney());
     }

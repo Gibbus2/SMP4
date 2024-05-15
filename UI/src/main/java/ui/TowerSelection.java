@@ -145,7 +145,7 @@ public class TowerSelection {
         Button setMoneyButton = new Button("Set Money to 200");
         setMoneyButton.setOnAction(e -> {
             player().stream().findFirst().ifPresent(
-                    spi -> spi.setMoney(200)
+                    spi -> spi.changeMoney(200)
             );
 
         });
