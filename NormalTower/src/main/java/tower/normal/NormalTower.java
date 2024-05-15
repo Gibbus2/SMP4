@@ -19,7 +19,7 @@ public class NormalTower extends CommonTowerComponent implements TowerSPI {
         super(objectPool, gameData);
         this.cost = 10;
         this.firerate = 1;
-        this.range = 15;
+        this.range = 300;
     }
 
     @Override

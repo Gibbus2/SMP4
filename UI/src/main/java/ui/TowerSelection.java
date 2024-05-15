@@ -77,12 +77,22 @@ public class TowerSelection {
                         event.getSceneX() - tower.getImage().getHeight() / 2,
                         event.getSceneY() - tower.getImage().getWidth() / 2
                 );
+
                 if (towerEntity != null) {
                     FXGL.getGameWorld().addEntity(towerEntity);
                     FXGL.getGameWorld().removeEntity(imageEntity);
                     isImageFollowingCursor.set(false);
                 }
             });
+
+            player().stream().findFirst().ifPresent(spi ->
+                    towers().stream()
+                            .filter(tower -> tower.getName().equals(towerName))
+                            .findFirst()
+                            .ifPresent(tower -> spi.changeMoney(- tower.getCost()))
+
+            );
+            System.out.println("Tower built" + player().stream().findFirst().get().getMoney());
         }
     }
     private Entity buildTowerAndAttach(Image image, double x, double y) {
@@ -94,7 +104,7 @@ public class TowerSelection {
                         .at(x, y)
                         .viewWithBBox(new Rectangle(image.getWidth(), image.getHeight(), (gameData.debug) ? Color.GREEN : new Color(0, 0, 0, 0)))
                         .view(new ImageView(image))
-                        .with(new CommonTowerComponent(objectPool, gameData))
+                        .with(tower.createComponent(objectPool, gameData))
                         .with(new CollidableComponent(true))
                         .buildAndAttach();
             }

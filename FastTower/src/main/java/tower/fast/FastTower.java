@@ -19,7 +19,7 @@ public class FastTower extends CommonTowerComponent implements TowerSPI {
         super(objectPool, gameData);
         this.cost = 15;
         this.firerate = 0.42069;
-        this.range = 10;
+        this.range = 300;
     }
 
     @Override
