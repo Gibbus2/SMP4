@@ -49,8 +49,10 @@ public class PlayerTest {
                 .with(new PlayerComponent())
                 .build();
 
+        int startMoney = entity.getComponent(PlayerComponent.class).getMoney();
+
         entity.getComponent(PlayerComponent.class).changeMoney(10);
 
-        assertEquals(10, entity.getComponent(PlayerComponent.class).getMoney());
+        assertEquals(startMoney + 10, entity.getComponent(PlayerComponent.class).getMoney());
     }
 }

@@ -15,7 +15,7 @@ public class PlayerComponent extends Component implements PlayerSPI {
 
     @Override
     public void onAdded() {
-        ledger = 0;
+        ledger = 20;
         player = getEntity();
 
         System.out.println("PlayerComponent added -> entity.");
