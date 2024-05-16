@@ -55,13 +55,13 @@ public class App extends GameApplication {
         settings.setTitle("SDU TD");
         settings.setGameMenuEnabled(true);
         settings.setMainMenuEnabled(true);
-        settings.setSceneFactory(new SceneFactory() {
-            @Override
-            public FXGLMenu newGameMenu() {
-                System.out.println("newGameMenu");
-                return new GameMenu();
-            }
-        });
+//        settings.setSceneFactory(new SceneFactory() {
+//            @Override
+//            public FXGLMenu newGameMenu() {
+//                System.out.println("newGameMenu");
+//                return new GameMenu();
+//            }
+//        });
 
 
     }
@@ -83,7 +83,6 @@ public class App extends GameApplication {
         vars.put("currentWave", waveManager.getCurrentWave());
     }
 
-    Entity player;
     @Override
     protected void initGame() {
 
@@ -98,7 +97,7 @@ public class App extends GameApplication {
         Point2D end = Waypoint.fromPolyline().getWaypoints().getLast().subtract(24,24);
 
         getPlayerSPIs().stream().findFirst().ifPresent(
-                spi -> player = FXGL.entityBuilder()
+                spi -> FXGL.entityBuilder()
                         .type(EntityType.PLAYER)
                         .at(end)
                         .viewWithBBox(new Rectangle(48, 48, (gameData.debug) ? Color.RED : new Color(0, 0, 0, 0)))
@@ -106,8 +105,6 @@ public class App extends GameApplication {
                         .with(new CollidableComponent(true))
                         .buildAndAttach()
         );
-
-        System.out.println(objectPool == null ? "True" : "False");
 
         // init wave manager
         waveManager.init();
