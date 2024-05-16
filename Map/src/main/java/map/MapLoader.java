@@ -9,6 +9,7 @@ import com.almasb.fxgl.entity.level.tiled.TMXLevelLoader;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
+import common.data.GameData;
 import javafx.scene.input.KeyCode;
 
 import java.io.File;
@@ -30,14 +31,14 @@ public class MapLoader {
         FXGL.getGameWorld().addEntityFactory(new MapFactory());
     }
 
-    public void loadLevel(int levelNumber) throws MalformedURLException {
+    public void loadLevel(int levelNumber, GameData gameData) throws MalformedURLException {
         File file = new File(location, "lvl" + levelNumber + ".tmx");
         System.out.println(file.toURI().toURL());
         var level = new TMXLevelLoader(true).load(file.toURI().toURL(), FXGL.getGameWorld());
         FXGL.getGameWorld().setLevel(level);
 
         NoBuildZone noBuildZone = new NoBuildZone();
-        noBuildZone.noBuildZone();
+        noBuildZone.noBuildZone(gameData);
     }
 
 

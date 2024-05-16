@@ -59,13 +59,13 @@ public class App extends GameApplication {
         settings.setTitle("SDU TD");
         settings.setGameMenuEnabled(true);
         settings.setMainMenuEnabled(true);
-        settings.setSceneFactory(new SceneFactory() {
-            @Override
-            public FXGLMenu newGameMenu() {
-                System.out.println("newGameMenu");
-                return new GameMenu();
-            }
-        });
+//        settings.setSceneFactory(new SceneFactory() {
+//            @Override
+//            public FXGLMenu newGameMenu() {
+//                System.out.println("newGameMenu");
+//                return new GameMenu();
+//            }
+//        });
 
 
     }
@@ -87,14 +87,13 @@ public class App extends GameApplication {
         vars.put("currentWave", waveManager.getCurrentWave());
     }
 
-    Entity player;
     @Override
     protected void initGame() {
 
         MapLoader mapLoader;
         try {
             mapLoader = new MapLoader();
-            mapLoader.loadLevel(0);
+            mapLoader.loadLevel(0, gameData);
         } catch (MalformedURLException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -102,7 +101,7 @@ public class App extends GameApplication {
         Point2D end = Waypoint.fromPolyline().getWaypoints().getLast().subtract(24,24);
 
         getPlayerSPIs().stream().findFirst().ifPresent(
-                spi -> player = FXGL.entityBuilder()
+                spi -> FXGL.entityBuilder()
                         .type(EntityType.PLAYER)
                         .at(end)
                         .viewWithBBox(new Rectangle(48, 48, (gameData.debug) ? Color.RED : new Color(0, 0, 0, 0)))
@@ -152,10 +151,12 @@ public class App extends GameApplication {
         FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.ENEMY, EntityType.TOWER) {
             @Override
             protected void onCollisionBegin(Entity a, Entity b) {
-                System.out.println("Enemy colliding with tower");
+                if(gameData.debug)
+                    System.out.println("Enemy colliding with tower");
                 for(Component component : b.getComponents()){
                     if(component instanceof CommonTowerCollider){
-                        System.out.println("Found tower collider component");
+                        if(gameData.debug)
+                            System.out.println("Found tower collider component");
                         ((CommonTowerCollider) component).addEnemy(a);
                     }
                 }
@@ -163,10 +164,12 @@ public class App extends GameApplication {
 
             @Override
             protected void onCollisionEnd(Entity a, Entity b) {
-                System.out.println("Enemy colliding with tower ended");
+                if(gameData.debug)
+                    System.out.println("Enemy colliding with tower ended");
                 for(Component component : b.getComponents()){
                     if(component instanceof CommonTowerCollider){
-                        System.out.println("Found tower collider component");
+                        if (gameData.debug)
+                            System.out.println("Found tower collider component");
                         ((CommonTowerCollider) component).removeEnemy(a);
                     }
                 }
