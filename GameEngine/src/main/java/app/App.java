@@ -10,6 +10,8 @@ import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.physics.CollisionHandler;
 import common.bullet.CommonBullet;
+import common.data.ShowButtonTrigger;
+import common.data.StartWaveTrigger;
 import common.player.PlayerSPI;
 import common.tower.CommonTowerCollider;
 import enemy.CommonEnemyComponent;
@@ -38,6 +40,7 @@ import objectPool.IObjectPool;
 
 
 import objectPool.PooledObjectComponent;
+import ui.GameInformation;
 import ui.GameMenu;
 import map.Waypoint;
 import ui.TowerSelection;
@@ -48,6 +51,7 @@ public class App extends GameApplication {
     private IObjectPool objectPool = new ObjectPool();
     private WaveManager waveManager = new WaveManager(objectPool, gameData);
     private TowerSelection towerSelection = new TowerSelection();
+    private GameInformation gameInformation = new GameInformation();
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setWidth(gameData.getDisplayWidth());
@@ -108,6 +112,15 @@ public class App extends GameApplication {
         );
 
         System.out.println(objectPool == null ? "True" : "False");
+
+        FXGL.getEventBus().addEventHandler(ShowButtonTrigger.ANY, showButtonTrigger -> {
+            System.out.println("Show button trigger");
+            gameInformation.showButton();
+        });
+        FXGL.getEventBus().addEventHandler(StartWaveTrigger.ANY, startWaveTrigger -> {
+            System.out.println("Start wave trigger");
+            waveManager.launchNextWave();
+        });
 
         // init wave manager
         waveManager.init();
@@ -207,6 +220,8 @@ public class App extends GameApplication {
 
         HBox hbox = towerSelection.createTowerSelection(objectPool, gameData);
         FXGL.getGameScene().addUINode(hbox);
+        //HBox hboxInfo = towerSelection.displayInformation();
+        //FXGL.getGameScene().addUINode(hboxInfo);
 
        /* var brickTexture = FXGL.getAssetLoader().loadTexture("brick.png");
         brickTexture.setTranslateX(50);
@@ -230,13 +245,7 @@ public class App extends GameApplication {
 
         FXGL.getGameScene().addUINode(brickTexture);*/
 
-        waveManager.startWaveUI();
-
-        //Button for starting wave, need to agree on if we do button to start
-        //or just intermission on game start then run after x seconds
-        //does this need to be in here or wavemanager for jpms?
-        //would assume i need to change this as if wavemanager gets removed
-        //it would just break right? but for now it just needs to work
+        gameInformation.startWaveUI();
 
 
     }
