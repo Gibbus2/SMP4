@@ -1,14 +1,19 @@
 package ui;
 
 import com.almasb.fxgl.dsl.FXGL;
+import common.data.EntityType;
+import common.data.GameData;
 import common.data.ShowButtonTrigger;
 import common.data.StartWaveTrigger;
 import common.player.PlayerSPI;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 
 import java.util.Collection;
 import java.util.ServiceLoader;
@@ -51,15 +56,29 @@ public class GameInformation {
         Text healthText = new Text();
         Text waveCounterText = new Text();
 
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(200), event -> {
+            player().forEach(player -> {
+                moneyText.setText("Money: " + player.getMoney());
+                healthText.setText("Health: " + player.getHealth());
+            });
+        }));
+        waveCounterText.textProperty().bind(FXGL.getWorldProperties().intProperty("currentWave").asString("Wave: %d"));
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
+
         moneyText.setFill(Color.BLACK);
         moneyText.setStyle("-fx-font: 24 arial;");
+
         healthText.setFill(Color.BLACK);
         healthText.setStyle("-fx-font: 24 arial;");
+
         waveCounterText.setFill(Color.BLACK);
         waveCounterText.setStyle("-fx-font: 24 arial;");
+
         vbox.getChildren().add(moneyText);
         vbox.getChildren().add(healthText);
         vbox.getChildren().add(waveCounterText);
+
         return vbox;
     }
     private Collection<? extends PlayerSPI> player() {
