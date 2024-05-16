@@ -17,6 +17,7 @@ import common.tower.CommonTowerCollider;
 import enemy.CommonEnemyComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
@@ -85,6 +86,7 @@ public class App extends GameApplication {
         // TODO: Should probably be moved into UI module when rendering
         // current wave to view.
         vars.put("currentWave", waveManager.getCurrentWave());
+
     }
 
     @Override
@@ -221,6 +223,7 @@ public class App extends GameApplication {
         // TODO: Use Map module to load scene "Main Menu".
 
 
+
         HBox hbox = towerSelection.createTowerSelection(objectPool, gameData);
         FXGL.getGameScene().addUINode(hbox);
         //HBox hboxInfo = towerSelection.displayInformation();
@@ -249,7 +252,8 @@ public class App extends GameApplication {
         FXGL.getGameScene().addUINode(brickTexture);*/
 
         gameInformation.startWaveUI();
-
+        VBox vbox = gameInformation.displayInformation();
+        FXGL.getGameScene().addUINode(vbox);
 
     }
 
