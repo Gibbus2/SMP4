@@ -8,6 +8,8 @@ import com.almasb.fxgl.entity.state.StateComponent;
 import com.almasb.fxgl.texture.Texture;
 import common.data.EntityType;
 import common.data.GameData;
+import common.data.ShowButtonTrigger;
+import common.data.StartWaveTrigger;
 import enemy.CommonEnemyComponent;
 import enemy.EnemySPI;
 import javafx.geometry.Point2D;
@@ -25,7 +27,6 @@ import java.util.*;
 public class WaveManager {
     private int currentWave;
     private List<Point2D> wayPoints;
-    private Button startWaveButton;
     private final IObjectPool objectPool;
     private final List<String> enemyKeys;
     private final GameData gameData;
@@ -70,7 +71,10 @@ public class WaveManager {
         this.generations = new Generations(this.enemyKeys.size(), 4);
 
     }
+    public void launchNextWaveEventCatcher(){
+        FXGL.getEventBus().addEventHandler(StartWaveTrigger.ANY,event -> launchNextWave());
 
+    }
     public void launchNextWave() {
         FXGL.getWorldProperties().setValue("currentWave", currentWave); //TODO: move into UI
         Population population = generations.getLatest();
@@ -106,32 +110,11 @@ public class WaveManager {
             System.out.println("Generating next wave");
             generations.reproduce();
             currentWave++;
-            startWaveButton.setVisible(true);
+            FXGL.getEventBus().fireEvent(new ShowButtonTrigger());
         }
     }
 
-    //TODO: move into UI
-    public void startWaveUI() {
-        startWaveButton = new Button("Start Wave");
 
-
-        startWaveButton.setTranslateX(50);
-        startWaveButton.setTranslateY(50);
-        startWaveButton.setOnAction(e -> {
-            this.launchNextWave();
-            startWaveButton.setVisible(false);
-        });
-        FXGL.getGameScene().addUINode(startWaveButton);
-
-        //waveCounter text
-        Text waveCounterText = new Text();
-        waveCounterText.setTranslateX(50);
-        waveCounterText.setTranslateY(150);
-        waveCounterText.textProperty().bind(FXGL.getWorldProperties().intProperty("currentWave").asString("Wave: %d"));
-
-        FXGL.getGameScene().addUINode(waveCounterText);
-
-    }
 
     public int getCurrentWave() {
         return currentWave;

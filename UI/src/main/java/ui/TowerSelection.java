@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.ServiceLoader;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javafx.scene.text.Text;
 import objectPool.IObjectPool;
 import static java.util.stream.Collectors.toList;
 
@@ -167,4 +168,5 @@ public class TowerSelection {
         hbox.getChildren().add(getTowers());
         return hbox;
     }
+
 }
