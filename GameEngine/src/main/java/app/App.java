@@ -139,10 +139,12 @@ public class App extends GameApplication {
         FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.ENEMY, EntityType.TOWER) {
             @Override
             protected void onCollisionBegin(Entity a, Entity b) {
-                System.out.println("Enemy colliding with tower");
+                if(gameData.debug)
+                    System.out.println("Enemy colliding with tower");
                 for(Component component : b.getComponents()){
                     if(component instanceof CommonTowerCollider){
-                        System.out.println("Found tower collider component");
+                        if(gameData.debug)
+                            System.out.println("Found tower collider component");
                         ((CommonTowerCollider) component).addEnemy(a);
                     }
                 }
@@ -150,10 +152,12 @@ public class App extends GameApplication {
 
             @Override
             protected void onCollisionEnd(Entity a, Entity b) {
-                System.out.println("Enemy colliding with tower ended");
+                if(gameData.debug)
+                    System.out.println("Enemy colliding with tower ended");
                 for(Component component : b.getComponents()){
                     if(component instanceof CommonTowerCollider){
-                        System.out.println("Found tower collider component");
+                        if (gameData.debug)
+                            System.out.println("Found tower collider component");
                         ((CommonTowerCollider) component).removeEnemy(a);
                     }
                 }
