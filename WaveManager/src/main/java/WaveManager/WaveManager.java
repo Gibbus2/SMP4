@@ -8,6 +8,8 @@ import com.almasb.fxgl.entity.state.StateComponent;
 import com.almasb.fxgl.texture.Texture;
 import common.data.EntityType;
 import common.data.GameData;
+import common.data.ShowButtonTrigger;
+import common.data.StartWaveTrigger;
 import enemy.CommonEnemyComponent;
 import enemy.EnemySPI;
 import javafx.geometry.Point2D;
@@ -25,17 +27,19 @@ import java.util.*;
 public class WaveManager {
     private int currentWave;
     private List<Point2D> wayPoints;
-    private Button startWaveButton;
     private final IObjectPool objectPool;
     private final List<String> enemyKeys;
     private final GameData gameData;
     private Generations generations;
+
+    private final int timeSpawnDelay;
 
     public WaveManager(IObjectPool objectPool, GameData gameData) {
         this.objectPool = objectPool;
         this.gameData = gameData;
         this.enemyKeys = new ArrayList<>();
         this.currentWave = 1;
+        this.timeSpawnDelay = 400;
     }
 
     public void init() {
@@ -67,16 +71,19 @@ public class WaveManager {
         this.generations = new Generations(this.enemyKeys.size(), 4);
 
     }
+    public void launchNextWaveEventCatcher(){
+        FXGL.getEventBus().addEventHandler(StartWaveTrigger.ANY,event -> launchNextWave());
 
+    }
     public void launchNextWave() {
         FXGL.getWorldProperties().setValue("currentWave", currentWave); //TODO: move into UI
-        Genome genome = generations.getLatest();
+        Population population = generations.getLatest();
         int delay = 0;
         // for each gene (enemy) in the chromosome
-        for (int i = 0; i < genome.getChromosome().size(); i++) {
+        for (int i = 0; i < population.getDna().size(); i++) {
 
             //launch the amount of entities defined by the gene
-            int toLaunch = genome.getChromosome().get(i);
+            int toLaunch = population.getDna().get(i);
             for (int j = 0; j < toLaunch; j++) {
                 String key = this.enemyKeys.get(i);
                 FXGL.getGameTimer().runOnceAfter(() -> {
@@ -85,14 +92,14 @@ public class WaveManager {
                     for (Component component : e.getComponents()) {
                         if (component instanceof CommonEnemyComponent commonEnemyComponent) {
                             commonEnemyComponent.setOnRemove(() -> {
-                                genome.entityRemoved(commonEnemyComponent.getDistanceTravelled());
+                                population.entityRemoved(commonEnemyComponent.getDistanceTravelled());
                                 generateNextWave();
                             });
                             commonEnemyComponent.reset();
                         }
                     }
                 }, Duration.millis(delay));
-                delay += 1000;
+                delay += timeSpawnDelay;
             }
 
         }
@@ -103,32 +110,11 @@ public class WaveManager {
             System.out.println("Generating next wave");
             generations.reproduce();
             currentWave++;
-            startWaveButton.setVisible(true);
+            FXGL.getEventBus().fireEvent(new ShowButtonTrigger());
         }
     }
 
-    //TODO: move into UI
-    public void startWaveUI() {
-        startWaveButton = new Button("Start Wave");
 
-
-        startWaveButton.setTranslateX(50);
-        startWaveButton.setTranslateY(50);
-        startWaveButton.setOnAction(e -> {
-            this.launchNextWave();
-            startWaveButton.setVisible(false);
-        });
-        FXGL.getGameScene().addUINode(startWaveButton);
-
-        //waveCounter text
-        Text waveCounterText = new Text();
-        waveCounterText.setTranslateX(50);
-        waveCounterText.setTranslateY(150);
-        waveCounterText.textProperty().bind(FXGL.getWorldProperties().intProperty("currentWave").asString("Wave: %d"));
-
-        FXGL.getGameScene().addUINode(waveCounterText);
-
-    }
 
     public int getCurrentWave() {
         return currentWave;

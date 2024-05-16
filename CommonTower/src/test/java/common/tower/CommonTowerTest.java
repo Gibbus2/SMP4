@@ -3,6 +3,7 @@ package common.tower;
 
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
+import common.data.GameData;
 import enemy.CommonEnemyComponent;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -11,10 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CommonTowerTest {
+    GameData gameData = new GameData();
     @Test
     public void testCreateComponent() {
-        CommonTowerComponent component = new CommonTowerComponent(null);
-        Assertions.assertNotNull(component.createComponent(null));
+        CommonTowerComponent component = new CommonTowerComponent(null, gameData);
+        Assertions.assertNotNull(component.createComponent(null, gameData));
     }
 
     @Test
@@ -40,7 +42,7 @@ public class CommonTowerTest {
 
         enemies.get(1).getComponent(CommonEnemyComponent.class).damage(10, false);
 
-        CommonTowerComponent component = new CommonTowerComponent(null);
+        CommonTowerComponent component = new CommonTowerComponent(null, gameData);
 
         List<Entity> sortedList = component.sortByHealth(enemies);
 
@@ -69,7 +71,7 @@ public class CommonTowerTest {
 
         enemies.get(1).getComponent(CommonEnemyComponent.class).setDistanceTravelled(10);
 
-        CommonTowerComponent component = new CommonTowerComponent(null);
+        CommonTowerComponent component = new CommonTowerComponent(null, gameData);
 
         List<Entity> sortedList = component.sortByDistanceTraveled(enemies);
 

@@ -1,12 +1,12 @@
 import common.tower.TowerSPI;
-import tower.normal.NormalTower;
+import tower.fast.FastTower;
 
-module NormalTower {
+module FastTower {
     requires CommonTower;
     requires com.almasb.fxgl.all;
     requires ObjectPool;
     requires Common;
 
-    provides TowerSPI with NormalTower;
+    provides TowerSPI with FastTower;
 
 }

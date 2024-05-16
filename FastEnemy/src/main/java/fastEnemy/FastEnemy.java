@@ -11,7 +11,7 @@ import java.util.List;
 public class FastEnemy implements EnemySPI {
     @Override
     public CommonEnemyComponent createEnemyComponent(List<Point2D> wayPoints) {
-        return new FastCommonEnemyComponentComponent(wayPoints);
+        return new FastEnemyComponent(wayPoints);
     }
 
     @Override

@@ -10,10 +10,10 @@ import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.physics.CollisionHandler;
 import common.bullet.CommonBullet;
+import common.data.ShowButtonTrigger;
+import common.data.StartWaveTrigger;
 import common.player.PlayerSPI;
 import common.tower.CommonTowerCollider;
-import common.tower.CommonTowerComponent;
-import common.tower.TowerSPI;
 import enemy.CommonEnemyComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.HBox;
@@ -40,6 +40,7 @@ import objectPool.IObjectPool;
 
 
 import objectPool.PooledObjectComponent;
+import ui.GameInformation;
 import ui.GameMenu;
 import map.Waypoint;
 import ui.TowerSelection;
@@ -49,8 +50,8 @@ public class App extends GameApplication {
     GameData gameData = new GameData();
     private IObjectPool objectPool = new ObjectPool();
     private WaveManager waveManager = new WaveManager(objectPool, gameData);
-
     private TowerSelection towerSelection = new TowerSelection();
+    private GameInformation gameInformation = new GameInformation();
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setWidth(gameData.getDisplayWidth());
@@ -58,13 +59,13 @@ public class App extends GameApplication {
         settings.setTitle("SDU TD");
         settings.setGameMenuEnabled(true);
         settings.setMainMenuEnabled(true);
-        settings.setSceneFactory(new SceneFactory() {
-            @Override
-            public FXGLMenu newGameMenu() {
-                System.out.println("newGameMenu");
-                return new GameMenu();
-            }
-        });
+//        settings.setSceneFactory(new SceneFactory() {
+//            @Override
+//            public FXGLMenu newGameMenu() {
+//                System.out.println("newGameMenu");
+//                return new GameMenu();
+//            }
+//        });
 
 
     }
@@ -86,14 +87,13 @@ public class App extends GameApplication {
         vars.put("currentWave", waveManager.getCurrentWave());
     }
 
-    Entity player;
     @Override
     protected void initGame() {
 
         MapLoader mapLoader;
         try {
             mapLoader = new MapLoader();
-            mapLoader.loadLevel(0);
+            mapLoader.loadLevel(0, gameData);
         } catch (MalformedURLException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -101,7 +101,7 @@ public class App extends GameApplication {
         Point2D end = Waypoint.fromPolyline().getWaypoints().getLast().subtract(24,24);
 
         getPlayerSPIs().stream().findFirst().ifPresent(
-                spi -> player = FXGL.entityBuilder()
+                spi -> FXGL.entityBuilder()
                         .type(EntityType.PLAYER)
                         .at(end)
                         .viewWithBBox(new Rectangle(48, 48, (gameData.debug) ? Color.RED : new Color(0, 0, 0, 0)))
@@ -110,23 +110,16 @@ public class App extends GameApplication {
                         .buildAndAttach()
         );
 
-        Entity tower = FXGL.entityBuilder()
-                .type(EntityType.NO_BUILD_ZONE)
-                .at(600,600)
-                .viewWithBBox(new Rectangle(48, 48, Color.BLUE))
-                .with(new CollidableComponent(true))
-                .with(new CommonTowerComponent(objectPool))
-                .buildAndAttach();
-
         System.out.println(objectPool == null ? "True" : "False");
 
-//        Entity bullet = FXGL.entityBuilder()
-//                .type(EntityType.BULLET)
-//                .at(600,600)
-//                .viewWithBBox(new Rectangle(16, 16, Color.GRAY))
-//                .with(new CollidableComponent(true))
-//                .with(new CommonBullet(null))
-//                .buildAndAttach();
+        FXGL.getEventBus().addEventHandler(ShowButtonTrigger.ANY, showButtonTrigger -> {
+            System.out.println("Show button trigger");
+            gameInformation.showButton();
+        });
+        FXGL.getEventBus().addEventHandler(StartWaveTrigger.ANY, startWaveTrigger -> {
+            System.out.println("Start wave trigger");
+            waveManager.launchNextWave();
+        });
 
         // init wave manager
         waveManager.init();
@@ -158,10 +151,12 @@ public class App extends GameApplication {
         FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.ENEMY, EntityType.TOWER) {
             @Override
             protected void onCollisionBegin(Entity a, Entity b) {
-                System.out.println("Enemy colliding with tower");
+                if(gameData.debug)
+                    System.out.println("Enemy colliding with tower");
                 for(Component component : b.getComponents()){
                     if(component instanceof CommonTowerCollider){
-                        System.out.println("Found tower collider component");
+                        if(gameData.debug)
+                            System.out.println("Found tower collider component");
                         ((CommonTowerCollider) component).addEnemy(a);
                     }
                 }
@@ -169,10 +164,12 @@ public class App extends GameApplication {
 
             @Override
             protected void onCollisionEnd(Entity a, Entity b) {
-                System.out.println("Enemy colliding with tower ended");
+                if(gameData.debug)
+                    System.out.println("Enemy colliding with tower ended");
                 for(Component component : b.getComponents()){
                     if(component instanceof CommonTowerCollider){
-                        System.out.println("Found tower collider component");
+                        if (gameData.debug)
+                            System.out.println("Found tower collider component");
                         ((CommonTowerCollider) component).removeEnemy(a);
                     }
                 }
@@ -211,28 +208,11 @@ public class App extends GameApplication {
                 }
             }
         });
-
-        System.out.println(" - Build and No_Build_Zone collision.");
-        // Tower and NoBuildZone collision.
         FXGL.getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.BUILD, EntityType.NO_BUILD_ZONE) {
-
             @Override
-            protected void onCollisionBegin(Entity Build, Entity no_build_zone) {
-                // Handle collision here
-                // Disable building on to build Entity. Sets canBuild flag to false
-                System.out.println("Collision detected between imageEntity and NO_BUILD_ZONE");
-                towerSelection.setBuildableArea(false);
-
-
-            }
-
+            protected void onCollisionBegin(Entity Build, Entity no_build_zone) {towerSelection.setColissionCounter(towerSelection.getColissionCounter() + 1);}
             @Override
-            protected void onCollisionEnd(Entity build, Entity no_build_zone) {
-                // Handle collision here
-                // Enable  building on to build Entity. Sets canBuild flag to true
-                System.out.println("Collision ended between imageEntity and NO_BUILD_ZONE");
-                towerSelection.setBuildableArea(true);
-            }
+            protected void onCollisionEnd(Entity build, Entity no_build_zone) {towerSelection.setColissionCounter(towerSelection.getColissionCounter() - 1);}
         });
     }
 
@@ -241,10 +221,12 @@ public class App extends GameApplication {
         // TODO: Use Map module to load scene "Main Menu".
 
 
-        HBox hbox = towerSelection.createTowerSelection(objectPool);
+        HBox hbox = towerSelection.createTowerSelection(objectPool, gameData);
         FXGL.getGameScene().addUINode(hbox);
+        //HBox hboxInfo = towerSelection.displayInformation();
+        //FXGL.getGameScene().addUINode(hboxInfo);
 
-        var brickTexture = FXGL.getAssetLoader().loadTexture("brick.png");
+       /* var brickTexture = FXGL.getAssetLoader().loadTexture("brick.png");
         brickTexture.setTranslateX(50);
         brickTexture.setTranslateY(450);
 
@@ -264,15 +246,9 @@ public class App extends GameApplication {
             brickTexture.setScaleY(1.0);
         });
 
-        FXGL.getGameScene().addUINode(brickTexture);
+        FXGL.getGameScene().addUINode(brickTexture);*/
 
-        waveManager.startWaveUI();
-
-        //Button for starting wave, need to agree on if we do button to start
-        //or just intermission on game start then run after x seconds
-        //does this need to be in here or wavemanager for jpms?
-        //would assume i need to change this as if wavemanager gets removed
-        //it would just break right? but for now it just needs to work
+        gameInformation.startWaveUI();
 
 
     }
@@ -291,18 +267,4 @@ public class App extends GameApplication {
         System.out.println("Loading PlayerSPI.");
         return ServiceLoader.load(PlayerSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
     }
-
-//    private Collection<? extends EnemySPI> getEnemySPIs() {
-//        System.out.println("Loading EnemySPIs.");
-//        return ServiceLoader.load(EnemySPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
-//    }
-
-
-
-//    private Collection<? extends TowerSPI> getTowerSPIs() {
-//        System.out.println("Loading TowerSPIs.");
-//        return ServiceLoader.load(TowerSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
-//    }
-
-
 }

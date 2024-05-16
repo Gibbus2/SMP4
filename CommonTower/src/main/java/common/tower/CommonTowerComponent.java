@@ -1,6 +1,5 @@
 package common.tower;
 
-import bullet.BulletComponent;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
@@ -9,18 +8,18 @@ import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.entity.components.ViewComponent;
 import com.almasb.fxgl.entity.state.EntityState;
 import com.almasb.fxgl.entity.state.StateComponent;
+import com.almasb.fxgl.texture.Texture;
 import com.almasb.fxgl.time.LocalTimer;
 import common.bullet.BulletSPI;
 import common.bullet.CommonBullet;
 import common.data.EntityType;
+import common.data.GameData;
 import enemy.CommonEnemyComponent;
 import health.HealthComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
 import javafx.util.Duration;
 import objectPool.IObjectPool;
 
@@ -29,8 +28,7 @@ import java.util.*;
 import static java.util.stream.Collectors.toList;
 
 public class CommonTowerComponent extends Component  {
-    protected int damage;
-    public int getDamage(){ return damage; }
+    private final GameData gameData;
     protected int cost;
     public int getCost(){ return cost; }
 
@@ -70,18 +68,18 @@ public class CommonTowerComponent extends Component  {
     // Some UI stuff trying to show the targeting state of the tower.
     // private InfoBox infoBox;
 
-    public CommonTowerComponent(IObjectPool objectPool) {
-        this.damage = 1;
+    public CommonTowerComponent(IObjectPool objectPool, GameData gameData) {
         this.cost = 10;
         this.firerate = 0.5;
         this.range = 300;
         this.targeting = TowerState.FIRST;
         enemiesInRange = new ArrayList<>();
         this.objectPool = objectPool;
+        this.gameData = gameData;
     }
 
-    public Component createComponent(IObjectPool objectPool) {
-        return new CommonTowerComponent(objectPool);
+    public Component createComponent(IObjectPool objectPool, GameData gameData) {
+        return new CommonTowerComponent(objectPool, gameData);
     }
 
     @Override
@@ -275,18 +273,25 @@ public class CommonTowerComponent extends Component  {
     private void shoot(Entity enemy) {
         if (objectPool != null) {
             getBulletSPIs().stream().findFirst().ifPresent(SPI -> {
+                Texture texture = new Texture(SPI.getImage());
                 objectPool.createPool(EntityType.BULLET.toString(), () -> FXGL.entityBuilder()
                         .type(EntityType.BULLET)
-                        .viewWithBBox(new Rectangle(16, 16, Color.GREEN))
+                        .viewWithBBox(new Rectangle(texture.getWidth(), texture.getHeight(), (gameData.debug) ? Color.GREEN : new Color(0, 0, 0, 0)))
                         .with(new CollidableComponent(true))
                         .with(SPI.createComponent(null))
+                        .view(texture.copy())
                         .buildAndAttach());
 
                 Entity bullet = objectPool.getEntityFromPool(EntityType.BULLET.toString());
                 for (Component comp : bullet.getComponents()) {
                     if (comp instanceof CommonBullet) {
                         ((CommonBullet) comp).setTarget(enemy);
-                        bullet.setPosition(getEntity().getPosition());
+                        bullet.setPosition(getEntity().getPosition().add(
+                            new Point2D(
+                                    Math.cos(Math.toRadians(getEntity().getRotation()) * getEntity().getWidth()) + getEntity().getWidth()/2,
+                                    Math.sin(Math.toRadians(getEntity().getRotation()) * getEntity().getHeight()) + getEntity().getHeight()/2
+                            )
+                        ));
                     }
                 }
             });

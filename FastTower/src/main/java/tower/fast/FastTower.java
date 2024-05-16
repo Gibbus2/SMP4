@@ -1,4 +1,4 @@
-package tower.normal;
+package tower.fast;
 
 import com.almasb.fxgl.entity.component.Component;
 import common.data.GameData;
@@ -9,27 +9,27 @@ import objectPool.IObjectPool;
 
 import java.io.InputStream;
 
-public class NormalTower extends CommonTowerComponent implements TowerSPI {
+public class FastTower extends CommonTowerComponent implements TowerSPI {
 
-    public NormalTower() {
+    public FastTower() {
         this(null, null);
     }
 
-    public NormalTower(IObjectPool objectPool, GameData gameData) {
+    public FastTower(IObjectPool objectPool, GameData gameData) {
         super(objectPool, gameData);
-        this.cost = 10;
-        this.firerate = 1.5;
+        this.cost = 15;
+        this.firerate = 0.42069;
         this.range = 300;
     }
 
     @Override
     public Component createComponent(IObjectPool objectPool, GameData gameData) {
-        return new NormalTower(objectPool, gameData);
+        return new FastTower(objectPool, gameData);
     }
 
     @Override
     public Image getImage() {
-        InputStream is = NormalTower.class.getResourceAsStream("/tower.png");
+        InputStream is = FastTower.class.getResourceAsStream("/fastTower48.png");
         if (is != null) {
             return new Image(is);
         }
@@ -37,6 +37,6 @@ public class NormalTower extends CommonTowerComponent implements TowerSPI {
     }
     @Override
     public String getName() {
-        return "Normal Tower";
+        return "Fast Tower";
     }
 }

@@ -2,19 +2,19 @@ package WaveManager;
 
 import java.util.List;
 
-public class Genome { //TODO: find better name??
-    private final List<Integer> chromosome;
+public class Population {
+    private final List<Integer> dna;
     private int totalDistance;
     private int removedEntities;
     private final int totalEntities;
 
-    public Genome(List<Integer> chromosome){
-        this.chromosome = chromosome;
+    public Population(List<Integer> dna){
+        this.dna = dna;
         this.totalDistance = 0;
         this.removedEntities = 0;
 
         int sum = 0;
-        for (int count : chromosome){
+        for (int count : dna){
             sum += count;
         }
         totalEntities = sum;
@@ -30,7 +30,7 @@ public class Genome { //TODO: find better name??
         return totalDistance;
     }
 
-    public List<Integer> getChromosome() {
-        return chromosome;
+    public List<Integer> getDna() {
+        return dna;
     }
 }

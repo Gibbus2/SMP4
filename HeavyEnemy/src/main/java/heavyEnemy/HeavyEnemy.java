@@ -11,7 +11,7 @@ import java.util.List;
 public class HeavyEnemy implements EnemySPI {
     @Override
     public CommonEnemyComponent createEnemyComponent(List<Point2D> wayPoints) {
-        return new HeavyCommonEnemyComponentComponent(wayPoints);
+        return new HeavyEnemyComponent(wayPoints);
     }
 
     @Override

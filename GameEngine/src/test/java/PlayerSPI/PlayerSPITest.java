@@ -62,7 +62,7 @@ public class PlayerSPITest {
     public void testChangeLedger() {
         getPlayerSPIs().stream().findFirst().ifPresent(
                 spi -> {
-                    spi.setMoney(10);
+                    spi.changeMoney(10);
                     Assertions.assertEquals(10, spi.getMoney());    ;
                 }
         );

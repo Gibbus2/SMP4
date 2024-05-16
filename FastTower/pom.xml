@@ -6,17 +6,19 @@
         <artifactId>SMP4</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>Shop</artifactId>
-    <name>Shop</name>
+    <artifactId>FastTower</artifactId>
+    <name>FastTower</name>
     <url>http://maven.apache.org</url>
-
     <dependencies>
         <dependency>
             <groupId>com.github.almasb</groupId>
             <artifactId>fxgl</artifactId>
             <version>21.1</version>
         </dependency>
+        <dependency>
+            <groupId>dk.sdu.mmmi.GRP7</groupId>
+            <artifactId>CommonTower</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
-
-    <packaging>jar</packaging>
 </project>

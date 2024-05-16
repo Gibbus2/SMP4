@@ -20,12 +20,12 @@
     <module>WaveManager</module>
     <module>Bullet</module>
     <module>UI</module>
-    <module>Shop</module>
     <module>Health</module>
     <module>NormalEnemy</module>
     <module>NormalTower</module>
     <module>FastEnemy</module>
     <module>HeavyEnemy</module>
+      <module>FastTower</module>
   </modules>
   <properties>
     <java>java</java>
