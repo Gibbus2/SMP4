@@ -8,6 +8,7 @@ import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.CollidableComponent;
+import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import common.bullet.CommonBullet;
 import common.data.ShowButtonTrigger;
@@ -16,6 +17,10 @@ import common.player.PlayerSPI;
 import common.tower.CommonTowerCollider;
 import enemy.CommonEnemyComponent;
 import javafx.geometry.Point2D;
+import javafx.scene.control.Button;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -34,6 +39,7 @@ import common.data.GameData;
 import WaveManager.WaveManager;
 import static java.util.stream.Collectors.toList;
 
+import javafx.scene.text.Text;
 import map.MapLoader;
 
 import objectPool.ObjectPool;
@@ -78,6 +84,20 @@ public class App extends GameApplication {
 
     @Override
     protected void initInput() {
+        FXGL.getInput().addAction(new UserAction("back") {
+            @Override
+            protected void onActionBegin() {
+                FXGL.getGameController().pauseEngine();
+                demon();
+
+            }
+        }, KeyCode.C);
+        FXGL.getInput().addAction(new UserAction("forward") {
+            @Override
+            protected void onActionBegin() {
+                FXGL.getGameController().resumeEngine();
+            }
+        }, KeyCode.V);
 
     }
 
@@ -267,6 +287,31 @@ public class App extends GameApplication {
         launch(args);
     }
 
+    public void demon(){
+        HBox hbox = new HBox();
+
+        hbox.setLayoutX(0);
+        hbox.setLayoutY(725);
+        hbox.setPrefSize(1440, 150);
+
+        BackgroundFill backgroundFill = new BackgroundFill(Color.WHITE, null, null);
+        Background background = new Background(backgroundFill);
+
+        hbox.setBackground(background);
+        hbox.setSpacing(20);
+        hbox.toFront();
+
+        Button exitButton = new Button("Exit");
+        exitButton.setPadding(new javafx.geometry.Insets(10, 20, 10, 20));
+        exitButton.setOnAction(e -> System.exit(0));
+        hbox.getChildren().add(exitButton);
+
+        Text endText = new Text("You made it to round " + waveManager.getCurrentWave() + " congratulations!");
+        endText.setFont(javafx.scene.text.Font.font(20));
+        hbox.getChildren().add(endText);
+
+        FXGL.getGameScene().addUINode(hbox);
+    }
     private Collection<? extends PlayerSPI> getPlayerSPIs() {
         System.out.println("Loading PlayerSPI.");
         return ServiceLoader.load(PlayerSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
