@@ -19,7 +19,7 @@ public class PlayerSPITest {
     }
 
     @Test
-    public void canCreatePlayerEntityWithPlayerComponent() {
+    public void testCanCreatePlayerEntityWithPlayerComponent() {
         getPlayerSPIs().stream().findFirst().ifPresent(
                 spi -> {
                     FXGL.entityBuilder()
