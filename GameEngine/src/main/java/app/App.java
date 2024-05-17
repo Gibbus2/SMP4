@@ -2,8 +2,6 @@ package app;
 
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
-import com.almasb.fxgl.app.scene.FXGLMenu;
-import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
@@ -16,6 +14,8 @@ import common.data.StartWaveTrigger;
 import common.player.PlayerSPI;
 import common.tower.CommonTowerCollider;
 import enemy.CommonEnemyComponent;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
@@ -40,6 +40,7 @@ import WaveManager.WaveManager;
 import static java.util.stream.Collectors.toList;
 
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 import map.MapLoader;
 
 import objectPool.ObjectPool;
@@ -48,7 +49,6 @@ import objectPool.IObjectPool;
 
 import objectPool.PooledObjectComponent;
 import ui.GameInformation;
-import ui.GameMenu;
 import map.Waypoint;
 import ui.TowerSelection;
 
@@ -88,7 +88,7 @@ public class App extends GameApplication {
             @Override
             protected void onActionBegin() {
                 FXGL.getGameController().pauseEngine();
-                demon();
+                endGameScreen();
 
             }
         }, KeyCode.C);
@@ -287,7 +287,17 @@ public class App extends GameApplication {
         launch(args);
     }
 
-    public void demon(){
+    public void endGameChecker(){
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(200), event -> {
+            getPlayerSPIs().forEach(player -> {
+
+            });
+        }));
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
+    }
+
+    public void endGameScreen(){
         HBox hbox = new HBox();
 
         hbox.setLayoutX(0);
