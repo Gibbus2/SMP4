@@ -1,18 +1,14 @@
 package ui;
 
 import com.almasb.fxgl.dsl.FXGL;
-import common.data.GameData;
 import common.data.ShowButtonTrigger;
 import common.data.StartWaveTrigger;
 import common.player.PlayerSPI;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
