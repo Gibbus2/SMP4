@@ -17,7 +17,9 @@ import enemy.CommonEnemyComponent;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.geometry.Point2D;
+import javafx.scene.Group;
 import javafx.scene.control.Button;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -30,6 +32,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ServiceLoader;
 
 import common.data.EntityType;
@@ -59,6 +62,9 @@ public class App extends GameApplication {
     private WaveManager waveManager = new WaveManager(objectPool, gameData);
     private TowerSelection towerSelection = new TowerSelection();
     private GameInformation gameInformation = new GameInformation();
+    private Text gameOverText;
+
+
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setWidth(gameData.getDisplayWidth());
@@ -84,21 +90,6 @@ public class App extends GameApplication {
 
     @Override
     protected void initInput() {
-        FXGL.getInput().addAction(new UserAction("back") {
-            @Override
-            protected void onActionBegin() {
-                FXGL.getGameController().pauseEngine();
-                endGameScreen();
-
-            }
-        }, KeyCode.C);
-        FXGL.getInput().addAction(new UserAction("forward") {
-            @Override
-            protected void onActionBegin() {
-                FXGL.getGameController().resumeEngine();
-            }
-        }, KeyCode.V);
-
     }
 
     @Override
@@ -145,6 +136,7 @@ public class App extends GameApplication {
 
         // init wave manager
         waveManager.init();
+        endGameChecker();
     }
 
     @Override
@@ -274,13 +266,20 @@ public class App extends GameApplication {
         gameInformation.startWaveUI();
         VBox vbox = gameInformation.displayInformation();
         FXGL.getGameScene().addUINode(vbox);
+        gameOverText = new Text("Game Over");
+        gameOverText.setFont(javafx.scene.text.Font.font(50));
+        double centerX = gameData.getDisplayWidth() / 2 - gameOverText.getLayoutBounds().getWidth() / 2;
+        double centerY = gameData.getDisplayHeight() / 2 - gameOverText.getLayoutBounds().getHeight() / 2;
+        gameOverText.setLayoutX(centerX);
+        gameOverText.setLayoutY(centerY);
+        FXGL.getGameScene().addUINode(gameOverText);
+        gameOverText.setVisible(false);
+
 
     }
 
-
     @Override
     protected void onUpdate(double tpf) {
-
     }
 
     public static void main(String[] args) {
@@ -288,11 +287,21 @@ public class App extends GameApplication {
     }
 
     public void endGameChecker(){
+        ColorAdjust grayScale = new ColorAdjust();
+        grayScale.setSaturation(-1);
+        Optional<? extends PlayerSPI> playerSPIOptional = getPlayerSPIs().stream().findFirst();
+        PlayerSPI playerSPI = playerSPIOptional.orElse(null);
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(200), event -> {
-            getPlayerSPIs().forEach(player -> {
-
-            });
+            if(playerSPI != null){
+                if(playerSPI.getHealth() <= 0 && !gameOverText.isVisible() ){
+                    endGameScreen();
+                    FXGL.getGameController().pauseEngine();
+                    FXGL.getGameScene().getRoot().setEffect(grayScale);
+                    gameOverText.setVisible(true);
+                }
+            }
         }));
+
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
     }
@@ -320,8 +329,13 @@ public class App extends GameApplication {
         endText.setFont(javafx.scene.text.Font.font(20));
         hbox.getChildren().add(endText);
 
+
         FXGL.getGameScene().addUINode(hbox);
     }
+
+
+
+
     private Collection<? extends PlayerSPI> getPlayerSPIs() {
         System.out.println("Loading PlayerSPI.");
         return ServiceLoader.load(PlayerSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());

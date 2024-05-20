@@ -1,27 +1,30 @@
 package ui;
 
 import com.almasb.fxgl.dsl.FXGL;
-import common.data.EntityType;
 import common.data.GameData;
 import common.data.ShowButtonTrigger;
 import common.data.StartWaveTrigger;
 import common.player.PlayerSPI;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.scene.Group;
 import javafx.scene.control.Button;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.ServiceLoader;
 
 import static java.util.stream.Collectors.toList;
 
 public class GameInformation {
     private Button startWaveButton;
+
 
 
     public void startWaveUI() {
@@ -56,15 +59,18 @@ public class GameInformation {
         Text healthText = new Text();
         Text waveCounterText = new Text();
 
+        Optional<? extends PlayerSPI> playerSPIOptional = getPlayerSPI().stream().findFirst();
+        PlayerSPI playerSPI = playerSPIOptional.orElse(null);
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(200), event -> {
-            player().forEach(player -> {
-                moneyText.setText("Money: " + player.getMoney());
-                healthText.setText("Health: " + player.getHealth());
-            });
+            if(playerSPI != null){
+                moneyText.setText("Money: " + playerSPI.getMoney());
+                healthText.setText("Health: " + playerSPI.getHealth());
+            }
         }));
-        waveCounterText.textProperty().bind(FXGL.getWorldProperties().intProperty("currentWave").asString("Wave: %d"));
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
+
+        waveCounterText.textProperty().bind(FXGL.getWorldProperties().intProperty("currentWave").asString("Wave: %d"));
 
         moneyText.setFill(Color.BLACK);
         moneyText.setStyle("-fx-font: 24 arial;");
@@ -81,7 +87,8 @@ public class GameInformation {
 
         return vbox;
     }
-    private Collection<? extends PlayerSPI> player() {
+
+    private Collection<? extends PlayerSPI> getPlayerSPI() {
         return ServiceLoader.load(PlayerSPI.class).stream().map(ServiceLoader.Provider::get).collect(toList());
     }
 }
