@@ -28,7 +28,7 @@ public class GameInformation {
 
 
     public void startWaveUI() {
-        startWaveButton = new Button("Start Wave");
+        startWaveButton = new Button("Start");
 
 
         startWaveButton.setTranslateX(1340);
