@@ -2,7 +2,6 @@ package common.bullet;
 
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
-import enemy.CommonEnemyComponent;
 import health.HealthComponent;
 import objectPool.PooledObjectComponent;
 

@@ -17,6 +17,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import objectPool.IObjectPool;
 import javafx.util.Duration;
+import map.Waypoint;
 
 
 import java.util.*;
@@ -42,7 +43,7 @@ public class WaveManager {
 
     public void init() {
         //get waypoints
-        this.wayPoints = map.Waypoint.fromPolyline().getWaypoints();
+        this.wayPoints = Waypoint.fromPolyline().getWaypoints();
 
         //get config for enemies and add them to object pool
         List<EnemySPI> enemies = ServiceLoader.load(EnemySPI.class).stream().map(ServiceLoader.Provider::get).toList();
