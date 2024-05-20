@@ -6,6 +6,13 @@ public class GameData {
 
     public boolean debug = false;
 
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
+    public boolean getDebug() {
+        return debug;
+    }
+
 
     public void setDisplayWidth(int width) {
         this.displayWidth = width;

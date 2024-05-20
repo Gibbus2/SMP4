@@ -6,7 +6,6 @@ import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.CollidableComponent;
-import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import common.bullet.CommonBullet;
 import common.data.ShowButtonTrigger;
@@ -17,10 +16,8 @@ import enemy.CommonEnemyComponent;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.geometry.Point2D;
-import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.effect.ColorAdjust;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.HBox;
@@ -63,6 +60,9 @@ public class App extends GameApplication {
     private TowerSelection towerSelection = new TowerSelection();
     private GameInformation gameInformation = new GameInformation();
     private Text gameOverText;
+    private Text fpsText;
+
+
 
 
     @Override
@@ -102,6 +102,8 @@ public class App extends GameApplication {
 
     @Override
     protected void initGame() {
+        //put this here as im too lazy to go to GameData and change
+        gameData.setDebug(true);
 
         MapLoader mapLoader;
         try {
@@ -266,20 +268,26 @@ public class App extends GameApplication {
         gameInformation.startWaveUI();
         VBox vbox = gameInformation.displayInformation();
         FXGL.getGameScene().addUINode(vbox);
-        gameOverText = new Text("Game Over");
-        gameOverText.setFont(javafx.scene.text.Font.font(50));
-        double centerX = gameData.getDisplayWidth() / 2 - gameOverText.getLayoutBounds().getWidth() / 2;
-        double centerY = gameData.getDisplayHeight() / 2 - gameOverText.getLayoutBounds().getHeight() / 2;
-        gameOverText.setLayoutX(centerX);
-        gameOverText.setLayoutY(centerY);
-        FXGL.getGameScene().addUINode(gameOverText);
-        gameOverText.setVisible(false);
-
-
+        gameOverText();
+        fpsCounter();
     }
+
+    private long frameCount = 0;
+    private long lastUpdate = 0;
+
 
     @Override
     protected void onUpdate(double tpf) {
+        if(gameData.debug){
+            frameCount++;
+            fpsText.setVisible(gameData.debug);
+            long now = System.nanoTime();
+            if (now - lastUpdate >= 1_000_000_000) { // 1_000_000_000 nanoseconds = 1 second
+                fpsText.setText("FPS: " + frameCount);
+                frameCount = 0;
+                lastUpdate = now;
+            }
+        }
     }
 
     public static void main(String[] args) {
@@ -331,6 +339,28 @@ public class App extends GameApplication {
 
 
         FXGL.getGameScene().addUINode(hbox);
+    }
+    public void gameOverText(){
+        gameOverText = new Text("Game Over");
+        gameOverText.setFont(javafx.scene.text.Font.font(50));
+        double centerX = gameData.getDisplayWidth() / 2 - gameOverText.getLayoutBounds().getWidth() / 2;
+        double centerY = gameData.getDisplayHeight() / 2 - gameOverText.getLayoutBounds().getHeight() / 2;
+        gameOverText.setLayoutX(centerX);
+        gameOverText.setLayoutY(centerY);
+        FXGL.getGameScene().addUINode(gameOverText);
+        gameOverText.setVisible(false);
+    }
+    public void fpsCounter(){
+        fpsText = new Text("FPS: 0");
+        fpsText.setVisible(false);
+
+        fpsText.setLayoutX(10);
+        fpsText.setLayoutY(20);
+
+        fpsText.setFont(javafx.scene.text.Font.font(20));
+        fpsText.setFill(Color.BLACK);
+
+        FXGL.getGameScene().addUINode(fpsText);
     }
 
 

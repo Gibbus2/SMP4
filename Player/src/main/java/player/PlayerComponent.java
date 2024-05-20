@@ -19,7 +19,7 @@ public class PlayerComponent extends Component implements PlayerSPI {
         player = getEntity();
 
         System.out.println("PlayerComponent added -> entity.");
-        getPlayerEntity().addComponent(new HealthComponent(1));
+        getPlayerEntity().addComponent(new HealthComponent(25));
         System.out.println("HealthComponent added -> " + PlayerComponent.class + ".");
     }
 
