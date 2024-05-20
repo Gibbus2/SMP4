@@ -98,7 +98,7 @@ public class Generations {
         System.out.println("Combining " + chromosome1 + " with " + chromosome2 + " using intermediate recombination");
         List<Integer> newChromosome = new ArrayList<>();
         for (int i = 0; i < chromosomeLength; i++) {
-            double a = -0.5 + (1.5 + 0.5) * Math.random(); //random number between -0.25 and 1.25
+            double a = -0.5 + (1.5 + 0.5) * Math.random(); //random number between -0.5 and 1.5
             a = Math.round(a * 100.0) / 100.0; //round to two decimal points
 
             // find the range
