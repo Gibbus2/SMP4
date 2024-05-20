@@ -11,7 +11,7 @@ public class PlayerTest {
     private Entity entity;
 
     @Test
-    public void canCreatePlayerEntityWithPlayerComponent() {
+    public void testCanCreatePlayerEntityWithPlayerComponent() {
         entity = FXGL.entityBuilder()
                 .at(0,0)
                 .with(new PlayerComponent())

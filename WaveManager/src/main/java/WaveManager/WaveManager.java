@@ -13,10 +13,8 @@ import common.data.StartWaveTrigger;
 import enemy.CommonEnemyComponent;
 import enemy.EnemySPI;
 import javafx.geometry.Point2D;
-import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
 import objectPool.IObjectPool;
 import javafx.util.Duration;
 
@@ -80,10 +78,10 @@ public class WaveManager {
         Population population = generations.getLatest();
         int delay = 0;
         // for each gene (enemy) in the chromosome
-        for (int i = 0; i < population.getDna().size(); i++) {
+        for (int i = 0; i < population.getChromosome().size(); i++) {
 
             //launch the amount of entities defined by the gene
-            int toLaunch = population.getDna().get(i);
+            int toLaunch = population.getChromosome().get(i);
             for (int j = 0; j < toLaunch; j++) {
                 String key = this.enemyKeys.get(i);
                 FXGL.getGameTimer().runOnceAfter(() -> {

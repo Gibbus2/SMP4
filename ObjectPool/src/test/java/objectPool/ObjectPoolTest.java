@@ -4,7 +4,7 @@ import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import common.data.EntityType;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ObjectPoolTest {
@@ -12,7 +12,7 @@ public class ObjectPoolTest {
     private Entity entity;
 
     @Test
-    void createPool_WhenCalled_AddsPoolToPools() {
+    public void testCreatePool_WhenCalled_AddsPoolToPools() {
         objectPool = new ObjectPool();
 
         objectPool.createPool("ENEMY",
@@ -26,7 +26,7 @@ public class ObjectPoolTest {
     }
 
     @Test
-    void createEntity_WhenGettingFromEmptyPool() {
+    public void testCreateEntity_WhenGettingFromEmptyPool() {
         objectPool = new ObjectPool();
 
         objectPool.createPool("ENEMY",
@@ -41,7 +41,7 @@ public class ObjectPoolTest {
     }
 
     @Test
-    void returnEntityAndComponentsArePaused_WhenCallingReturnToPool() {
+    public void testReturnEntityAndComponentsArePaused_WhenCallingReturnToPool() {
         objectPool = new ObjectPool();
 
         objectPool.createPool("ENEMY",
@@ -63,7 +63,7 @@ public class ObjectPoolTest {
     }
 
     @Test
-    void getEntityFromPoolAndComponentsAreResumed_WhenGettingFromNonEmptyPool() {
+    public void testGetEntityFromPoolAndComponentsAreResumed_WhenGettingFromNonEmptyPool() {
         objectPool = new ObjectPool();
 
         objectPool.createPool("ENEMY",
@@ -85,7 +85,7 @@ public class ObjectPoolTest {
     }
 
     @Test
-    void performanceTest_WhenUsingDifferentEntityGettersOrBuilders() {
+    public void testPerformanceTest_WhenUsingDifferentEntityGettersOrBuilders() {
         objectPool = new ObjectPool();
 
         objectPool.createPool("ENEMY",

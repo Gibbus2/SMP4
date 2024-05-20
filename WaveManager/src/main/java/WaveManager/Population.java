@@ -3,18 +3,18 @@ package WaveManager;
 import java.util.List;
 
 public class Population {
-    private final List<Integer> dna;
+    private final List<Integer> chromosome;
     private int totalDistance;
     private int removedEntities;
     private final int totalEntities;
 
-    public Population(List<Integer> dna){
-        this.dna = dna;
+    public Population(List<Integer> chromosome){
+        this.chromosome = chromosome;
         this.totalDistance = 0;
         this.removedEntities = 0;
 
         int sum = 0;
-        for (int count : dna){
+        for (int count : chromosome){
             sum += count;
         }
         totalEntities = sum;
@@ -30,7 +30,7 @@ public class Population {
         return totalDistance;
     }
 
-    public List<Integer> getDna() {
-        return dna;
+    public List<Integer> getChromosome() {
+        return chromosome;
     }
 }

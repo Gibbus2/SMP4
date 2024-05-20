@@ -13,7 +13,7 @@ public class GenerationsTest {
     public void testInitialization(){
         Generations generations = new Generations(4, 11);
 
-        List<Integer> chromosome = generations.getLatest().getDna();
+        List<Integer> chromosome = generations.getLatest().getChromosome();
         assertEquals(4, chromosome.size());
 
         assertEquals(1, generations.generationsCount());
