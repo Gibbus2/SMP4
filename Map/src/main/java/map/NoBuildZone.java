@@ -15,7 +15,6 @@ public class NoBuildZone {
 
                 obj.setPosition(x,y);
                 obj.getViewComponent().setVisible(gameData.debug);
-                //FXGL.getGameWorld().getEntitiesByType((EntityType.NO_BUILD_ZONE)).get(i).setPosition(x, y);
          }
 
 
