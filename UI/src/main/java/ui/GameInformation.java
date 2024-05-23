@@ -25,8 +25,6 @@ public class GameInformation {
 
     public void startWaveUI() {
         startWaveButton = new Button("Start");
-
-
         startWaveButton.setTranslateX(1340);
         startWaveButton.setTranslateY(730);
         startWaveButton.setPrefSize(90,90);
@@ -47,8 +45,8 @@ public class GameInformation {
     }
     public VBox displayInformation(){
         VBox vbox = new VBox();
-        vbox.setLayoutX(1150);
-        vbox.setLayoutY(725);
+/*        vbox.setLayoutX(1150);
+        vbox.setLayoutY(725);*/
         vbox.setPrefSize(50, 88);
 
         Text moneyText = new Text();
