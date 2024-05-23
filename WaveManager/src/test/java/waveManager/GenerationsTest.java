@@ -24,7 +24,9 @@ public class GenerationsTest {
         Generations generations = new Generations(4,11);
         Population initial = generations.getLatest();
 
-        generations.reproduce();
+        generations.reproduce(); // random chromosome
+
+        generations.reproduce(); // reproduction
 
         assertNotEquals(initial, generations.getLatest());
     }
