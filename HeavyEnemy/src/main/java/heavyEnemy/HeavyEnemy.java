@@ -1,6 +1,6 @@
 package heavyEnemy;
 
-import enemy.CommonEnemyComponent;
+import com.almasb.fxgl.entity.component.Component;
 import enemy.EnemySPI;
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
@@ -10,7 +10,7 @@ import java.util.List;
 
 public class HeavyEnemy implements EnemySPI {
     @Override
-    public CommonEnemyComponent createEnemyComponent(List<Point2D> wayPoints) {
+    public Component createEnemyComponent(List<Point2D> wayPoints) {
         return new HeavyEnemyComponent(wayPoints);
     }
 
