@@ -51,17 +51,20 @@ public class Generations {
 
             Population parent1 = generations.get(parent1Index);
             Population parent2 = generations.get(parent2Index);
+            System.out.println("Selected wave " + parent1Index + " and " + parent2Index + " as parents");
 
             // breed/combine parents TO ONE CHILD
             chromosome = intermediateRecombination(parent1.getChromosome(), parent2.getChromosome());
+            System.out.println("Combined parents to new chromosome: " + chromosome);
 
             // mutate child
             mutate(chromosome);
+            System.out.println("Mutated chromosome to: " + chromosome);
         }
 
         // add to generations list
         generations.add(new Population(chromosome));
-        System.out.println("New generation added, with chromosome: " + chromosome);
+        System.out.println("New population added");
     }
 
     public Population getLatest(){
@@ -86,7 +89,6 @@ public class Generations {
 
             cumulativeFitness += generations.get(i).fitness();
             if(cumulativeFitness >= randValue){
-                System.out.println("Selected " + i + " as parent");
                 return i;
             }
         }
@@ -119,7 +121,5 @@ public class Generations {
         int value = (int) (Math.random() * 5);
         int index = (int) (Math.random() * chromosome.size());
         chromosome.set(index, chromosome.get(index) + value);
-
-        System.out.println("Mutated chromosome on " + index + " with " + value);
     }
 }
