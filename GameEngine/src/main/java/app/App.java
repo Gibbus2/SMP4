@@ -274,18 +274,25 @@ public class App extends GameApplication {
 
     private long frameCount = 0;
     private long lastUpdate = 0;
+    //setting to 60 so it doesnt have to start counting from 0
+    private long totalFrameCount = 60;
+    private long startTime = System.nanoTime();
 
 
     @Override
     protected void onUpdate(double tpf) {
         if(gameData.debug){
             frameCount++;
+            totalFrameCount++;
             fpsText.setVisible(gameData.debug);
             long now = System.nanoTime();
-            if (now - lastUpdate >= 1_000_000_000) { // 1_000_000_000 nanoseconds = 1 second
+            long elapsedTime = now - startTime;
+            double avgFPS = totalFrameCount / (elapsedTime / 1_000_000_000.0);
+            if (now - lastUpdate >= 1_000_000_000) {
                 fpsText.setText("FPS: " + frameCount);
                 frameCount = 0;
                 lastUpdate = now;
+                System.out.println("Average FPS: " + avgFPS);
             }
         }
     }
