@@ -75,7 +75,7 @@ public class WaveManager {
 
     }
     public void launchNextWave() {
-        FXGL.getWorldProperties().setValue("currentWave", currentWave); //TODO: move into UI
+        FXGL.getWorldProperties().setValue("currentWave", currentWave);
         Population population = generations.getLatest();
         int delay = 0;
         // for each gene (enemy) in the chromosome
