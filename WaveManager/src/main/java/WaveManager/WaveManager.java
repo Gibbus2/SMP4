@@ -70,10 +70,7 @@ public class WaveManager {
         this.generations = new Generations(this.enemyKeys.size(), 4);
 
     }
-    public void launchNextWaveEventCatcher(){
-        FXGL.getEventBus().addEventHandler(StartWaveTrigger.ANY,event -> launchNextWave());
 
-    }
     public void launchNextWave() {
         FXGL.getWorldProperties().setValue("currentWave", currentWave);
         Population population = generations.getLatest();
