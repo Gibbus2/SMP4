@@ -19,7 +19,7 @@ public class PlayerComponent extends Component implements PlayerSPI {
         player = getEntity();
 
         System.out.println("PlayerComponent added -> entity.");
-        getPlayerEntity().addComponent(new HealthComponent(100));
+        getPlayerEntity().addComponent(new HealthComponent(25));
         System.out.println("HealthComponent added -> " + PlayerComponent.class + ".");
     }
 
@@ -36,11 +36,13 @@ public class PlayerComponent extends Component implements PlayerSPI {
         System.out.println((getPlayerEntity().getComponent(HealthComponent.class).getHealth()));
 
         if (getPlayerEntity().getComponent(HealthComponent.class).isDead()) {
-            getPlayerEntity().removeFromWorld();
+            //getPlayerEntity().removeFromWorld();
 
             System.out.println("Player died.");
             // TODO: End game.
+
         }
+
     }
 
     @Override

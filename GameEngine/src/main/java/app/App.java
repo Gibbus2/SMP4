@@ -2,8 +2,6 @@ package app;
 
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
-import com.almasb.fxgl.app.scene.FXGLMenu;
-import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
@@ -15,8 +13,15 @@ import common.data.StartWaveTrigger;
 import common.player.PlayerSPI;
 import common.tower.CommonTowerCollider;
 import enemy.CommonEnemyComponent;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.geometry.Point2D;
+import javafx.scene.control.Button;
+import javafx.scene.effect.ColorAdjust;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
@@ -24,6 +29,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ServiceLoader;
 
 import common.data.EntityType;
@@ -33,6 +39,8 @@ import common.data.GameData;
 import WaveManager.WaveManager;
 import static java.util.stream.Collectors.toList;
 
+import javafx.scene.text.Text;
+import javafx.util.Duration;
 import map.MapLoader;
 
 import objectPool.ObjectPool;
@@ -41,7 +49,6 @@ import objectPool.IObjectPool;
 
 import objectPool.PooledObjectComponent;
 import ui.GameInformation;
-import ui.GameMenu;
 import map.Waypoint;
 import ui.TowerSelection;
 
@@ -52,6 +59,12 @@ public class App extends GameApplication {
     private WaveManager waveManager = new WaveManager(objectPool, gameData);
     private TowerSelection towerSelection = new TowerSelection();
     private GameInformation gameInformation = new GameInformation();
+    private Text gameOverText;
+    private Text fpsText;
+
+
+
+
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setWidth(gameData.getDisplayWidth());
@@ -77,7 +90,6 @@ public class App extends GameApplication {
 
     @Override
     protected void initInput() {
-
     }
 
     @Override
@@ -85,10 +97,13 @@ public class App extends GameApplication {
         // TODO: Should probably be moved into UI module when rendering
         // current wave to view.
         vars.put("currentWave", waveManager.getCurrentWave());
+
     }
 
     @Override
     protected void initGame() {
+        //put this here as im too lazy to go to GameData and change
+        gameData.setDebug(true);
 
         MapLoader mapLoader;
         try {
@@ -123,6 +138,7 @@ public class App extends GameApplication {
 
         // init wave manager
         waveManager.init();
+        endGameChecker();
     }
 
     @Override
@@ -221,6 +237,7 @@ public class App extends GameApplication {
         // TODO: Use Map module to load scene "Main Menu".
 
 
+
         HBox hbox = towerSelection.createTowerSelection(objectPool, gameData);
         FXGL.getGameScene().addUINode(hbox);
         //HBox hboxInfo = towerSelection.displayInformation();
@@ -249,19 +266,112 @@ public class App extends GameApplication {
         FXGL.getGameScene().addUINode(brickTexture);*/
 
         gameInformation.startWaveUI();
-
-
+        VBox vbox = gameInformation.displayInformation();
+        FXGL.getGameScene().addUINode(vbox);
+        gameOverText();
+        fpsCounter();
     }
+
+    private long frameCount = 0;
+    private long lastUpdate = 0;
+    //setting to 60 so it doesnt have to start counting from 0
+    private long totalFrameCount = 60;
+    private long startTime = System.nanoTime();
 
 
     @Override
     protected void onUpdate(double tpf) {
-
+        if(gameData.debug){
+            frameCount++;
+            totalFrameCount++;
+            fpsText.setVisible(gameData.debug);
+            long now = System.nanoTime();
+            long elapsedTime = now - startTime;
+            double avgFPS = totalFrameCount / (elapsedTime / 1_000_000_000.0);
+            if (now - lastUpdate >= 1_000_000_000) {
+                fpsText.setText("FPS: " + frameCount);
+                frameCount = 0;
+                lastUpdate = now;
+                System.out.println("Average FPS: " + avgFPS);
+            }
+        }
     }
 
     public static void main(String[] args) {
         launch(args);
     }
+
+    public void endGameChecker(){
+        ColorAdjust grayScale = new ColorAdjust();
+        grayScale.setSaturation(-1);
+        Optional<? extends PlayerSPI> playerSPIOptional = getPlayerSPIs().stream().findFirst();
+        PlayerSPI playerSPI = playerSPIOptional.orElse(null);
+        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(200), event -> {
+            if(playerSPI != null){
+                if(playerSPI.getHealth() <= 0 && !gameOverText.isVisible() ){
+                    endGameScreen();
+                    FXGL.getGameController().pauseEngine();
+                    FXGL.getGameScene().getRoot().setEffect(grayScale);
+                    gameOverText.setVisible(true);
+                }
+            }
+        }));
+
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
+    }
+
+    public void endGameScreen(){
+        HBox hbox = new HBox();
+
+        hbox.setLayoutX(0);
+        hbox.setLayoutY(725);
+        hbox.setPrefSize(1440, 150);
+
+        BackgroundFill backgroundFill = new BackgroundFill(Color.WHITE, null, null);
+        Background background = new Background(backgroundFill);
+
+        hbox.setBackground(background);
+        hbox.setSpacing(20);
+        hbox.toFront();
+
+        Button exitButton = new Button("Exit");
+        exitButton.setPadding(new javafx.geometry.Insets(10, 20, 10, 20));
+        exitButton.setOnAction(e -> System.exit(0));
+        hbox.getChildren().add(exitButton);
+
+        Text endText = new Text("You made it to round " + waveManager.getCurrentWave() + " congratulations!");
+        endText.setFont(javafx.scene.text.Font.font(20));
+        hbox.getChildren().add(endText);
+
+
+        FXGL.getGameScene().addUINode(hbox);
+    }
+    public void gameOverText(){
+        gameOverText = new Text("Game Over");
+        gameOverText.setFont(javafx.scene.text.Font.font(50));
+        double centerX = gameData.getDisplayWidth() / 2 - gameOverText.getLayoutBounds().getWidth() / 2;
+        double centerY = gameData.getDisplayHeight() / 2 - gameOverText.getLayoutBounds().getHeight() / 2;
+        gameOverText.setLayoutX(centerX);
+        gameOverText.setLayoutY(centerY);
+        FXGL.getGameScene().addUINode(gameOverText);
+        gameOverText.setVisible(false);
+    }
+    public void fpsCounter(){
+        fpsText = new Text("FPS: 0");
+        fpsText.setVisible(false);
+
+        fpsText.setLayoutX(10);
+        fpsText.setLayoutY(20);
+
+        fpsText.setFont(javafx.scene.text.Font.font(20));
+        fpsText.setFill(Color.BLACK);
+
+        FXGL.getGameScene().addUINode(fpsText);
+    }
+
+
+
 
     private Collection<? extends PlayerSPI> getPlayerSPIs() {
         System.out.println("Loading PlayerSPI.");

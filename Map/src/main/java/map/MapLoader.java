@@ -1,27 +1,13 @@
 package map;
 
-import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.dsl.FXGL;
-import com.almasb.fxgl.entity.Entity;
-
 import com.almasb.fxgl.entity.level.tiled.TMXLevelLoader;
-import com.almasb.fxgl.input.Input;
-import com.almasb.fxgl.input.UserAction;
-import com.almasb.fxgl.physics.CollisionHandler;
 import common.data.GameData;
-import javafx.scene.input.KeyCode;
 
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
-import java.util.Map;
-import javafx.scene.text.Text;
-import map.MapFactory;
-import map.MapLoader;
-
-import static com.almasb.fxgl.dsl.FXGLForKtKt.getAssetLoader;
 
 public class MapLoader {
     private final File location;

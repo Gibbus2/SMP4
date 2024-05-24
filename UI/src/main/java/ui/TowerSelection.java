@@ -8,7 +8,6 @@ import com.almasb.fxgl.texture.Texture;
 import common.data.EntityType;
 import common.data.GameData;
 import common.player.PlayerSPI;
-import common.tower.CommonTowerComponent;
 import common.tower.TowerSPI;
 
 import javafx.scene.image.Image;
@@ -23,7 +22,6 @@ import java.util.Collection;
 import java.util.ServiceLoader;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javafx.scene.text.Text;
 import objectPool.IObjectPool;
 import static java.util.stream.Collectors.toList;
 

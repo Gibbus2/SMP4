@@ -13,12 +13,11 @@ import common.data.StartWaveTrigger;
 import enemy.CommonEnemyComponent;
 import enemy.EnemySPI;
 import javafx.geometry.Point2D;
-import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
 import objectPool.IObjectPool;
 import javafx.util.Duration;
+import map.Waypoint;
 
 
 import java.util.*;
@@ -44,7 +43,7 @@ public class WaveManager {
 
     public void init() {
         //get waypoints
-        this.wayPoints = map.Waypoint.fromPolyline().getWaypoints();
+        this.wayPoints = Waypoint.fromPolyline().getWaypoints();
 
         //get config for enemies and add them to object pool
         List<EnemySPI> enemies = ServiceLoader.load(EnemySPI.class).stream().map(ServiceLoader.Provider::get).toList();
@@ -71,19 +70,16 @@ public class WaveManager {
         this.generations = new Generations(this.enemyKeys.size(), 4);
 
     }
-    public void launchNextWaveEventCatcher(){
-        FXGL.getEventBus().addEventHandler(StartWaveTrigger.ANY,event -> launchNextWave());
 
-    }
     public void launchNextWave() {
-        FXGL.getWorldProperties().setValue("currentWave", currentWave); //TODO: move into UI
+        FXGL.getWorldProperties().setValue("currentWave", currentWave);
         Population population = generations.getLatest();
         int delay = 0;
         // for each gene (enemy) in the chromosome
-        for (int i = 0; i < population.getDna().size(); i++) {
+        for (int i = 0; i < population.getChromosome().size(); i++) {
 
             //launch the amount of entities defined by the gene
-            int toLaunch = population.getDna().get(i);
+            int toLaunch = population.getChromosome().get(i);
             for (int j = 0; j < toLaunch; j++) {
                 String key = this.enemyKeys.get(i);
                 FXGL.getGameTimer().runOnceAfter(() -> {

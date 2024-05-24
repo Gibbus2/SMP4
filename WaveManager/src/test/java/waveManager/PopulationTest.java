@@ -48,6 +48,6 @@ public class PopulationTest {
 
         Population population = new Population(chromosome);
 
-        assertEquals(chromosome, population.getDna());
+        assertEquals(chromosome, population.getChromosome());
     }
 }

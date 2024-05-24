@@ -42,7 +42,7 @@ public class Pool {
                 entity.addComponent(new PooledObjectComponent(this));
             }
 
-            if (!entity.hasComponent(CollidableComponent.class)) {
+            if (entity.hasComponent(CollidableComponent.class)) {
                 entity.getComponent(CollidableComponent.class).setValue(true);
             }
 
