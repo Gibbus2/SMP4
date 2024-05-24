@@ -45,8 +45,8 @@ public class GameInformation {
     }
     public VBox displayInformation(){
         VBox vbox = new VBox();
-/*        vbox.setLayoutX(1150);
-        vbox.setLayoutY(725);*/
+        vbox.setLayoutX(1150);
+        vbox.setLayoutY(725);
         vbox.setPrefSize(50, 88);
 
         Text moneyText = new Text();
