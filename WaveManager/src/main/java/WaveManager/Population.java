@@ -22,8 +22,7 @@ public class Population {
         }
         totalEntities = sum;
         System.out.println("Enemies in next wave" + totalEntities);
-        writeToFile("Enemies in next wave: " + totalEntities);
-
+        //writeToFile("Enemies in next wave: " + totalEntities);
     }
 
     private void writeToFile(String text) {
